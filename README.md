@@ -32,7 +32,7 @@ TI recommends to terminate unused pins by setting the corresponding functions to
 GPIO and configure the pins to output low or input with internal
 pullup/pulldown resistor.
 
-SysConfig allows developers to easily configure unused pins by selecting **Board**â†’**Configure Unused Pins**.
+SysConfig allows developers to easily configure unused pins by selecting **Board**¡ú**Configure Unused Pins**.
 
 For more information about jumper configuration to achieve low-power using the
 MSPM0 LaunchPad, please visit the [LP-MSPM0G3507 User's Guide](https://www.ti.com/lit/slau873).

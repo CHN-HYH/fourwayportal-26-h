@@ -9,37 +9,37 @@ volatile uint8_t  recv0_flag = 0;
 
 void USART_Init(void)
 {
-	// SYSCFGåˆå§‹åŒ–
+	// SYSCFG³õÊ¼»¯
 	// SYSCFG initialization
 	SYSCFG_DL_init();
-	//æ¸…é™¤ä¸²å£ä¸­æ–­æ ‡å¿—
+	//Çå³ı´®¿ÚÖĞ¶Ï±êÖ¾
 	//Clear the serial port interrupt flag
 	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
 	NVIC_ClearPendingIRQ(UART_1_INST_INT_IRQN);
-	//ä½¿èƒ½ä¸²å£ä¸­æ–­
+	//Ê¹ÄÜ´®¿ÚÖĞ¶Ï
 	//Enable serial port interrupt
 	NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
 	NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
 }
 
-//ä¸²å£å‘é€ä¸€ä¸ªå­—èŠ‚
+//´®¿Ú·¢ËÍÒ»¸ö×Ö½Ú
 //The serial port sends a byte
 void USART_SendData(unsigned char data)
 {
-	//å½“ä¸²å£0å¿™çš„æ—¶å€™ç­‰å¾…
+	//µ±´®¿Ú0Ã¦µÄÊ±ºòµÈ´ı
 	//Wait when serial port 0 is busy
 	while( DL_UART_isBusy(UART_0_INST) == true );
-	//å‘é€
+	//·¢ËÍ
 	//send
 	DL_UART_Main_transmitData(UART_0_INST, data);
 }
 
 
 #if !defined(__MICROLIB)
-//ä¸ä½¿ç”¨å¾®åº“çš„è¯å°±éœ€è¦æ·»åŠ ä¸‹é¢çš„å‡½æ•°
+//²»Ê¹ÓÃÎ¢¿âµÄ»°¾ÍĞèÒªÌí¼ÓÏÂÃæµÄº¯Êı
 //If you don't use the micro library, you need to add the following function
 #if (__ARMCLIB_VERSION <= 6000000)
-//å¦‚æœç¼–è¯‘å™¨æ˜¯AC5  å°±å®šä¹‰ä¸‹é¢è¿™ä¸ªç»“æ„ä½“
+//Èç¹û±àÒëÆ÷ÊÇAC5  ¾Í¶¨ÒåÏÂÃæÕâ¸ö½á¹¹Ìå
 //If the compiler is AC5, define the following structure
 struct __FILE
 {
@@ -49,7 +49,7 @@ struct __FILE
 
 FILE __stdout;
 
-//å®šä¹‰_sys_exit()ä»¥é¿å…ä½¿ç”¨åŠä¸»æœºæ¨¡å¼
+//¶¨Òå_sys_exit()ÒÔ±ÜÃâÊ¹ÓÃ°ëÖ÷»úÄ£Ê½
 //Define _sys_exit() to avoid using semihosting mode
 void _sys_exit(int x)
 {
@@ -58,11 +58,11 @@ void _sys_exit(int x)
 #endif
 
 
-//printfå‡½æ•°é‡å®šä¹‰
+//printfº¯ÊıÖØ¶¨Òå
 //printf function redefinition
 int fputc(int ch, FILE *stream)
 {
-	//å½“ä¸²å£0å¿™çš„æ—¶å€™ç­‰å¾…ï¼Œä¸å¿™çš„æ—¶å€™å†å‘é€ä¼ è¿›æ¥çš„å­—ç¬¦
+	//µ±´®¿Ú0Ã¦µÄÊ±ºòµÈ´ı£¬²»Ã¦µÄÊ±ºòÔÙ·¢ËÍ´«½øÀ´µÄ×Ö·û
 	//Wait when serial port 0 is busy, and send the incoming characters when it is not busy
 	while( DL_UART_isBusy(UART_0_INST) == true );
 	
@@ -71,22 +71,22 @@ int fputc(int ch, FILE *stream)
 	return ch;
 }
 
-//ä¸²å£çš„ä¸­æ–­æœåŠ¡å‡½æ•°
+//´®¿ÚµÄÖĞ¶Ï·şÎñº¯Êı
 //Serial port interrupt service function
 void UART_0_INST_IRQHandler(void)
 {
 	uint8_t receivedData = 0;
 	
-	//å¦‚æœäº§ç”Ÿäº†ä¸²å£ä¸­æ–­
+	//Èç¹û²úÉúÁË´®¿ÚÖĞ¶Ï
 	//If a serial port interrupt occurs
 	switch( DL_UART_getPendingInterrupt(UART_0_INST) )
 	{
-		case DL_UART_IIDX_RX://å¦‚æœæ˜¯æ¥æ”¶ä¸­æ–­	If it is a receive interrupt
+		case DL_UART_IIDX_RX://Èç¹ûÊÇ½ÓÊÕÖĞ¶Ï	If it is a receive interrupt
 			
-			// æ¥æ”¶å‘é€è¿‡æ¥çš„æ•°æ®ä¿å­˜	Receive and save the data sent
+			// ½ÓÊÕ·¢ËÍ¹ıÀ´µÄÊı¾İ±£´æ	Receive and save the data sent
 			receivedData = DL_UART_Main_receiveData(UART_0_INST);
 		
-			// æ£€æŸ¥ç¼“å†²åŒºæ˜¯å¦å·²æ»¡	Check if the buffer is full
+			// ¼ì²é»º³åÇøÊÇ·ñÒÑÂú	Check if the buffer is full
 			if (recv0_length < RE_0_BUFF_LEN_MAX - 1)
 			{
 				recv0_buff[recv0_length++] = receivedData;
@@ -96,12 +96,12 @@ void UART_0_INST_IRQHandler(void)
 				recv0_length = 0;
 			}
 
-			// æ ‡è®°æ¥æ”¶æ ‡å¿—	Mark receiving flag
+			// ±ê¼Ç½ÓÊÕ±êÖ¾	Mark receiving flag
 			recv0_flag = 1;
 		
 			break;
 		
-		default://å…¶ä»–çš„ä¸²å£ä¸­æ–­	Other serial port interrupts
+		default://ÆäËûµÄ´®¿ÚÖĞ¶Ï	Other serial port interrupts
 			break;
 	}
 }

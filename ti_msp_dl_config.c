@@ -197,7 +197,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_UART_1_init(void)
 
 SYSCONFIG_WEAK void SYSCFG_DL_SYSTICK_init(void)
 {
-    /* Initialize the period to 1.00 Î¼s */
+    /* Initialize the period to 1.00 ¦Ìs */
     DL_SYSTICK_init(32);
     /* Enable the SysTick and start counting */
     DL_SYSTICK_enable();
