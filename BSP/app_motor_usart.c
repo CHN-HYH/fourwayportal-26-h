@@ -90,13 +90,17 @@ void splitString(char* mystrArray[],char *str, const char *delimiter)
 {
     char *token = strtok(str, delimiter); //这是第一次分割,第一个字符值	This is the first split, the first character value
 		mystrArray[0] = token; //保留第一次分割的字符		Keep the first split character
-    int i =1;
+    int i = 0;
 	
-    while (token != NULL) 
+    while (token != NULL && i < 10)
     {
+        mystrArray[i++] = token;
         token = strtok(NULL, delimiter);
-        mystrArray[i] = token;
-        i++;
+    }
+
+    if (i < 10)
+    {
+        mystrArray[i] = NULL;
     }
 }
 
@@ -124,7 +128,7 @@ void Deal_Control_Rxtemp(uint8_t rxtemp)
 			}
 			else
 			{
-				if(step > RXBUFF_LEN)
+				if(step >= RXBUFF_LEN - 1)
 				{
 					start_flag = 0;
 					step = 0;
@@ -146,11 +150,21 @@ void Deal_data_real(void)
 {
 	static uint8_t data[RXBUFF_LEN];
 	uint8_t  length = 0;
+	uint16_t frame_len = 0;
+
+	while (frame_len < RXBUFF_LEN && g_recv_buff_deal[frame_len] != '\0')
+	{
+		frame_len++;
+	}
+	if (frame_len < 5 || frame_len >= RXBUFF_LEN || g_recv_buff_deal[4] != ':')
+	{
+		return;
+	}
 	
 	//总体的编码器	Overall encoder
 	 if ((strncmp("MAll",(char*)g_recv_buff_deal,4)==0))
     {
-        length = strlen((char*)g_recv_buff_deal)-5;
+        length = (uint8_t)(frame_len - 5);
         for (uint8_t i = 0; i < length; i++)
         {
             data[i] = g_recv_buff_deal[i+5]; //去掉冒号	Remove the colon
@@ -163,6 +177,10 @@ void Deal_data_real(void)
 				splitString(strArray,(char*)data, ", ");//以逗号切割	Split by comma
 				for (int i = 0; i < 4; i++)
 				{
+						if (strArray[i] == NULL || strlen(strArray[i]) >= sizeof(mystr_temp[i]))
+						{
+							return;
+						}
 						strcpy(mystr_temp[i],strArray[i]);
 						Encoder_Now[i] = atoi(mystr_temp[i]);
 				}
@@ -171,7 +189,7 @@ void Deal_data_real(void)
 		//10ms的实时编码器数据	10ms real-time encoder data
 		else if	((strncmp("MTEP",(char*)g_recv_buff_deal,4)==0))
     {
-        length = strlen((char*)g_recv_buff_deal)-5;
+        length = (uint8_t)(frame_len - 5);
         for (uint8_t i = 0; i < length; i++)
         {
             data[i] = g_recv_buff_deal[i+5]; //去掉冒号	Remove the colon
@@ -183,6 +201,10 @@ void Deal_data_real(void)
 				splitString(strArray,(char*)data, ", ");//以逗号切割	Split by comma
 				for (int i = 0; i < 4; i++)
 				{
+						if (strArray[i] == NULL || strlen(strArray[i]) >= sizeof(mystr_temp[i]))
+						{
+							return;
+						}
 						strcpy(mystr_temp[i],strArray[i]);
 						Encoder_Offset[i] = atoi(mystr_temp[i]);
 				}
@@ -190,7 +212,7 @@ void Deal_data_real(void)
 		//速度	Speed
 		else if	((strncmp("MSPD",(char*)g_recv_buff_deal,4)==0))
     {
-        length = strlen((char*)g_recv_buff_deal)-5;
+        length = (uint8_t)(frame_len - 5);
         for (uint8_t i = 0; i < length; i++)
         {
             data[i] = g_recv_buff_deal[i+5]; //去掉冒号	Remove the colon
@@ -202,6 +224,10 @@ void Deal_data_real(void)
 				splitString(strArray,(char*)data, ", ");//以逗号切割	Split by comma
 				for (int i = 0; i < 4; i++)
 				{
+						if (strArray[i] == NULL || strlen(strArray[i]) >= sizeof(mystr_temp[i]))
+						{
+							return;
+						}
 						strcpy(mystr_temp[i],strArray[i]);
 						g_Speed[i] = atof(mystr_temp[i]);
 				}
