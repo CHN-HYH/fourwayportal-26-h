@@ -1,3 +1,6 @@
 **/OBJ
-**/Keil
+
+**/Keil/*
+!**/Keil/empty.map
+
 **/ti

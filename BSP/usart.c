@@ -16,10 +16,12 @@ void USART_Init(void)
 	//Clear the serial port interrupt flag
 	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
 	NVIC_ClearPendingIRQ(UART_1_INST_INT_IRQN);
+    NVIC_ClearPendingIRQ(UART_3_INST_INT_IRQN);
 	//使能串口中断
 	//Enable serial port interrupt
 	NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
 	NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
+    NVIC_EnableIRQ(UART_3_INST_INT_IRQN);
 }
 
 //串口发送一个字节

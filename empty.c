@@ -1,4 +1,9 @@
 #include "ti_msp_dl_config.h"
+#include <stdint.h>
+
+/* UniFlash 串口 BSL 要求 Flash 镜像长度按 8 字节对齐，当前工程补 4 字节。 */
+__attribute__((used))
+const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 #include "delay.h"
 #include "usart.h"
 #include "app_motor_usart.h"
@@ -17,7 +22,7 @@ int main(void)
     
     //修改电机PID，这里的参数是为四驱310底盘配置的，其他底盘需要自己测试修改
     //Modify the motor PID, the parameters here are configured for the 4WD 310 chassis, other chassis need to test and modify their own!
-		send_motor_PID(1.9,0.2,0.8);
+	send_motor_PID(1.9,0.2,0.8);
     
     delay_ms(100);
 
