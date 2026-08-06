@@ -9,6 +9,7 @@
 #include "key.h"
 #include "usart.h"
 #include "bsp_camera_usart.h"
+#include "vision_servo_test.h"
 #include "app_motor_usart.h"
 #include "Four_linewalking.h"
 #include "app_motor.h"
@@ -20,6 +21,7 @@ int main(void)
 	SYSCFG_DL_init();
 	USART_Init();
 	Camera_Vision_Init();
+	Vision_Servo_Test_Init();
 	printf("please wait...");
     
     // Set_Motor(MOTOR_TYPE);
@@ -33,6 +35,7 @@ int main(void)
 	while(1)
 	{
 		Camera_Vision_Process();
+		Vision_Servo_Test_Update();
 		// Four_LineWalking();//四路巡线，启动！	Four-way line patrol, start!
 	}
 	

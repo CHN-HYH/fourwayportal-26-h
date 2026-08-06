@@ -7,10 +7,25 @@ Section Cross References
     empty.o(.text.main) refers to ti_msp_dl_config.o(.text.SYSCFG_DL_init) for SYSCFG_DL_init
     empty.o(.text.main) refers to usart.o(.text.USART_Init) for USART_Init
     empty.o(.text.main) refers to bsp_camera_usart.o(.text.Camera_Vision_Init) for Camera_Vision_Init
+    empty.o(.text.main) refers to servo.o(.text.Servo_Init) for Servo_Init
+    empty.o(.text.main) refers to servo.o(.text.Servo_SetAngle) for Servo_SetAngle
     empty.o(.text.main) refers to printfa.o(i.__0printf) for printf
     empty.o(.text.main) refers to bsp_camera_usart.o(.text.Camera_Vision_Process) for Camera_Vision_Process
+    empty.o(.text.main) refers to empty.o(.text.Vision_Servo_Test_Update) for Vision_Servo_Test_Update
     empty.o(.text.main) refers to empty.o(.rodata.str1.1) for [Anonymous Symbol]
     empty.o(.ARM.exidx.text.main) refers to empty.o(.text.main) for [Anonymous Symbol]
+    empty.o(.text.Vision_Servo_Test_Update) refers to bsp_camera_usart.o(.text.Camera_Vision_GetTimeMs) for Camera_Vision_GetTimeMs
+    empty.o(.text.Vision_Servo_Test_Update) refers to bsp_camera_usart.o(.text.Camera_Vision_IsUsable) for Camera_Vision_IsUsable
+    empty.o(.text.Vision_Servo_Test_Update) refers to fflti.o(.text) for __aeabi_i2f
+    empty.o(.text.Vision_Servo_Test_Update) refers to fmul.o(.text) for __aeabi_fmul
+    empty.o(.text.Vision_Servo_Test_Update) refers to ffixi.o(.text) for __aeabi_f2iz
+    empty.o(.text.Vision_Servo_Test_Update) refers to servo.o(.text.Servo_SetAngle) for Servo_SetAngle
+    empty.o(.text.Vision_Servo_Test_Update) refers to printfa.o(i.__0printf) for printf
+    empty.o(.text.Vision_Servo_Test_Update) refers to empty.o(.bss.Vision_Servo_Test_Update.last_update_ms) for [Anonymous Symbol]
+    empty.o(.text.Vision_Servo_Test_Update) refers to bsp_camera_usart.o(.bss.vision) for vision
+    empty.o(.text.Vision_Servo_Test_Update) refers to empty.o(.data.Vision_Servo_Test_Update.last_angle) for [Anonymous Symbol]
+    empty.o(.text.Vision_Servo_Test_Update) refers to empty.o(.rodata.str1.1) for [Anonymous Symbol]
+    empty.o(.ARM.exidx.text.Vision_Servo_Test_Update) refers to empty.o(.text.Vision_Servo_Test_Update) for [Anonymous Symbol]
     startup_mspm0g350x_uvision.o(RESET) refers to startup_mspm0g350x_uvision.o(STACK) for __initial_sp
     startup_mspm0g350x_uvision.o(RESET) refers to startup_mspm0g350x_uvision.o(.text) for Reset_Handler
     startup_mspm0g350x_uvision.o(RESET) refers to bsp_camera_usart.o(.text.UART3_IRQHandler) for UART3_IRQHandler
@@ -1635,6 +1650,7 @@ Removing Unused input sections from the image.
 
     Removing empty.o(.text), (0 bytes).
     Removing empty.o(.ARM.exidx.text.main), (8 bytes).
+    Removing empty.o(.ARM.exidx.text.Vision_Servo_Test_Update), (8 bytes).
     Removing empty.o(.ARM.use_no_argv), (4 bytes).
     Removing startup_mspm0g350x_uvision.o(HEAP), (0 bytes).
     Removing ti_msp_dl_config.o(.text), (0 bytes).
@@ -2688,11 +2704,8 @@ Removing Unused input sections from the image.
     Removing key.o(.ARM.exidx.text.DL_GPIO_readPins), (8 bytes).
     Removing key.o(.bss.Key_GetEvent.last_key), (1 bytes).
     Removing servo.o(.text), (0 bytes).
-    Removing servo.o(.text.Servo_Init), (20 bytes).
     Removing servo.o(.ARM.exidx.text.Servo_Init), (8 bytes).
-    Removing servo.o(.text.Servo_SetAngle), (80 bytes).
     Removing servo.o(.ARM.exidx.text.Servo_SetAngle), (8 bytes).
-    Removing servo.o(.text.DL_Timer_startCounter), (24 bytes).
     Removing servo.o(.ARM.exidx.text.DL_Timer_startCounter), (8 bytes).
     Removing usart.o(.text), (0 bytes).
     Removing usart.o(.ARM.exidx.text.USART_Init), (8 bytes).
@@ -2716,7 +2729,6 @@ Removing Unused input sections from the image.
     Removing bsp_camera_usart.o(.ARM.exidx.text.Camera_Uart_NextIndex), (8 bytes).
     Removing bsp_camera_usart.o(.ARM.exidx.text.Camera_ParseByte), (8 bytes).
     Removing bsp_camera_usart.o(.ARM.exidx.text.Camera_Vision_GetTimeMs), (8 bytes).
-    Removing bsp_camera_usart.o(.text.Camera_Vision_IsUsable), (64 bytes).
     Removing bsp_camera_usart.o(.ARM.exidx.text.Camera_Vision_IsUsable), (8 bytes).
     Removing bsp_camera_usart.o(.text.Camera_Vision_IsLinkAlive), (68 bytes).
     Removing bsp_camera_usart.o(.ARM.exidx.text.Camera_Vision_IsLinkAlive), (8 bytes).
@@ -2809,16 +2821,12 @@ Removing Unused input sections from the image.
     Removing app_motor.o(.bss.speed_R1_setup), (4 bytes).
     Removing app_motor.o(.bss.speed_R2_setup), (4 bytes).
     Removing fadd.o(.text), (178 bytes).
-    Removing fmul.o(.text), (122 bytes).
     Removing fdiv.o(.text), (124 bytes).
-    Removing fflti.o(.text), (22 bytes).
-    Removing ffixi.o(.text), (50 bytes).
     Removing f2d.o(.text), (40 bytes).
     Removing d2f.o(.text), (56 bytes).
-    Removing fepilogue.o(.text), (130 bytes).
     Removing dfltul.o(.text), (28 bytes).
 
-1184 unused section(s) (total 43849 bytes) removed from the image.
+1177 unused section(s) (total 43345 bytes) removed from the image.
 
 ==============================================================================
 
@@ -2953,315 +2961,339 @@ Image Symbol Table
     .text                                    0x000000d4   Section       20  startup_mspm0g350x_uvision.o(.text)
     .text                                    0x000000e8   Section        0  memcpya.o(.text)
     .text                                    0x0000010c   Section        0  memseta.o(.text)
-    .text                                    0x00000130   Section        0  uidiv_div0.o(.text)
-    .text                                    0x0000016e   Section        0  uldiv.o(.text)
-    .text                                    0x000001ce   Section        0  iusefp.o(.text)
-    .text                                    0x000001d0   Section        0  dadd.o(.text)
-    .text                                    0x00000334   Section        0  dmul.o(.text)
-    .text                                    0x00000404   Section        0  ddiv.o(.text)
-    .text                                    0x000004f4   Section        0  dfixul.o(.text)
-    .text                                    0x00000534   Section       40  cdrcmple.o(.text)
-    .text                                    0x00000560   Section       48  init.o(.text)
-    .text                                    0x00000590   Section        0  llshl.o(.text)
-    .text                                    0x000005b0   Section        0  llushr.o(.text)
-    .text                                    0x000005d2   Section        0  llsshr.o(.text)
-    .text                                    0x000005f8   Section        0  depilogue.o(.text)
-    Camera_Checksum                          0x000006b7   Thumb Code    70  bsp_camera_usart.o(.text.Camera_Checksum)
-    [Anonymous Symbol]                       0x000006b6   Section        0  bsp_camera_usart.o(.text.Camera_Checksum)
-    Camera_HandleFrame                       0x000006fd   Thumb Code   252  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    [Anonymous Symbol]                       0x000006fc   Section        0  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    __arm_cp.21_2                            0x000007f8   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    __arm_cp.21_3                            0x000007fc   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    __arm_cp.21_4                            0x00000800   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    __arm_cp.21_5                            0x00000804   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    __arm_cp.21_6                            0x00000808   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
-    Camera_IsNewSequence                     0x0000080d   Thumb Code    72  bsp_camera_usart.o(.text.Camera_IsNewSequence)
-    [Anonymous Symbol]                       0x0000080c   Section        0  bsp_camera_usart.o(.text.Camera_IsNewSequence)
-    Camera_ParseByte                         0x00000855   Thumb Code   164  bsp_camera_usart.o(.text.Camera_ParseByte)
-    [Anonymous Symbol]                       0x00000854   Section        0  bsp_camera_usart.o(.text.Camera_ParseByte)
-    __arm_cp.6_2                             0x000008f8   Number         4  bsp_camera_usart.o(.text.Camera_ParseByte)
-    Camera_ResetParser                       0x000008fd   Thumb Code    16  bsp_camera_usart.o(.text.Camera_ResetParser)
-    [Anonymous Symbol]                       0x000008fc   Section        0  bsp_camera_usart.o(.text.Camera_ResetParser)
-    __arm_cp.1_0                             0x0000090c   Number         4  bsp_camera_usart.o(.text.Camera_ResetParser)
-    __arm_cp.1_1                             0x00000910   Number         4  bsp_camera_usart.o(.text.Camera_ResetParser)
-    Camera_Time_Init                         0x00000915   Thumb Code    72  bsp_camera_usart.o(.text.Camera_Time_Init)
-    [Anonymous Symbol]                       0x00000914   Section        0  bsp_camera_usart.o(.text.Camera_Time_Init)
-    __arm_cp.3_0                             0x0000095c   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
-    __arm_cp.3_1                             0x00000960   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
-    __arm_cp.3_2                             0x00000964   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
-    Camera_Uart_NextIndex                    0x00000969   Thumb Code    38  bsp_camera_usart.o(.text.Camera_Uart_NextIndex)
-    [Anonymous Symbol]                       0x00000968   Section        0  bsp_camera_usart.o(.text.Camera_Uart_NextIndex)
-    Camera_UpdateSequence                    0x00000991   Thumb Code   116  bsp_camera_usart.o(.text.Camera_UpdateSequence)
-    [Anonymous Symbol]                       0x00000990   Section        0  bsp_camera_usart.o(.text.Camera_UpdateSequence)
-    __arm_cp.24_0                            0x00000a04   Number         4  bsp_camera_usart.o(.text.Camera_UpdateSequence)
-    [Anonymous Symbol]                       0x00000a08   Section        0  bsp_camera_usart.o(.text.Camera_Vision_GetTimeMs)
-    [Anonymous Symbol]                       0x00000a10   Section        0  bsp_camera_usart.o(.text.Camera_Vision_Init)
-    __arm_cp.2_4                             0x00000a88   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Init)
-    [Anonymous Symbol]                       0x00000a8c   Section        0  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    __arm_cp.4_0                             0x00000ad4   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    __arm_cp.4_1                             0x00000ad8   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    __arm_cp.4_2                             0x00000adc   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    __arm_cp.4_3                             0x00000ae0   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    __arm_cp.4_4                             0x00000ae4   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    [Anonymous Symbol]                       0x00000ae8   Section        0  dl_common.o(.text.DL_Common_delayCycles)
-    DL_Common_updateReg                      0x00000afd   Thumb Code    40  ti_msp_dl_config.o(.text.DL_Common_updateReg)
-    [Anonymous Symbol]                       0x00000afc   Section        0  ti_msp_dl_config.o(.text.DL_Common_updateReg)
-    DL_Common_updateReg                      0x00000b25   Thumb Code    40  dl_timer.o(.text.DL_Common_updateReg)
-    [Anonymous Symbol]                       0x00000b24   Section        0  dl_timer.o(.text.DL_Common_updateReg)
-    DL_Common_updateReg                      0x00000b4d   Thumb Code    40  dl_uart.o(.text.DL_Common_updateReg)
-    [Anonymous Symbol]                       0x00000b4c   Section        0  dl_uart.o(.text.DL_Common_updateReg)
-    DL_GPIO_clearPins                        0x00000b75   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_clearPins)
-    [Anonymous Symbol]                       0x00000b74   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_clearPins)
-    DL_GPIO_enableOutput                     0x00000b89   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
-    [Anonymous Symbol]                       0x00000b88   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
-    __arm_cp.18_0                            0x00000b9c   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
-    DL_GPIO_enablePower                      0x00000ba1   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_enablePower)
-    [Anonymous Symbol]                       0x00000ba0   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_enablePower)
-    DL_GPIO_initDigitalInputFeatures         0x00000bb5   Thumb Code    44  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
-    [Anonymous Symbol]                       0x00000bb4   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
-    __arm_cp.20_0                            0x00000be0   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
-    DL_GPIO_initDigitalOutput                0x00000be5   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalOutput)
-    [Anonymous Symbol]                       0x00000be4   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalOutput)
-    DL_GPIO_initPeripheralInputFunction      0x00000bf9   Thumb Code    24  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
-    [Anonymous Symbol]                       0x00000bf8   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
-    __arm_cp.19_0                            0x00000c10   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
-    DL_GPIO_initPeripheralOutputFunction     0x00000c15   Thumb Code    24  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
-    [Anonymous Symbol]                       0x00000c14   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
-    __arm_cp.17_0                            0x00000c2c   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
-    DL_GPIO_reset                            0x00000c31   Thumb Code    16  ti_msp_dl_config.o(.text.DL_GPIO_reset)
-    [Anonymous Symbol]                       0x00000c30   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_reset)
-    __arm_cp.11_0                            0x00000c40   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_reset)
-    __arm_cp.11_1                            0x00000c44   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_reset)
-    DL_SYSCTL_disableHFXT                    0x00000c49   Thumb Code    12  ti_msp_dl_config.o(.text.DL_SYSCTL_disableHFXT)
-    [Anonymous Symbol]                       0x00000c48   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_disableHFXT)
-    DL_SYSCTL_disableSYSPLL                  0x00000c55   Thumb Code    16  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
-    [Anonymous Symbol]                       0x00000c54   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
-    __arm_cp.26_0                            0x00000c64   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
-    DL_SYSCTL_enableMFCLK                    0x00000c69   Thumb Code    16  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
-    [Anonymous Symbol]                       0x00000c68   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
-    __arm_cp.27_0                            0x00000c78   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
-    DL_SYSCTL_setBORThreshold                0x00000c7d   Thumb Code    20  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
-    [Anonymous Symbol]                       0x00000c7c   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
-    __arm_cp.23_0                            0x00000c90   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
-    DL_SYSCTL_setSYSOSCFreq                  0x00000c95   Thumb Code    24  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
-    [Anonymous Symbol]                       0x00000c94   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
-    __arm_cp.24_0                            0x00000cac   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
-    DL_SYSTICK_enable                        0x00000cb1   Thumb Code    12  ti_msp_dl_config.o(.text.DL_SYSTICK_enable)
-    [Anonymous Symbol]                       0x00000cb0   Section        0  ti_msp_dl_config.o(.text.DL_SYSTICK_enable)
-    DL_SYSTICK_init                          0x00000cbd   Thumb Code    28  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
-    [Anonymous Symbol]                       0x00000cbc   Section        0  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
-    __arm_cp.34_0                            0x00000cd8   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
-    __arm_cp.34_1                            0x00000cdc   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
-    __arm_cp.34_2                            0x00000ce0   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
-    DL_Timer_enableClock                     0x00000ce5   Thumb Code    16  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
-    [Anonymous Symbol]                       0x00000ce4   Section        0  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
-    __arm_cp.28_0                            0x00000cf4   Number         4  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
-    DL_Timer_enableInterrupt                 0x00000cf9   Thumb Code    24  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
-    [Anonymous Symbol]                       0x00000cf8   Section        0  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
-    __arm_cp.17_0                            0x00000d10   Number         4  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
-    DL_Timer_enablePower                     0x00000d15   Thumb Code    20  ti_msp_dl_config.o(.text.DL_Timer_enablePower)
-    [Anonymous Symbol]                       0x00000d14   Section        0  ti_msp_dl_config.o(.text.DL_Timer_enablePower)
-    DL_Timer_enablePower                     0x00000d29   Thumb Code    20  bsp_camera_usart.o(.text.DL_Timer_enablePower)
-    [Anonymous Symbol]                       0x00000d28   Section        0  bsp_camera_usart.o(.text.DL_Timer_enablePower)
-    __arm_cp.16_0                            0x00000d3c   Number         4  bsp_camera_usart.o(.text.DL_Timer_enablePower)
-    DL_Timer_getPendingInterrupt             0x00000d41   Thumb Code    18  bsp_camera_usart.o(.text.DL_Timer_getPendingInterrupt)
-    [Anonymous Symbol]                       0x00000d40   Section        0  bsp_camera_usart.o(.text.DL_Timer_getPendingInterrupt)
-    [Anonymous Symbol]                       0x00000d54   Section        0  dl_timer.o(.text.DL_Timer_initFourCCPWMMode)
-    [Anonymous Symbol]                       0x00000e3c   Section        0  dl_timer.o(.text.DL_Timer_initTimerMode)
-    DL_Timer_initTwoCCPWMMode                0x00000f39   Thumb Code   260  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
-    [Anonymous Symbol]                       0x00000f38   Section        0  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
-    __arm_cp.45_0                            0x0000103c   Number         4  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
-    __arm_cp.45_2                            0x00001040   Number         4  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
-    DL_Timer_reset                           0x00001045   Thumb Code    16  ti_msp_dl_config.o(.text.DL_Timer_reset)
-    [Anonymous Symbol]                       0x00001044   Section        0  ti_msp_dl_config.o(.text.DL_Timer_reset)
-    DL_Timer_reset                           0x00001055   Thumb Code    16  bsp_camera_usart.o(.text.DL_Timer_reset)
-    [Anonymous Symbol]                       0x00001054   Section        0  bsp_camera_usart.o(.text.DL_Timer_reset)
-    DL_Timer_setCCPDirection                 0x00001065   Thumb Code    20  ti_msp_dl_config.o(.text.DL_Timer_setCCPDirection)
-    [Anonymous Symbol]                       0x00001064   Section        0  ti_msp_dl_config.o(.text.DL_Timer_setCCPDirection)
-    [Anonymous Symbol]                       0x00001078   Section        0  dl_timer.o(.text.DL_Timer_setCaptCompUpdateMethod)
-    [Anonymous Symbol]                       0x000010a8   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
-    __arm_cp.33_0                            0x000010d4   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
-    __arm_cp.33_1                            0x000010d8   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
-    [Anonymous Symbol]                       0x000010dc   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
-    __arm_cp.6_0                             0x00001110   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
-    __arm_cp.6_1                             0x00001114   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
-    [Anonymous Symbol]                       0x00001118   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareInput)
-    [Anonymous Symbol]                       0x0000114c   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
-    __arm_cp.31_0                            0x00001188   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
-    [Anonymous Symbol]                       0x0000118c   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
-    __arm_cp.5_0                             0x000011b4   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
-    [Anonymous Symbol]                       0x000011b8   Section        0  dl_timer.o(.text.DL_Timer_setClockConfig)
-    __arm_cp.0_1                             0x000011e4   Number         4  dl_timer.o(.text.DL_Timer_setClockConfig)
-    DL_Timer_setCounterValueAfterEnable      0x000011e9   Thumb Code    28  dl_timer.o(.text.DL_Timer_setCounterValueAfterEnable)
-    [Anonymous Symbol]                       0x000011e8   Section        0  dl_timer.o(.text.DL_Timer_setCounterValueAfterEnable)
-    DL_Timer_setLoadValue                    0x00001205   Thumb Code    20  dl_timer.o(.text.DL_Timer_setLoadValue)
-    [Anonymous Symbol]                       0x00001204   Section        0  dl_timer.o(.text.DL_Timer_setLoadValue)
-    __arm_cp.3_0                             0x00001218   Number         4  dl_timer.o(.text.DL_Timer_setLoadValue)
-    DL_Timer_startCounter                    0x0000121d   Thumb Code    20  bsp_camera_usart.o(.text.DL_Timer_startCounter)
-    [Anonymous Symbol]                       0x0000121c   Section        0  bsp_camera_usart.o(.text.DL_Timer_startCounter)
-    __arm_cp.20_0                            0x00001230   Number         4  bsp_camera_usart.o(.text.DL_Timer_startCounter)
-    DL_UART_disable                          0x00001235   Thumb Code    22  dl_uart.o(.text.DL_UART_disable)
-    [Anonymous Symbol]                       0x00001234   Section        0  dl_uart.o(.text.DL_UART_disable)
-    DL_UART_enable                           0x0000124b   Thumb Code    22  ti_msp_dl_config.o(.text.DL_UART_enable)
-    [Anonymous Symbol]                       0x0000124a   Section        0  ti_msp_dl_config.o(.text.DL_UART_enable)
-    DL_UART_enableInterrupt                  0x00001261   Thumb Code    24  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
-    [Anonymous Symbol]                       0x00001260   Section        0  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
-    __arm_cp.32_0                            0x00001278   Number         4  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
-    DL_UART_enablePower                      0x0000127d   Thumb Code    20  ti_msp_dl_config.o(.text.DL_UART_enablePower)
-    [Anonymous Symbol]                       0x0000127c   Section        0  ti_msp_dl_config.o(.text.DL_UART_enablePower)
-    __arm_cp.16_0                            0x00001290   Number         4  ti_msp_dl_config.o(.text.DL_UART_enablePower)
-    DL_UART_getPendingInterrupt              0x00001295   Thumb Code    18  usart.o(.text.DL_UART_getPendingInterrupt)
-    [Anonymous Symbol]                       0x00001294   Section        0  usart.o(.text.DL_UART_getPendingInterrupt)
-    DL_UART_getPendingInterrupt              0x000012a7   Thumb Code    18  bsp_camera_usart.o(.text.DL_UART_getPendingInterrupt)
-    [Anonymous Symbol]                       0x000012a6   Section        0  bsp_camera_usart.o(.text.DL_UART_getPendingInterrupt)
-    DL_UART_getPendingInterrupt              0x000012b9   Thumb Code    18  bsp_motor_usart.o(.text.DL_UART_getPendingInterrupt)
-    [Anonymous Symbol]                       0x000012b8   Section        0  bsp_motor_usart.o(.text.DL_UART_getPendingInterrupt)
-    [Anonymous Symbol]                       0x000012cc   Section        0  dl_uart.o(.text.DL_UART_init)
-    __arm_cp.0_0                             0x00001310   Number         4  dl_uart.o(.text.DL_UART_init)
-    DL_UART_isBusy                           0x00001315   Thumb Code    20  usart.o(.text.DL_UART_isBusy)
-    [Anonymous Symbol]                       0x00001314   Section        0  usart.o(.text.DL_UART_isBusy)
-    __arm_cp.4_0                             0x00001328   Number         4  usart.o(.text.DL_UART_isBusy)
-    DL_UART_receiveData                      0x0000132d   Thumb Code    16  usart.o(.text.DL_UART_receiveData)
-    [Anonymous Symbol]                       0x0000132c   Section        0  usart.o(.text.DL_UART_receiveData)
-    DL_UART_receiveData                      0x0000133d   Thumb Code    16  bsp_camera_usart.o(.text.DL_UART_receiveData)
-    [Anonymous Symbol]                       0x0000133c   Section        0  bsp_camera_usart.o(.text.DL_UART_receiveData)
-    DL_UART_receiveData                      0x0000134d   Thumb Code    16  bsp_motor_usart.o(.text.DL_UART_receiveData)
-    [Anonymous Symbol]                       0x0000134c   Section        0  bsp_motor_usart.o(.text.DL_UART_receiveData)
-    __arm_cp.6_0                             0x0000135c   Number         4  bsp_motor_usart.o(.text.DL_UART_receiveData)
-    DL_UART_reset                            0x00001361   Thumb Code    16  ti_msp_dl_config.o(.text.DL_UART_reset)
-    [Anonymous Symbol]                       0x00001360   Section        0  ti_msp_dl_config.o(.text.DL_UART_reset)
-    __arm_cp.13_0                            0x00001370   Number         4  ti_msp_dl_config.o(.text.DL_UART_reset)
-    __arm_cp.13_1                            0x00001374   Number         4  ti_msp_dl_config.o(.text.DL_UART_reset)
-    DL_UART_setBaudRateDivisor               0x00001379   Thumb Code    60  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    [Anonymous Symbol]                       0x00001378   Section        0  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    __arm_cp.31_0                            0x000013b4   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    __arm_cp.31_1                            0x000013b8   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    __arm_cp.31_2                            0x000013bc   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    __arm_cp.31_3                            0x000013c0   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
-    [Anonymous Symbol]                       0x000013c4   Section        0  dl_uart.o(.text.DL_UART_setClockConfig)
-    __arm_cp.3_0                             0x000013e4   Number         4  dl_uart.o(.text.DL_UART_setClockConfig)
-    DL_UART_setOversampling                  0x000013e9   Thumb Code    30  ti_msp_dl_config.o(.text.DL_UART_setOversampling)
-    [Anonymous Symbol]                       0x000013e8   Section        0  ti_msp_dl_config.o(.text.DL_UART_setOversampling)
-    DL_UART_transmitData                     0x00001407   Thumb Code    22  usart.o(.text.DL_UART_transmitData)
-    [Anonymous Symbol]                       0x00001406   Section        0  usart.o(.text.DL_UART_transmitData)
-    [Anonymous Symbol]                       0x0000141c   Section        0  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    __arm_cp.10_0                            0x000014b4   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    __arm_cp.10_1                            0x000014b8   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    __arm_cp.10_2                            0x000014bc   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    __arm_cp.10_3                            0x000014c0   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    __arm_cp.10_4                            0x000014c4   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    [Anonymous Symbol]                       0x000014c8   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_GPIO_init)
-    [Anonymous Symbol]                       0x000015b0   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
-    __arm_cp.4_0                             0x00001600   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
-    __arm_cp.4_2                             0x00001604   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
-    __arm_cp.4_3                             0x00001608   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
-    [Anonymous Symbol]                       0x0000160c   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_init)
-    [Anonymous Symbol]                       0x0000162e   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSTICK_init)
-    [Anonymous Symbol]                       0x0000163c   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
-    __arm_cp.5_0                             0x00001678   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
-    __arm_cp.5_2                             0x0000167c   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
-    [Anonymous Symbol]                       0x00001680   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
-    __arm_cp.6_0                             0x000016bc   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
-    __arm_cp.6_2                             0x000016c0   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
-    [Anonymous Symbol]                       0x000016c4   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
-    __arm_cp.7_0                             0x00001700   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
-    __arm_cp.7_2                             0x00001704   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
-    [Anonymous Symbol]                       0x00001708   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
-    __arm_cp.0_0                             0x0000173c   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
-    __arm_cp.0_1                             0x00001740   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
-    [Anonymous Symbol]                       0x00001744   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
-    __arm_cp.1_0                             0x000017a8   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
-    __arm_cp.1_1                             0x000017ac   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
-    __arm_cp.1_2                             0x000017b0   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
-    [Anonymous Symbol]                       0x000017b4   Section        0  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
-    __arm_cp.13_0                            0x000017d0   Number         4  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
-    __arm_cp.13_1                            0x000017d4   Number         4  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
-    [Anonymous Symbol]                       0x000017d8   Section        0  usart.o(.text.UART0_IRQHandler)
-    __arm_cp.7_1                             0x00001828   Number         4  usart.o(.text.UART0_IRQHandler)
-    __arm_cp.7_2                             0x0000182c   Number         4  usart.o(.text.UART0_IRQHandler)
-    __arm_cp.7_3                             0x00001830   Number         4  usart.o(.text.UART0_IRQHandler)
-    [Anonymous Symbol]                       0x00001834   Section        0  bsp_motor_usart.o(.text.UART1_IRQHandler)
-    __arm_cp.4_0                             0x00001864   Number         4  bsp_motor_usart.o(.text.UART1_IRQHandler)
-    [Anonymous Symbol]                       0x00001868   Section        0  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    __arm_cp.10_0                            0x000018c0   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    __arm_cp.10_1                            0x000018c4   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    __arm_cp.10_2                            0x000018c8   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    __arm_cp.10_3                            0x000018cc   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    __arm_cp.10_4                            0x000018d0   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    [Anonymous Symbol]                       0x000018d4   Section        0  usart.o(.text.USART_Init)
-    __NVIC_ClearPendingIRQ                   0x0000190d   Thumb Code    40  usart.o(.text.__NVIC_ClearPendingIRQ)
-    [Anonymous Symbol]                       0x0000190c   Section        0  usart.o(.text.__NVIC_ClearPendingIRQ)
-    __NVIC_ClearPendingIRQ                   0x00001935   Thumb Code    40  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
-    [Anonymous Symbol]                       0x00001934   Section        0  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
-    __arm_cp.18_0                            0x0000195c   Number         4  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
-    __NVIC_EnableIRQ                         0x00001961   Thumb Code    40  usart.o(.text.__NVIC_EnableIRQ)
-    [Anonymous Symbol]                       0x00001960   Section        0  usart.o(.text.__NVIC_EnableIRQ)
-    __NVIC_EnableIRQ                         0x00001989   Thumb Code    40  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
-    [Anonymous Symbol]                       0x00001988   Section        0  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
-    __arm_cp.19_0                            0x000019b0   Number         4  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
-    [Anonymous Symbol]                       0x000019b4   Section        0  usart.o(.text.fputc)
-    __arm_cp.6_0                             0x000019dc   Number         4  usart.o(.text.fputc)
-    [Anonymous Symbol]                       0x000019e0   Section        0  empty.o(.text.main)
-    __arm_cp.0_0                             0x00001a04   Number         4  empty.o(.text.main)
-    i.__0printf                              0x00001a08   Section        0  printfa.o(i.__0printf)
-    i.__ARM_clz                              0x00001a28   Section        0  depilogue.o(i.__ARM_clz)
-    i.__scatterload_copy                     0x00001a58   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x00001a68   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x00001a70   Section       14  handlers.o(i.__scatterload_zeroinit)
-    _fp_digits                               0x00001a81   Thumb Code   344  printfa.o(i._fp_digits)
-    i._fp_digits                             0x00001a80   Section        0  printfa.o(i._fp_digits)
-    _printf_core                             0x00001bf5   Thumb Code  1754  printfa.o(i._printf_core)
-    i._printf_core                           0x00001bf4   Section        0  printfa.o(i._printf_core)
-    _printf_post_padding                     0x000022e1   Thumb Code    32  printfa.o(i._printf_post_padding)
-    i._printf_post_padding                   0x000022e0   Section        0  printfa.o(i._printf_post_padding)
-    _printf_pre_padding                      0x00002301   Thumb Code    44  printfa.o(i._printf_pre_padding)
-    i._printf_pre_padding                    0x00002300   Section        0  printfa.o(i._printf_pre_padding)
-    gSERVO_PWMClockConfig                    0x0000232c   Data           3  ti_msp_dl_config.o(.rodata.gSERVO_PWMClockConfig)
-    [Anonymous Symbol]                       0x0000232c   Section        0  ti_msp_dl_config.o(.rodata.gSERVO_PWMClockConfig)
-    gSERVO_PWMConfig                         0x00002330   Data           8  ti_msp_dl_config.o(.rodata.gSERVO_PWMConfig)
-    [Anonymous Symbol]                       0x00002330   Section        0  ti_msp_dl_config.o(.rodata.gSERVO_PWMConfig)
-    gUART_0ClockConfig                       0x00002338   Data           2  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
-    [Anonymous Symbol]                       0x00002338   Section        0  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
-    gUART_0Config                            0x0000233a   Data          10  ti_msp_dl_config.o(.rodata.gUART_0Config)
-    [Anonymous Symbol]                       0x0000233a   Section        0  ti_msp_dl_config.o(.rodata.gUART_0Config)
-    gUART_1ClockConfig                       0x00002344   Data           2  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
-    [Anonymous Symbol]                       0x00002344   Section        0  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
-    gUART_1Config                            0x00002346   Data          10  ti_msp_dl_config.o(.rodata.gUART_1Config)
-    [Anonymous Symbol]                       0x00002346   Section        0  ti_msp_dl_config.o(.rodata.gUART_1Config)
-    gUART_3ClockConfig                       0x00002350   Data           2  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
-    [Anonymous Symbol]                       0x00002350   Section        0  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
-    gUART_3Config                            0x00002352   Data          10  ti_msp_dl_config.o(.rodata.gUART_3Config)
-    [Anonymous Symbol]                       0x00002352   Section        0  ti_msp_dl_config.o(.rodata.gUART_3Config)
-    g_camera_time_clock_config               0x0000235c   Data           3  bsp_camera_usart.o(.rodata.g_camera_time_clock_config)
-    [Anonymous Symbol]                       0x0000235c   Section        0  bsp_camera_usart.o(.rodata.g_camera_time_clock_config)
-    g_camera_time_timer_config               0x00002360   Data          20  bsp_camera_usart.o(.rodata.g_camera_time_timer_config)
-    [Anonymous Symbol]                       0x00002360   Section        0  bsp_camera_usart.o(.rodata.g_camera_time_timer_config)
-    [Anonymous Symbol]                       0x00002374   Section        0  empty.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x00002383   Section        0  bsp_camera_usart.o(.rodata.str1.1)
+    .text                                    0x00000130   Section        0  fmul.o(.text)
+    .text                                    0x000001aa   Section        0  fflti.o(.text)
+    .text                                    0x000001c0   Section        0  ffixi.o(.text)
+    .text                                    0x000001f2   Section        0  uidiv_div0.o(.text)
+    .text                                    0x00000230   Section        0  uldiv.o(.text)
+    .text                                    0x00000290   Section        0  iusefp.o(.text)
+    .text                                    0x00000290   Section        0  fepilogue.o(.text)
+    .text                                    0x00000314   Section        0  dadd.o(.text)
+    .text                                    0x00000478   Section        0  dmul.o(.text)
+    .text                                    0x00000548   Section        0  ddiv.o(.text)
+    .text                                    0x00000638   Section        0  dfixul.o(.text)
+    .text                                    0x00000678   Section       40  cdrcmple.o(.text)
+    .text                                    0x000006a0   Section       48  init.o(.text)
+    .text                                    0x000006d0   Section        0  llshl.o(.text)
+    .text                                    0x000006f0   Section        0  llushr.o(.text)
+    .text                                    0x00000712   Section        0  llsshr.o(.text)
+    .text                                    0x00000738   Section        0  depilogue.o(.text)
+    Camera_Checksum                          0x000007f7   Thumb Code    70  bsp_camera_usart.o(.text.Camera_Checksum)
+    [Anonymous Symbol]                       0x000007f6   Section        0  bsp_camera_usart.o(.text.Camera_Checksum)
+    Camera_HandleFrame                       0x0000083d   Thumb Code   252  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    [Anonymous Symbol]                       0x0000083c   Section        0  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    __arm_cp.21_2                            0x00000938   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    __arm_cp.21_3                            0x0000093c   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    __arm_cp.21_4                            0x00000940   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    __arm_cp.21_5                            0x00000944   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    __arm_cp.21_6                            0x00000948   Number         4  bsp_camera_usart.o(.text.Camera_HandleFrame)
+    Camera_IsNewSequence                     0x0000094d   Thumb Code    72  bsp_camera_usart.o(.text.Camera_IsNewSequence)
+    [Anonymous Symbol]                       0x0000094c   Section        0  bsp_camera_usart.o(.text.Camera_IsNewSequence)
+    Camera_ParseByte                         0x00000995   Thumb Code   164  bsp_camera_usart.o(.text.Camera_ParseByte)
+    [Anonymous Symbol]                       0x00000994   Section        0  bsp_camera_usart.o(.text.Camera_ParseByte)
+    __arm_cp.6_2                             0x00000a38   Number         4  bsp_camera_usart.o(.text.Camera_ParseByte)
+    Camera_ResetParser                       0x00000a3d   Thumb Code    16  bsp_camera_usart.o(.text.Camera_ResetParser)
+    [Anonymous Symbol]                       0x00000a3c   Section        0  bsp_camera_usart.o(.text.Camera_ResetParser)
+    __arm_cp.1_0                             0x00000a4c   Number         4  bsp_camera_usart.o(.text.Camera_ResetParser)
+    __arm_cp.1_1                             0x00000a50   Number         4  bsp_camera_usart.o(.text.Camera_ResetParser)
+    Camera_Time_Init                         0x00000a55   Thumb Code    72  bsp_camera_usart.o(.text.Camera_Time_Init)
+    [Anonymous Symbol]                       0x00000a54   Section        0  bsp_camera_usart.o(.text.Camera_Time_Init)
+    __arm_cp.3_0                             0x00000a9c   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
+    __arm_cp.3_1                             0x00000aa0   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
+    __arm_cp.3_2                             0x00000aa4   Number         4  bsp_camera_usart.o(.text.Camera_Time_Init)
+    Camera_Uart_NextIndex                    0x00000aa9   Thumb Code    38  bsp_camera_usart.o(.text.Camera_Uart_NextIndex)
+    [Anonymous Symbol]                       0x00000aa8   Section        0  bsp_camera_usart.o(.text.Camera_Uart_NextIndex)
+    Camera_UpdateSequence                    0x00000ad1   Thumb Code   116  bsp_camera_usart.o(.text.Camera_UpdateSequence)
+    [Anonymous Symbol]                       0x00000ad0   Section        0  bsp_camera_usart.o(.text.Camera_UpdateSequence)
+    __arm_cp.24_0                            0x00000b44   Number         4  bsp_camera_usart.o(.text.Camera_UpdateSequence)
+    [Anonymous Symbol]                       0x00000b48   Section        0  bsp_camera_usart.o(.text.Camera_Vision_GetTimeMs)
+    [Anonymous Symbol]                       0x00000b50   Section        0  bsp_camera_usart.o(.text.Camera_Vision_Init)
+    __arm_cp.2_4                             0x00000bc8   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Init)
+    [Anonymous Symbol]                       0x00000bcc   Section        0  bsp_camera_usart.o(.text.Camera_Vision_IsUsable)
+    __arm_cp.8_0                             0x00000c08   Number         4  bsp_camera_usart.o(.text.Camera_Vision_IsUsable)
+    [Anonymous Symbol]                       0x00000c0c   Section        0  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    __arm_cp.4_0                             0x00000c54   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    __arm_cp.4_1                             0x00000c58   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    __arm_cp.4_2                             0x00000c5c   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    __arm_cp.4_3                             0x00000c60   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    __arm_cp.4_4                             0x00000c64   Number         4  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    [Anonymous Symbol]                       0x00000c68   Section        0  dl_common.o(.text.DL_Common_delayCycles)
+    DL_Common_updateReg                      0x00000c7d   Thumb Code    40  ti_msp_dl_config.o(.text.DL_Common_updateReg)
+    [Anonymous Symbol]                       0x00000c7c   Section        0  ti_msp_dl_config.o(.text.DL_Common_updateReg)
+    DL_Common_updateReg                      0x00000ca5   Thumb Code    40  dl_timer.o(.text.DL_Common_updateReg)
+    [Anonymous Symbol]                       0x00000ca4   Section        0  dl_timer.o(.text.DL_Common_updateReg)
+    DL_Common_updateReg                      0x00000ccd   Thumb Code    40  dl_uart.o(.text.DL_Common_updateReg)
+    [Anonymous Symbol]                       0x00000ccc   Section        0  dl_uart.o(.text.DL_Common_updateReg)
+    DL_GPIO_clearPins                        0x00000cf5   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_clearPins)
+    [Anonymous Symbol]                       0x00000cf4   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_clearPins)
+    DL_GPIO_enableOutput                     0x00000d09   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
+    [Anonymous Symbol]                       0x00000d08   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
+    __arm_cp.18_0                            0x00000d1c   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_enableOutput)
+    DL_GPIO_enablePower                      0x00000d21   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_enablePower)
+    [Anonymous Symbol]                       0x00000d20   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_enablePower)
+    DL_GPIO_initDigitalInputFeatures         0x00000d35   Thumb Code    44  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
+    [Anonymous Symbol]                       0x00000d34   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
+    __arm_cp.20_0                            0x00000d60   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalInputFeatures)
+    DL_GPIO_initDigitalOutput                0x00000d65   Thumb Code    20  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalOutput)
+    [Anonymous Symbol]                       0x00000d64   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initDigitalOutput)
+    DL_GPIO_initPeripheralInputFunction      0x00000d79   Thumb Code    24  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
+    [Anonymous Symbol]                       0x00000d78   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
+    __arm_cp.19_0                            0x00000d90   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralInputFunction)
+    DL_GPIO_initPeripheralOutputFunction     0x00000d95   Thumb Code    24  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
+    [Anonymous Symbol]                       0x00000d94   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
+    __arm_cp.17_0                            0x00000dac   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_initPeripheralOutputFunction)
+    DL_GPIO_reset                            0x00000db1   Thumb Code    16  ti_msp_dl_config.o(.text.DL_GPIO_reset)
+    [Anonymous Symbol]                       0x00000db0   Section        0  ti_msp_dl_config.o(.text.DL_GPIO_reset)
+    __arm_cp.11_0                            0x00000dc0   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_reset)
+    __arm_cp.11_1                            0x00000dc4   Number         4  ti_msp_dl_config.o(.text.DL_GPIO_reset)
+    DL_SYSCTL_disableHFXT                    0x00000dc9   Thumb Code    12  ti_msp_dl_config.o(.text.DL_SYSCTL_disableHFXT)
+    [Anonymous Symbol]                       0x00000dc8   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_disableHFXT)
+    DL_SYSCTL_disableSYSPLL                  0x00000dd5   Thumb Code    16  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
+    [Anonymous Symbol]                       0x00000dd4   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
+    __arm_cp.26_0                            0x00000de4   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_disableSYSPLL)
+    DL_SYSCTL_enableMFCLK                    0x00000de9   Thumb Code    16  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
+    [Anonymous Symbol]                       0x00000de8   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
+    __arm_cp.27_0                            0x00000df8   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_enableMFCLK)
+    DL_SYSCTL_setBORThreshold                0x00000dfd   Thumb Code    20  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
+    [Anonymous Symbol]                       0x00000dfc   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
+    __arm_cp.23_0                            0x00000e10   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_setBORThreshold)
+    DL_SYSCTL_setSYSOSCFreq                  0x00000e15   Thumb Code    24  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
+    [Anonymous Symbol]                       0x00000e14   Section        0  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
+    __arm_cp.24_0                            0x00000e2c   Number         4  ti_msp_dl_config.o(.text.DL_SYSCTL_setSYSOSCFreq)
+    DL_SYSTICK_enable                        0x00000e31   Thumb Code    12  ti_msp_dl_config.o(.text.DL_SYSTICK_enable)
+    [Anonymous Symbol]                       0x00000e30   Section        0  ti_msp_dl_config.o(.text.DL_SYSTICK_enable)
+    DL_SYSTICK_init                          0x00000e3d   Thumb Code    28  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
+    [Anonymous Symbol]                       0x00000e3c   Section        0  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
+    __arm_cp.34_0                            0x00000e58   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
+    __arm_cp.34_1                            0x00000e5c   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
+    __arm_cp.34_2                            0x00000e60   Number         4  ti_msp_dl_config.o(.text.DL_SYSTICK_init)
+    DL_Timer_enableClock                     0x00000e65   Thumb Code    16  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
+    [Anonymous Symbol]                       0x00000e64   Section        0  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
+    __arm_cp.28_0                            0x00000e74   Number         4  ti_msp_dl_config.o(.text.DL_Timer_enableClock)
+    DL_Timer_enableInterrupt                 0x00000e79   Thumb Code    24  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
+    [Anonymous Symbol]                       0x00000e78   Section        0  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
+    __arm_cp.17_0                            0x00000e90   Number         4  bsp_camera_usart.o(.text.DL_Timer_enableInterrupt)
+    DL_Timer_enablePower                     0x00000e95   Thumb Code    20  ti_msp_dl_config.o(.text.DL_Timer_enablePower)
+    [Anonymous Symbol]                       0x00000e94   Section        0  ti_msp_dl_config.o(.text.DL_Timer_enablePower)
+    DL_Timer_enablePower                     0x00000ea9   Thumb Code    20  bsp_camera_usart.o(.text.DL_Timer_enablePower)
+    [Anonymous Symbol]                       0x00000ea8   Section        0  bsp_camera_usart.o(.text.DL_Timer_enablePower)
+    __arm_cp.16_0                            0x00000ebc   Number         4  bsp_camera_usart.o(.text.DL_Timer_enablePower)
+    DL_Timer_getPendingInterrupt             0x00000ec1   Thumb Code    18  bsp_camera_usart.o(.text.DL_Timer_getPendingInterrupt)
+    [Anonymous Symbol]                       0x00000ec0   Section        0  bsp_camera_usart.o(.text.DL_Timer_getPendingInterrupt)
+    [Anonymous Symbol]                       0x00000ed4   Section        0  dl_timer.o(.text.DL_Timer_initFourCCPWMMode)
+    [Anonymous Symbol]                       0x00000fbc   Section        0  dl_timer.o(.text.DL_Timer_initTimerMode)
+    DL_Timer_initTwoCCPWMMode                0x000010b9   Thumb Code   260  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
+    [Anonymous Symbol]                       0x000010b8   Section        0  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
+    __arm_cp.45_0                            0x000011bc   Number         4  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
+    __arm_cp.45_2                            0x000011c0   Number         4  dl_timer.o(.text.DL_Timer_initTwoCCPWMMode)
+    DL_Timer_reset                           0x000011c5   Thumb Code    16  ti_msp_dl_config.o(.text.DL_Timer_reset)
+    [Anonymous Symbol]                       0x000011c4   Section        0  ti_msp_dl_config.o(.text.DL_Timer_reset)
+    DL_Timer_reset                           0x000011d5   Thumb Code    16  bsp_camera_usart.o(.text.DL_Timer_reset)
+    [Anonymous Symbol]                       0x000011d4   Section        0  bsp_camera_usart.o(.text.DL_Timer_reset)
+    DL_Timer_setCCPDirection                 0x000011e5   Thumb Code    20  ti_msp_dl_config.o(.text.DL_Timer_setCCPDirection)
+    [Anonymous Symbol]                       0x000011e4   Section        0  ti_msp_dl_config.o(.text.DL_Timer_setCCPDirection)
+    [Anonymous Symbol]                       0x000011f8   Section        0  dl_timer.o(.text.DL_Timer_setCaptCompUpdateMethod)
+    [Anonymous Symbol]                       0x00001228   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
+    __arm_cp.33_0                            0x00001254   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
+    __arm_cp.33_1                            0x00001258   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
+    [Anonymous Symbol]                       0x0000125c   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
+    __arm_cp.6_0                             0x00001290   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
+    __arm_cp.6_1                             0x00001294   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
+    [Anonymous Symbol]                       0x00001298   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareInput)
+    [Anonymous Symbol]                       0x000012cc   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
+    __arm_cp.31_0                            0x00001308   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
+    [Anonymous Symbol]                       0x0000130c   Section        0  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
+    __arm_cp.5_0                             0x00001334   Number         4  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
+    [Anonymous Symbol]                       0x00001338   Section        0  dl_timer.o(.text.DL_Timer_setClockConfig)
+    __arm_cp.0_1                             0x00001364   Number         4  dl_timer.o(.text.DL_Timer_setClockConfig)
+    DL_Timer_setCounterValueAfterEnable      0x00001369   Thumb Code    28  dl_timer.o(.text.DL_Timer_setCounterValueAfterEnable)
+    [Anonymous Symbol]                       0x00001368   Section        0  dl_timer.o(.text.DL_Timer_setCounterValueAfterEnable)
+    DL_Timer_setLoadValue                    0x00001385   Thumb Code    20  dl_timer.o(.text.DL_Timer_setLoadValue)
+    [Anonymous Symbol]                       0x00001384   Section        0  dl_timer.o(.text.DL_Timer_setLoadValue)
+    __arm_cp.3_0                             0x00001398   Number         4  dl_timer.o(.text.DL_Timer_setLoadValue)
+    DL_Timer_startCounter                    0x0000139d   Thumb Code    20  servo.o(.text.DL_Timer_startCounter)
+    [Anonymous Symbol]                       0x0000139c   Section        0  servo.o(.text.DL_Timer_startCounter)
+    DL_Timer_startCounter                    0x000013b1   Thumb Code    20  bsp_camera_usart.o(.text.DL_Timer_startCounter)
+    [Anonymous Symbol]                       0x000013b0   Section        0  bsp_camera_usart.o(.text.DL_Timer_startCounter)
+    __arm_cp.20_0                            0x000013c4   Number         4  bsp_camera_usart.o(.text.DL_Timer_startCounter)
+    DL_UART_disable                          0x000013c9   Thumb Code    22  dl_uart.o(.text.DL_UART_disable)
+    [Anonymous Symbol]                       0x000013c8   Section        0  dl_uart.o(.text.DL_UART_disable)
+    DL_UART_enable                           0x000013df   Thumb Code    22  ti_msp_dl_config.o(.text.DL_UART_enable)
+    [Anonymous Symbol]                       0x000013de   Section        0  ti_msp_dl_config.o(.text.DL_UART_enable)
+    DL_UART_enableInterrupt                  0x000013f5   Thumb Code    24  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
+    [Anonymous Symbol]                       0x000013f4   Section        0  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
+    __arm_cp.32_0                            0x0000140c   Number         4  ti_msp_dl_config.o(.text.DL_UART_enableInterrupt)
+    DL_UART_enablePower                      0x00001411   Thumb Code    20  ti_msp_dl_config.o(.text.DL_UART_enablePower)
+    [Anonymous Symbol]                       0x00001410   Section        0  ti_msp_dl_config.o(.text.DL_UART_enablePower)
+    __arm_cp.16_0                            0x00001424   Number         4  ti_msp_dl_config.o(.text.DL_UART_enablePower)
+    DL_UART_getPendingInterrupt              0x00001429   Thumb Code    18  usart.o(.text.DL_UART_getPendingInterrupt)
+    [Anonymous Symbol]                       0x00001428   Section        0  usart.o(.text.DL_UART_getPendingInterrupt)
+    DL_UART_getPendingInterrupt              0x0000143b   Thumb Code    18  bsp_camera_usart.o(.text.DL_UART_getPendingInterrupt)
+    [Anonymous Symbol]                       0x0000143a   Section        0  bsp_camera_usart.o(.text.DL_UART_getPendingInterrupt)
+    DL_UART_getPendingInterrupt              0x0000144d   Thumb Code    18  bsp_motor_usart.o(.text.DL_UART_getPendingInterrupt)
+    [Anonymous Symbol]                       0x0000144c   Section        0  bsp_motor_usart.o(.text.DL_UART_getPendingInterrupt)
+    [Anonymous Symbol]                       0x00001460   Section        0  dl_uart.o(.text.DL_UART_init)
+    __arm_cp.0_0                             0x000014a4   Number         4  dl_uart.o(.text.DL_UART_init)
+    DL_UART_isBusy                           0x000014a9   Thumb Code    20  usart.o(.text.DL_UART_isBusy)
+    [Anonymous Symbol]                       0x000014a8   Section        0  usart.o(.text.DL_UART_isBusy)
+    __arm_cp.4_0                             0x000014bc   Number         4  usart.o(.text.DL_UART_isBusy)
+    DL_UART_receiveData                      0x000014c1   Thumb Code    16  usart.o(.text.DL_UART_receiveData)
+    [Anonymous Symbol]                       0x000014c0   Section        0  usart.o(.text.DL_UART_receiveData)
+    DL_UART_receiveData                      0x000014d1   Thumb Code    16  bsp_camera_usart.o(.text.DL_UART_receiveData)
+    [Anonymous Symbol]                       0x000014d0   Section        0  bsp_camera_usart.o(.text.DL_UART_receiveData)
+    DL_UART_receiveData                      0x000014e1   Thumb Code    16  bsp_motor_usart.o(.text.DL_UART_receiveData)
+    [Anonymous Symbol]                       0x000014e0   Section        0  bsp_motor_usart.o(.text.DL_UART_receiveData)
+    __arm_cp.6_0                             0x000014f0   Number         4  bsp_motor_usart.o(.text.DL_UART_receiveData)
+    DL_UART_reset                            0x000014f5   Thumb Code    16  ti_msp_dl_config.o(.text.DL_UART_reset)
+    [Anonymous Symbol]                       0x000014f4   Section        0  ti_msp_dl_config.o(.text.DL_UART_reset)
+    __arm_cp.13_0                            0x00001504   Number         4  ti_msp_dl_config.o(.text.DL_UART_reset)
+    __arm_cp.13_1                            0x00001508   Number         4  ti_msp_dl_config.o(.text.DL_UART_reset)
+    DL_UART_setBaudRateDivisor               0x0000150d   Thumb Code    60  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    [Anonymous Symbol]                       0x0000150c   Section        0  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    __arm_cp.31_0                            0x00001548   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    __arm_cp.31_1                            0x0000154c   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    __arm_cp.31_2                            0x00001550   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    __arm_cp.31_3                            0x00001554   Number         4  ti_msp_dl_config.o(.text.DL_UART_setBaudRateDivisor)
+    [Anonymous Symbol]                       0x00001558   Section        0  dl_uart.o(.text.DL_UART_setClockConfig)
+    __arm_cp.3_0                             0x00001578   Number         4  dl_uart.o(.text.DL_UART_setClockConfig)
+    DL_UART_setOversampling                  0x0000157d   Thumb Code    30  ti_msp_dl_config.o(.text.DL_UART_setOversampling)
+    [Anonymous Symbol]                       0x0000157c   Section        0  ti_msp_dl_config.o(.text.DL_UART_setOversampling)
+    DL_UART_transmitData                     0x0000159b   Thumb Code    22  usart.o(.text.DL_UART_transmitData)
+    [Anonymous Symbol]                       0x0000159a   Section        0  usart.o(.text.DL_UART_transmitData)
+    [Anonymous Symbol]                       0x000015b0   Section        0  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    __arm_cp.10_0                            0x00001648   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    __arm_cp.10_1                            0x0000164c   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    __arm_cp.10_2                            0x00001650   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    __arm_cp.10_3                            0x00001654   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    __arm_cp.10_4                            0x00001658   Number         4  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    [Anonymous Symbol]                       0x0000165c   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_GPIO_init)
+    [Anonymous Symbol]                       0x00001744   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
+    __arm_cp.4_0                             0x00001794   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
+    __arm_cp.4_2                             0x00001798   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
+    __arm_cp.4_3                             0x0000179c   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
+    [Anonymous Symbol]                       0x000017a0   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_init)
+    [Anonymous Symbol]                       0x000017c2   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSTICK_init)
+    [Anonymous Symbol]                       0x000017d0   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
+    __arm_cp.5_0                             0x0000180c   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
+    __arm_cp.5_2                             0x00001810   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
+    [Anonymous Symbol]                       0x00001814   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
+    __arm_cp.6_0                             0x00001850   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
+    __arm_cp.6_2                             0x00001854   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
+    [Anonymous Symbol]                       0x00001858   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
+    __arm_cp.7_0                             0x00001894   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
+    __arm_cp.7_2                             0x00001898   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
+    [Anonymous Symbol]                       0x0000189c   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
+    __arm_cp.0_0                             0x000018d0   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
+    __arm_cp.0_1                             0x000018d4   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
+    [Anonymous Symbol]                       0x000018d8   Section        0  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
+    __arm_cp.1_0                             0x0000193c   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
+    __arm_cp.1_1                             0x00001940   Number         4  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
+    [Anonymous Symbol]                       0x00001944   Section        0  servo.o(.text.Servo_Init)
+    [Anonymous Symbol]                       0x00001954   Section        0  servo.o(.text.Servo_SetAngle)
+    __arm_cp.1_0                             0x0000199c   Number         4  servo.o(.text.Servo_SetAngle)
+    __arm_cp.1_1                             0x000019a0   Number         4  servo.o(.text.Servo_SetAngle)
+    [Anonymous Symbol]                       0x000019a4   Section        0  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
+    __arm_cp.13_0                            0x000019c0   Number         4  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
+    __arm_cp.13_1                            0x000019c4   Number         4  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
+    [Anonymous Symbol]                       0x000019c8   Section        0  usart.o(.text.UART0_IRQHandler)
+    __arm_cp.7_0                             0x00001a18   Number         4  usart.o(.text.UART0_IRQHandler)
+    __arm_cp.7_1                             0x00001a1c   Number         4  usart.o(.text.UART0_IRQHandler)
+    __arm_cp.7_2                             0x00001a20   Number         4  usart.o(.text.UART0_IRQHandler)
+    __arm_cp.7_3                             0x00001a24   Number         4  usart.o(.text.UART0_IRQHandler)
+    [Anonymous Symbol]                       0x00001a28   Section        0  bsp_motor_usart.o(.text.UART1_IRQHandler)
+    __arm_cp.4_0                             0x00001a58   Number         4  bsp_motor_usart.o(.text.UART1_IRQHandler)
+    [Anonymous Symbol]                       0x00001a5c   Section        0  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    __arm_cp.10_0                            0x00001ab4   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    __arm_cp.10_1                            0x00001ab8   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    __arm_cp.10_2                            0x00001abc   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    __arm_cp.10_3                            0x00001ac0   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    __arm_cp.10_4                            0x00001ac4   Number         4  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    [Anonymous Symbol]                       0x00001ac8   Section        0  usart.o(.text.USART_Init)
+    Vision_Servo_Test_Update                 0x00001b01   Thumb Code   208  empty.o(.text.Vision_Servo_Test_Update)
+    [Anonymous Symbol]                       0x00001b00   Section        0  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_0                             0x00001bd0   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_1                             0x00001bd4   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_2                             0x00001bd8   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_3                             0x00001bdc   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_4                             0x00001be0   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __arm_cp.1_5                             0x00001be4   Number         4  empty.o(.text.Vision_Servo_Test_Update)
+    __NVIC_ClearPendingIRQ                   0x00001be9   Thumb Code    40  usart.o(.text.__NVIC_ClearPendingIRQ)
+    [Anonymous Symbol]                       0x00001be8   Section        0  usart.o(.text.__NVIC_ClearPendingIRQ)
+    __NVIC_ClearPendingIRQ                   0x00001c11   Thumb Code    40  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
+    [Anonymous Symbol]                       0x00001c10   Section        0  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
+    __arm_cp.18_0                            0x00001c38   Number         4  bsp_camera_usart.o(.text.__NVIC_ClearPendingIRQ)
+    __NVIC_EnableIRQ                         0x00001c3d   Thumb Code    40  usart.o(.text.__NVIC_EnableIRQ)
+    [Anonymous Symbol]                       0x00001c3c   Section        0  usart.o(.text.__NVIC_EnableIRQ)
+    __NVIC_EnableIRQ                         0x00001c65   Thumb Code    40  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
+    [Anonymous Symbol]                       0x00001c64   Section        0  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
+    __arm_cp.19_0                            0x00001c8c   Number         4  bsp_camera_usart.o(.text.__NVIC_EnableIRQ)
+    [Anonymous Symbol]                       0x00001c90   Section        0  usart.o(.text.fputc)
+    __arm_cp.6_0                             0x00001cb8   Number         4  usart.o(.text.fputc)
+    [Anonymous Symbol]                       0x00001cbc   Section        0  empty.o(.text.main)
+    __arm_cp.0_0                             0x00001cec   Number         4  empty.o(.text.main)
+    i.__0printf                              0x00001cf0   Section        0  printfa.o(i.__0printf)
+    i.__ARM_clz                              0x00001d10   Section        0  depilogue.o(i.__ARM_clz)
+    i.__scatterload_copy                     0x00001d40   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x00001d50   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x00001d58   Section       14  handlers.o(i.__scatterload_zeroinit)
+    _fp_digits                               0x00001d69   Thumb Code   344  printfa.o(i._fp_digits)
+    i._fp_digits                             0x00001d68   Section        0  printfa.o(i._fp_digits)
+    _printf_core                             0x00001edd   Thumb Code  1754  printfa.o(i._printf_core)
+    i._printf_core                           0x00001edc   Section        0  printfa.o(i._printf_core)
+    _printf_post_padding                     0x000025c9   Thumb Code    32  printfa.o(i._printf_post_padding)
+    i._printf_post_padding                   0x000025c8   Section        0  printfa.o(i._printf_post_padding)
+    _printf_pre_padding                      0x000025e9   Thumb Code    44  printfa.o(i._printf_pre_padding)
+    i._printf_pre_padding                    0x000025e8   Section        0  printfa.o(i._printf_pre_padding)
+    gSERVO_PWMClockConfig                    0x00002614   Data           3  ti_msp_dl_config.o(.rodata.gSERVO_PWMClockConfig)
+    [Anonymous Symbol]                       0x00002614   Section        0  ti_msp_dl_config.o(.rodata.gSERVO_PWMClockConfig)
+    gSERVO_PWMConfig                         0x00002618   Data           8  ti_msp_dl_config.o(.rodata.gSERVO_PWMConfig)
+    [Anonymous Symbol]                       0x00002618   Section        0  ti_msp_dl_config.o(.rodata.gSERVO_PWMConfig)
+    gUART_0ClockConfig                       0x00002620   Data           2  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
+    [Anonymous Symbol]                       0x00002620   Section        0  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
+    gUART_0Config                            0x00002622   Data          10  ti_msp_dl_config.o(.rodata.gUART_0Config)
+    [Anonymous Symbol]                       0x00002622   Section        0  ti_msp_dl_config.o(.rodata.gUART_0Config)
+    gUART_1ClockConfig                       0x0000262c   Data           2  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
+    [Anonymous Symbol]                       0x0000262c   Section        0  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
+    gUART_1Config                            0x0000262e   Data          10  ti_msp_dl_config.o(.rodata.gUART_1Config)
+    [Anonymous Symbol]                       0x0000262e   Section        0  ti_msp_dl_config.o(.rodata.gUART_1Config)
+    gUART_3ClockConfig                       0x00002638   Data           2  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
+    [Anonymous Symbol]                       0x00002638   Section        0  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
+    gUART_3Config                            0x0000263a   Data          10  ti_msp_dl_config.o(.rodata.gUART_3Config)
+    [Anonymous Symbol]                       0x0000263a   Section        0  ti_msp_dl_config.o(.rodata.gUART_3Config)
+    g_camera_time_clock_config               0x00002644   Data           3  bsp_camera_usart.o(.rodata.g_camera_time_clock_config)
+    [Anonymous Symbol]                       0x00002644   Section        0  bsp_camera_usart.o(.rodata.g_camera_time_clock_config)
+    g_camera_time_timer_config               0x00002648   Data          20  bsp_camera_usart.o(.rodata.g_camera_time_timer_config)
+    [Anonymous Symbol]                       0x00002648   Section        0  bsp_camera_usart.o(.rodata.g_camera_time_timer_config)
+    [Anonymous Symbol]                       0x0000265c   Section        0  empty.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x000026ae   Section        0  bsp_camera_usart.o(.rodata.str1.1)
     .data                                    0x20200000   Section        4  stdout.o(.data)
+    Vision_Servo_Test_Update.last_angle      0x20200004   Data           2  empty.o(.data.Vision_Servo_Test_Update.last_angle)
+    [Anonymous Symbol]                       0x20200004   Section        0  empty.o(.data.Vision_Servo_Test_Update.last_angle)
     Deal_Control_Rxtemp.start_flag           0x20200008   Data           1  app_motor_usart.o(.bss.Deal_Control_Rxtemp.start_flag)
     [Anonymous Symbol]                       0x20200008   Section        0  app_motor_usart.o(.bss.Deal_Control_Rxtemp.start_flag)
     Deal_Control_Rxtemp.step                 0x2020000a   Data           2  app_motor_usart.o(.bss.Deal_Control_Rxtemp.step)
     [Anonymous Symbol]                       0x2020000a   Section        0  app_motor_usart.o(.bss.Deal_Control_Rxtemp.step)
-    g_camera_frame                           0x202000f8   Data           8  bsp_camera_usart.o(.bss.g_camera_frame)
-    [Anonymous Symbol]                       0x202000f8   Section        0  bsp_camera_usart.o(.bss.g_camera_frame)
-    g_camera_frame_index                     0x20200100   Data           1  bsp_camera_usart.o(.bss.g_camera_frame_index)
-    [Anonymous Symbol]                       0x20200100   Section        0  bsp_camera_usart.o(.bss.g_camera_frame_index)
-    g_camera_has_seq                         0x20200101   Data           1  bsp_camera_usart.o(.bss.g_camera_has_seq)
-    [Anonymous Symbol]                       0x20200101   Section        0  bsp_camera_usart.o(.bss.g_camera_has_seq)
-    g_camera_parse_state                     0x20200102   Data           1  bsp_camera_usart.o(.bss.g_camera_parse_state)
-    [Anonymous Symbol]                       0x20200102   Section        0  bsp_camera_usart.o(.bss.g_camera_parse_state)
-    g_camera_time_ms                         0x20200104   Data           4  bsp_camera_usart.o(.bss.g_camera_time_ms)
-    [Anonymous Symbol]                       0x20200104   Section        0  bsp_camera_usart.o(.bss.g_camera_time_ms)
-    g_camera_uart_rx_buffer                  0x20200108   Data         128  bsp_camera_usart.o(.bss.g_camera_uart_rx_buffer)
-    [Anonymous Symbol]                       0x20200108   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_buffer)
-    g_camera_uart_rx_head                    0x20200188   Data           2  bsp_camera_usart.o(.bss.g_camera_uart_rx_head)
-    [Anonymous Symbol]                       0x20200188   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_head)
-    g_camera_uart_rx_overflow_count          0x2020018c   Data           4  bsp_camera_usart.o(.bss.g_camera_uart_rx_overflow_count)
-    [Anonymous Symbol]                       0x2020018c   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_overflow_count)
-    g_camera_uart_rx_tail                    0x20200190   Data           2  bsp_camera_usart.o(.bss.g_camera_uart_rx_tail)
-    [Anonymous Symbol]                       0x20200190   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_tail)
-    STACK                                    0x20200448   Section     1024  startup_mspm0g350x_uvision.o(STACK)
+    Vision_Servo_Test_Update.last_update_ms  0x2020000c   Data           4  empty.o(.bss.Vision_Servo_Test_Update.last_update_ms)
+    [Anonymous Symbol]                       0x2020000c   Section        0  empty.o(.bss.Vision_Servo_Test_Update.last_update_ms)
+    g_camera_frame                           0x202000fc   Data           8  bsp_camera_usart.o(.bss.g_camera_frame)
+    [Anonymous Symbol]                       0x202000fc   Section        0  bsp_camera_usart.o(.bss.g_camera_frame)
+    g_camera_frame_index                     0x20200104   Data           1  bsp_camera_usart.o(.bss.g_camera_frame_index)
+    [Anonymous Symbol]                       0x20200104   Section        0  bsp_camera_usart.o(.bss.g_camera_frame_index)
+    g_camera_has_seq                         0x20200105   Data           1  bsp_camera_usart.o(.bss.g_camera_has_seq)
+    [Anonymous Symbol]                       0x20200105   Section        0  bsp_camera_usart.o(.bss.g_camera_has_seq)
+    g_camera_parse_state                     0x20200106   Data           1  bsp_camera_usart.o(.bss.g_camera_parse_state)
+    [Anonymous Symbol]                       0x20200106   Section        0  bsp_camera_usart.o(.bss.g_camera_parse_state)
+    g_camera_time_ms                         0x20200108   Data           4  bsp_camera_usart.o(.bss.g_camera_time_ms)
+    [Anonymous Symbol]                       0x20200108   Section        0  bsp_camera_usart.o(.bss.g_camera_time_ms)
+    g_camera_uart_rx_buffer                  0x2020010c   Data         128  bsp_camera_usart.o(.bss.g_camera_uart_rx_buffer)
+    [Anonymous Symbol]                       0x2020010c   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_buffer)
+    g_camera_uart_rx_head                    0x2020018c   Data           2  bsp_camera_usart.o(.bss.g_camera_uart_rx_head)
+    [Anonymous Symbol]                       0x2020018c   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_head)
+    g_camera_uart_rx_overflow_count          0x20200190   Data           4  bsp_camera_usart.o(.bss.g_camera_uart_rx_overflow_count)
+    [Anonymous Symbol]                       0x20200190   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_overflow_count)
+    g_camera_uart_rx_tail                    0x20200194   Data           2  bsp_camera_usart.o(.bss.g_camera_uart_rx_tail)
+    [Anonymous Symbol]                       0x20200194   Section        0  bsp_camera_usart.o(.bss.g_camera_uart_rx_tail)
+    STACK                                    0x20200450   Section     1024  startup_mspm0g350x_uvision.o(STACK)
 
     Global Symbols
 
@@ -3322,81 +3354,89 @@ Image Symbol Table
     __aeabi_memclr4                          0x0000011b   Thumb Code     0  memseta.o(.text)
     __aeabi_memclr8                          0x0000011b   Thumb Code     0  memseta.o(.text)
     _memset$wrapper                          0x0000011f   Thumb Code    18  memseta.o(.text)
-    __aeabi_uidiv                            0x00000131   Thumb Code     0  uidiv_div0.o(.text)
-    __aeabi_uidivmod                         0x00000131   Thumb Code    62  uidiv_div0.o(.text)
-    __aeabi_uldivmod                         0x0000016f   Thumb Code    96  uldiv.o(.text)
-    __I$use$fp                               0x000001cf   Thumb Code     0  iusefp.o(.text)
-    __aeabi_dadd                             0x000001d1   Thumb Code   328  dadd.o(.text)
-    __aeabi_dsub                             0x00000319   Thumb Code    12  dadd.o(.text)
-    __aeabi_drsub                            0x00000325   Thumb Code    12  dadd.o(.text)
-    __aeabi_dmul                             0x00000335   Thumb Code   202  dmul.o(.text)
-    __aeabi_ddiv                             0x00000405   Thumb Code   234  ddiv.o(.text)
-    __aeabi_d2ulz                            0x000004f5   Thumb Code    54  dfixul.o(.text)
-    __aeabi_cdrcmple                         0x00000535   Thumb Code    38  cdrcmple.o(.text)
-    __scatterload                            0x00000561   Thumb Code    38  init.o(.text)
-    __scatterload_rt2                        0x00000561   Thumb Code     0  init.o(.text)
-    __aeabi_llsl                             0x00000591   Thumb Code    32  llshl.o(.text)
-    _ll_shift_l                              0x00000591   Thumb Code     0  llshl.o(.text)
-    __aeabi_llsr                             0x000005b1   Thumb Code    34  llushr.o(.text)
-    _ll_ushift_r                             0x000005b1   Thumb Code     0  llushr.o(.text)
-    __aeabi_lasr                             0x000005d3   Thumb Code    38  llsshr.o(.text)
-    _ll_sshift_r                             0x000005d3   Thumb Code     0  llsshr.o(.text)
-    _double_round                            0x000005f9   Thumb Code    26  depilogue.o(.text)
-    _double_epilogue                         0x00000613   Thumb Code   164  depilogue.o(.text)
-    Camera_Vision_GetTimeMs                  0x00000a09   Thumb Code     8  bsp_camera_usart.o(.text.Camera_Vision_GetTimeMs)
-    Camera_Vision_Init                       0x00000a11   Thumb Code   120  bsp_camera_usart.o(.text.Camera_Vision_Init)
-    Camera_Vision_Process                    0x00000a8d   Thumb Code    72  bsp_camera_usart.o(.text.Camera_Vision_Process)
-    DL_Common_delayCycles                    0x00000ae9   Thumb Code    20  dl_common.o(.text.DL_Common_delayCycles)
-    DL_Timer_initFourCCPWMMode               0x00000d55   Thumb Code   232  dl_timer.o(.text.DL_Timer_initFourCCPWMMode)
-    DL_Timer_initTimerMode                   0x00000e3d   Thumb Code   252  dl_timer.o(.text.DL_Timer_initTimerMode)
-    DL_Timer_setCaptCompUpdateMethod         0x00001079   Thumb Code    48  dl_timer.o(.text.DL_Timer_setCaptCompUpdateMethod)
-    DL_Timer_setCaptureCompareAction         0x000010a9   Thumb Code    44  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
-    DL_Timer_setCaptureCompareCtl            0x000010dd   Thumb Code    52  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
-    DL_Timer_setCaptureCompareInput          0x00001119   Thumb Code    52  dl_timer.o(.text.DL_Timer_setCaptureCompareInput)
-    DL_Timer_setCaptureCompareOutCtl         0x0000114d   Thumb Code    60  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
-    DL_Timer_setCaptureCompareValue          0x0000118d   Thumb Code    40  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
-    DL_Timer_setClockConfig                  0x000011b9   Thumb Code    44  dl_timer.o(.text.DL_Timer_setClockConfig)
-    DL_UART_init                             0x000012cd   Thumb Code    68  dl_uart.o(.text.DL_UART_init)
-    DL_UART_setClockConfig                   0x000013c5   Thumb Code    32  dl_uart.o(.text.DL_UART_setClockConfig)
-    Deal_Control_Rxtemp                      0x0000141d   Thumb Code   152  app_motor_usart.o(.text.Deal_Control_Rxtemp)
-    SYSCFG_DL_GPIO_init                      0x000014c9   Thumb Code   232  ti_msp_dl_config.o(.text.SYSCFG_DL_GPIO_init)
-    SYSCFG_DL_SERVO_PWM_init                 0x000015b1   Thumb Code    80  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
-    SYSCFG_DL_SYSCTL_init                    0x0000160d   Thumb Code    34  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_init)
-    SYSCFG_DL_SYSTICK_init                   0x0000162f   Thumb Code    14  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSTICK_init)
-    SYSCFG_DL_UART_0_init                    0x0000163d   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
-    SYSCFG_DL_UART_1_init                    0x00001681   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
-    SYSCFG_DL_UART_3_init                    0x000016c5   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
-    SYSCFG_DL_init                           0x00001709   Thumb Code    52  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
-    SYSCFG_DL_initPower                      0x00001745   Thumb Code   100  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
-    TIMG12_IRQHandler                        0x000017b5   Thumb Code    28  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
-    UART0_IRQHandler                         0x000017d9   Thumb Code    80  usart.o(.text.UART0_IRQHandler)
-    UART1_IRQHandler                         0x00001835   Thumb Code    48  bsp_motor_usart.o(.text.UART1_IRQHandler)
-    UART3_IRQHandler                         0x00001869   Thumb Code    88  bsp_camera_usart.o(.text.UART3_IRQHandler)
-    USART_Init                               0x000018d5   Thumb Code    54  usart.o(.text.USART_Init)
-    fputc                                    0x000019b5   Thumb Code    40  usart.o(.text.fputc)
-    main                                     0x000019e1   Thumb Code    36  empty.o(.text.main)
-    __0printf                                0x00001a09   Thumb Code    24  printfa.o(i.__0printf)
-    __1printf                                0x00001a09   Thumb Code     0  printfa.o(i.__0printf)
-    __2printf                                0x00001a09   Thumb Code     0  printfa.o(i.__0printf)
-    __c89printf                              0x00001a09   Thumb Code     0  printfa.o(i.__0printf)
-    printf                                   0x00001a09   Thumb Code     0  printfa.o(i.__0printf)
-    __ARM_clz                                0x00001a29   Thumb Code    46  depilogue.o(i.__ARM_clz)
-    __scatterload_copy                       0x00001a59   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x00001a69   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x00001a71   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    Region$$Table$$Base                      0x0000242c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0000244c   Number         0  anon$$obj.o(Region$$Table)
+    __aeabi_fmul                             0x00000131   Thumb Code   122  fmul.o(.text)
+    __aeabi_i2f                              0x000001ab   Thumb Code    22  fflti.o(.text)
+    __aeabi_f2iz                             0x000001c1   Thumb Code    50  ffixi.o(.text)
+    __aeabi_uidiv                            0x000001f3   Thumb Code     0  uidiv_div0.o(.text)
+    __aeabi_uidivmod                         0x000001f3   Thumb Code    62  uidiv_div0.o(.text)
+    __aeabi_uldivmod                         0x00000231   Thumb Code    96  uldiv.o(.text)
+    __I$use$fp                               0x00000291   Thumb Code     0  iusefp.o(.text)
+    _float_round                             0x00000291   Thumb Code    16  fepilogue.o(.text)
+    _float_epilogue                          0x000002a1   Thumb Code   114  fepilogue.o(.text)
+    __aeabi_dadd                             0x00000315   Thumb Code   328  dadd.o(.text)
+    __aeabi_dsub                             0x0000045d   Thumb Code    12  dadd.o(.text)
+    __aeabi_drsub                            0x00000469   Thumb Code    12  dadd.o(.text)
+    __aeabi_dmul                             0x00000479   Thumb Code   202  dmul.o(.text)
+    __aeabi_ddiv                             0x00000549   Thumb Code   234  ddiv.o(.text)
+    __aeabi_d2ulz                            0x00000639   Thumb Code    54  dfixul.o(.text)
+    __aeabi_cdrcmple                         0x00000679   Thumb Code    38  cdrcmple.o(.text)
+    __scatterload                            0x000006a1   Thumb Code    38  init.o(.text)
+    __scatterload_rt2                        0x000006a1   Thumb Code     0  init.o(.text)
+    __aeabi_llsl                             0x000006d1   Thumb Code    32  llshl.o(.text)
+    _ll_shift_l                              0x000006d1   Thumb Code     0  llshl.o(.text)
+    __aeabi_llsr                             0x000006f1   Thumb Code    34  llushr.o(.text)
+    _ll_ushift_r                             0x000006f1   Thumb Code     0  llushr.o(.text)
+    __aeabi_lasr                             0x00000713   Thumb Code    38  llsshr.o(.text)
+    _ll_sshift_r                             0x00000713   Thumb Code     0  llsshr.o(.text)
+    _double_round                            0x00000739   Thumb Code    26  depilogue.o(.text)
+    _double_epilogue                         0x00000753   Thumb Code   164  depilogue.o(.text)
+    Camera_Vision_GetTimeMs                  0x00000b49   Thumb Code     8  bsp_camera_usart.o(.text.Camera_Vision_GetTimeMs)
+    Camera_Vision_Init                       0x00000b51   Thumb Code   120  bsp_camera_usart.o(.text.Camera_Vision_Init)
+    Camera_Vision_IsUsable                   0x00000bcd   Thumb Code    60  bsp_camera_usart.o(.text.Camera_Vision_IsUsable)
+    Camera_Vision_Process                    0x00000c0d   Thumb Code    72  bsp_camera_usart.o(.text.Camera_Vision_Process)
+    DL_Common_delayCycles                    0x00000c69   Thumb Code    20  dl_common.o(.text.DL_Common_delayCycles)
+    DL_Timer_initFourCCPWMMode               0x00000ed5   Thumb Code   232  dl_timer.o(.text.DL_Timer_initFourCCPWMMode)
+    DL_Timer_initTimerMode                   0x00000fbd   Thumb Code   252  dl_timer.o(.text.DL_Timer_initTimerMode)
+    DL_Timer_setCaptCompUpdateMethod         0x000011f9   Thumb Code    48  dl_timer.o(.text.DL_Timer_setCaptCompUpdateMethod)
+    DL_Timer_setCaptureCompareAction         0x00001229   Thumb Code    44  dl_timer.o(.text.DL_Timer_setCaptureCompareAction)
+    DL_Timer_setCaptureCompareCtl            0x0000125d   Thumb Code    52  dl_timer.o(.text.DL_Timer_setCaptureCompareCtl)
+    DL_Timer_setCaptureCompareInput          0x00001299   Thumb Code    52  dl_timer.o(.text.DL_Timer_setCaptureCompareInput)
+    DL_Timer_setCaptureCompareOutCtl         0x000012cd   Thumb Code    60  dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl)
+    DL_Timer_setCaptureCompareValue          0x0000130d   Thumb Code    40  dl_timer.o(.text.DL_Timer_setCaptureCompareValue)
+    DL_Timer_setClockConfig                  0x00001339   Thumb Code    44  dl_timer.o(.text.DL_Timer_setClockConfig)
+    DL_UART_init                             0x00001461   Thumb Code    68  dl_uart.o(.text.DL_UART_init)
+    DL_UART_setClockConfig                   0x00001559   Thumb Code    32  dl_uart.o(.text.DL_UART_setClockConfig)
+    Deal_Control_Rxtemp                      0x000015b1   Thumb Code   152  app_motor_usart.o(.text.Deal_Control_Rxtemp)
+    SYSCFG_DL_GPIO_init                      0x0000165d   Thumb Code   232  ti_msp_dl_config.o(.text.SYSCFG_DL_GPIO_init)
+    SYSCFG_DL_SERVO_PWM_init                 0x00001745   Thumb Code    80  ti_msp_dl_config.o(.text.SYSCFG_DL_SERVO_PWM_init)
+    SYSCFG_DL_SYSCTL_init                    0x000017a1   Thumb Code    34  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_init)
+    SYSCFG_DL_SYSTICK_init                   0x000017c3   Thumb Code    14  ti_msp_dl_config.o(.text.SYSCFG_DL_SYSTICK_init)
+    SYSCFG_DL_UART_0_init                    0x000017d1   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_0_init)
+    SYSCFG_DL_UART_1_init                    0x00001815   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_1_init)
+    SYSCFG_DL_UART_3_init                    0x00001859   Thumb Code    60  ti_msp_dl_config.o(.text.SYSCFG_DL_UART_3_init)
+    SYSCFG_DL_init                           0x0000189d   Thumb Code    52  ti_msp_dl_config.o(.text.SYSCFG_DL_init)
+    SYSCFG_DL_initPower                      0x000018d9   Thumb Code   100  ti_msp_dl_config.o(.text.SYSCFG_DL_initPower)
+    Servo_Init                               0x00001945   Thumb Code    16  servo.o(.text.Servo_Init)
+    Servo_SetAngle                           0x00001955   Thumb Code    72  servo.o(.text.Servo_SetAngle)
+    TIMG12_IRQHandler                        0x000019a5   Thumb Code    28  bsp_camera_usart.o(.text.TIMG12_IRQHandler)
+    UART0_IRQHandler                         0x000019c9   Thumb Code    80  usart.o(.text.UART0_IRQHandler)
+    UART1_IRQHandler                         0x00001a29   Thumb Code    48  bsp_motor_usart.o(.text.UART1_IRQHandler)
+    UART3_IRQHandler                         0x00001a5d   Thumb Code    88  bsp_camera_usart.o(.text.UART3_IRQHandler)
+    USART_Init                               0x00001ac9   Thumb Code    54  usart.o(.text.USART_Init)
+    fputc                                    0x00001c91   Thumb Code    40  usart.o(.text.fputc)
+    main                                     0x00001cbd   Thumb Code    48  empty.o(.text.main)
+    __0printf                                0x00001cf1   Thumb Code    24  printfa.o(i.__0printf)
+    __1printf                                0x00001cf1   Thumb Code     0  printfa.o(i.__0printf)
+    __2printf                                0x00001cf1   Thumb Code     0  printfa.o(i.__0printf)
+    __c89printf                              0x00001cf1   Thumb Code     0  printfa.o(i.__0printf)
+    printf                                   0x00001cf1   Thumb Code     0  printfa.o(i.__0printf)
+    __ARM_clz                                0x00001d11   Thumb Code    46  depilogue.o(i.__ARM_clz)
+    __scatterload_copy                       0x00001d41   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x00001d51   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x00001d59   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    Region$$Table$$Base                      0x00002758   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x00002778   Number         0  anon$$obj.o(Region$$Table)
     __stdout                                 0x20200000   Data           4  stdout.o(.data)
-    gSERVO_PWMBackup                         0x2020000c   Data         188  ti_msp_dl_config.o(.bss.gSERVO_PWMBackup)
-    gUART_3Backup                            0x202000c8   Data          48  ti_msp_dl_config.o(.bss.gUART_3Backup)
-    g_recv_buff                              0x20200192   Data         256  app_motor_usart.o(.bss.g_recv_buff)
-    g_recv_buff_deal                         0x20200292   Data         256  app_motor_usart.o(.bss.g_recv_buff_deal)
-    g_recv_flag                              0x20200392   Data           1  app_motor_usart.o(.bss.g_recv_flag)
-    recv0_buff                               0x20200393   Data         128  usart.o(.bss.recv0_buff)
-    recv0_flag                               0x20200413   Data           1  usart.o(.bss.recv0_flag)
-    recv0_length                             0x20200414   Data           2  usart.o(.bss.recv0_length)
-    vision                                   0x20200418   Data          48  bsp_camera_usart.o(.bss.vision)
-    __initial_sp                             0x20200848   Data           0  startup_mspm0g350x_uvision.o(STACK)
+    gSERVO_PWMBackup                         0x20200010   Data         188  ti_msp_dl_config.o(.bss.gSERVO_PWMBackup)
+    gUART_3Backup                            0x202000cc   Data          48  ti_msp_dl_config.o(.bss.gUART_3Backup)
+    g_recv_buff                              0x20200196   Data         256  app_motor_usart.o(.bss.g_recv_buff)
+    g_recv_buff_deal                         0x20200296   Data         256  app_motor_usart.o(.bss.g_recv_buff_deal)
+    g_recv_flag                              0x20200396   Data           1  app_motor_usart.o(.bss.g_recv_flag)
+    recv0_buff                               0x20200397   Data         128  usart.o(.bss.recv0_buff)
+    recv0_flag                               0x20200417   Data           1  usart.o(.bss.recv0_flag)
+    recv0_length                             0x20200418   Data           2  usart.o(.bss.recv0_length)
+    vision                                   0x2020041c   Data          48  bsp_camera_usart.o(.bss.vision)
+    __initial_sp                             0x20200850   Data           0  startup_mspm0g350x_uvision.o(STACK)
 
 
 
@@ -3406,194 +3446,206 @@ Memory Map of the image
 
   Image Entry point : 0x000000c1
 
-  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00002458, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00002780, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x0000244c, Max: 0x00020000, ABSOLUTE)
-
-    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
-
-    0x00000000   0x00000000   0x000000c0   Data   RO           13    RESET               startup_mspm0g350x_uvision.o
-    0x000000c0   0x000000c0   0x00000000   Code   RO         1476  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
-    0x000000c0   0x000000c0   0x00000004   Code   RO         1545    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
-    0x000000c4   0x000000c4   0x00000004   Code   RO         1548    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
-    0x000000c8   0x000000c8   0x00000000   Code   RO         1550    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
-    0x000000c8   0x000000c8   0x00000000   Code   RO         1552    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
-    0x000000c8   0x000000c8   0x00000008   Code   RO         1553    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
-    0x000000d0   0x000000d0   0x00000000   Code   RO         1555    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
-    0x000000d0   0x000000d0   0x00000000   Code   RO         1557    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
-    0x000000d0   0x000000d0   0x00000004   Code   RO         1546    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
-    0x000000d4   0x000000d4   0x00000014   Code   RO           14    .text               startup_mspm0g350x_uvision.o
-    0x000000e8   0x000000e8   0x00000024   Code   RO         1483    .text               mc_p.l(memcpya.o)
-    0x0000010c   0x0000010c   0x00000024   Code   RO         1485    .text               mc_p.l(memseta.o)
-    0x00000130   0x00000130   0x0000003e   Code   RO         1562    .text               mc_p.l(uidiv_div0.o)
-    0x0000016e   0x0000016e   0x00000060   Code   RO         1568    .text               mc_p.l(uldiv.o)
-    0x000001ce   0x000001ce   0x00000000   Code   RO         1581    .text               mc_p.l(iusefp.o)
-    0x000001ce   0x000001ce   0x00000002   PAD
-    0x000001d0   0x000001d0   0x00000164   Code   RO         1584    .text               mf_p.l(dadd.o)
-    0x00000334   0x00000334   0x000000d0   Code   RO         1586    .text               mf_p.l(dmul.o)
-    0x00000404   0x00000404   0x000000f0   Code   RO         1588    .text               mf_p.l(ddiv.o)
-    0x000004f4   0x000004f4   0x00000040   Code   RO         1590    .text               mf_p.l(dfixul.o)
-    0x00000534   0x00000534   0x00000028   Code   RO         1592    .text               mf_p.l(cdrcmple.o)
-    0x0000055c   0x0000055c   0x00000004   PAD
-    0x00000560   0x00000560   0x00000030   Code   RO         1594    .text               mc_p.l(init.o)
-    0x00000590   0x00000590   0x00000020   Code   RO         1596    .text               mc_p.l(llshl.o)
-    0x000005b0   0x000005b0   0x00000022   Code   RO         1598    .text               mc_p.l(llushr.o)
-    0x000005d2   0x000005d2   0x00000026   Code   RO         1600    .text               mc_p.l(llsshr.o)
-    0x000005f8   0x000005f8   0x000000be   Code   RO         1640    .text               mf_p.l(depilogue.o)
-    0x000006b6   0x000006b6   0x00000046   Code   RO         1341    .text.Camera_Checksum  bsp_camera_usart.o
-    0x000006fc   0x000006fc   0x00000110   Code   RO         1339    .text.Camera_HandleFrame  bsp_camera_usart.o
-    0x0000080c   0x0000080c   0x00000048   Code   RO         1343    .text.Camera_IsNewSequence  bsp_camera_usart.o
-    0x00000854   0x00000854   0x000000a8   Code   RO         1309    .text.Camera_ParseByte  bsp_camera_usart.o
-    0x000008fc   0x000008fc   0x00000018   Code   RO         1299    .text.Camera_ResetParser  bsp_camera_usart.o
-    0x00000914   0x00000914   0x00000054   Code   RO         1303    .text.Camera_Time_Init  bsp_camera_usart.o
-    0x00000968   0x00000968   0x00000026   Code   RO         1307    .text.Camera_Uart_NextIndex  bsp_camera_usart.o
-    0x0000098e   0x0000098e   0x00000002   PAD
-    0x00000990   0x00000990   0x00000078   Code   RO         1345    .text.Camera_UpdateSequence  bsp_camera_usart.o
-    0x00000a08   0x00000a08   0x00000008   Code   RO         1311    .text.Camera_Vision_GetTimeMs  bsp_camera_usart.o
-    0x00000a10   0x00000a10   0x0000007c   Code   RO         1301    .text.Camera_Vision_Init  bsp_camera_usart.o
-    0x00000a8c   0x00000a8c   0x0000005c   Code   RO         1305    .text.Camera_Vision_Process  bsp_camera_usart.o
-    0x00000ae8   0x00000ae8   0x00000014   Code   RO          165    .text.DL_Common_delayCycles  dl_common.o
-    0x00000afc   0x00000afc   0x00000028   Code   RO           93    .text.DL_Common_updateReg  ti_msp_dl_config.o
-    0x00000b24   0x00000b24   0x00000028   Code   RO         1054    .text.DL_Common_updateReg  dl_timer.o
-    0x00000b4c   0x00000b4c   0x00000028   Code   RO         1160    .text.DL_Common_updateReg  dl_uart.o
-    0x00000b74   0x00000b74   0x00000014   Code   RO           65    .text.DL_GPIO_clearPins  ti_msp_dl_config.o
-    0x00000b88   0x00000b88   0x00000018   Code   RO           57    .text.DL_GPIO_enableOutput  ti_msp_dl_config.o
-    0x00000ba0   0x00000ba0   0x00000014   Code   RO           49    .text.DL_GPIO_enablePower  ti_msp_dl_config.o
-    0x00000bb4   0x00000bb4   0x00000030   Code   RO           61    .text.DL_GPIO_initDigitalInputFeatures  ti_msp_dl_config.o
-    0x00000be4   0x00000be4   0x00000014   Code   RO           63    .text.DL_GPIO_initDigitalOutput  ti_msp_dl_config.o
-    0x00000bf8   0x00000bf8   0x0000001c   Code   RO           59    .text.DL_GPIO_initPeripheralInputFunction  ti_msp_dl_config.o
-    0x00000c14   0x00000c14   0x0000001c   Code   RO           55    .text.DL_GPIO_initPeripheralOutputFunction  ti_msp_dl_config.o
-    0x00000c30   0x00000c30   0x00000018   Code   RO           43    .text.DL_GPIO_reset  ti_msp_dl_config.o
-    0x00000c48   0x00000c48   0x0000000c   Code   RO           71    .text.DL_SYSCTL_disableHFXT  ti_msp_dl_config.o
-    0x00000c54   0x00000c54   0x00000014   Code   RO           73    .text.DL_SYSCTL_disableSYSPLL  ti_msp_dl_config.o
-    0x00000c68   0x00000c68   0x00000014   Code   RO           75    .text.DL_SYSCTL_enableMFCLK  ti_msp_dl_config.o
-    0x00000c7c   0x00000c7c   0x00000018   Code   RO           67    .text.DL_SYSCTL_setBORThreshold  ti_msp_dl_config.o
-    0x00000c94   0x00000c94   0x0000001c   Code   RO           69    .text.DL_SYSCTL_setSYSOSCFreq  ti_msp_dl_config.o
-    0x00000cb0   0x00000cb0   0x0000000c   Code   RO           91    .text.DL_SYSTICK_enable  ti_msp_dl_config.o
-    0x00000cbc   0x00000cbc   0x00000028   Code   RO           89    .text.DL_SYSTICK_init  ti_msp_dl_config.o
-    0x00000ce4   0x00000ce4   0x00000014   Code   RO           77    .text.DL_Timer_enableClock  ti_msp_dl_config.o
-    0x00000cf8   0x00000cf8   0x0000001c   Code   RO         1331    .text.DL_Timer_enableInterrupt  bsp_camera_usart.o
-    0x00000d14   0x00000d14   0x00000014   Code   RO           51    .text.DL_Timer_enablePower  ti_msp_dl_config.o
-    0x00000d28   0x00000d28   0x00000018   Code   RO         1329    .text.DL_Timer_enablePower  bsp_camera_usart.o
-    0x00000d40   0x00000d40   0x00000012   Code   RO         1325    .text.DL_Timer_getPendingInterrupt  bsp_camera_usart.o
-    0x00000d52   0x00000d52   0x00000002   PAD
-    0x00000d54   0x00000d54   0x000000e8   Code   RO         1120    .text.DL_Timer_initFourCCPWMMode  dl_timer.o
-    0x00000e3c   0x00000e3c   0x000000fc   Code   RO         1036    .text.DL_Timer_initTimerMode  dl_timer.o
-    0x00000f38   0x00000f38   0x0000010c   Code   RO         1122    .text.DL_Timer_initTwoCCPWMMode  dl_timer.o
-    0x00001044   0x00001044   0x00000010   Code   RO           45    .text.DL_Timer_reset  ti_msp_dl_config.o
-    0x00001054   0x00001054   0x00000010   Code   RO         1327    .text.DL_Timer_reset  bsp_camera_usart.o
-    0x00001064   0x00001064   0x00000014   Code   RO           79    .text.DL_Timer_setCCPDirection  ti_msp_dl_config.o
-    0x00001078   0x00001078   0x00000030   Code   RO         1090    .text.DL_Timer_setCaptCompUpdateMethod  dl_timer.o
-    0x000010a8   0x000010a8   0x00000034   Code   RO         1098    .text.DL_Timer_setCaptureCompareAction  dl_timer.o
-    0x000010dc   0x000010dc   0x0000003c   Code   RO         1044    .text.DL_Timer_setCaptureCompareCtl  dl_timer.o
-    0x00001118   0x00001118   0x00000034   Code   RO         1050    .text.DL_Timer_setCaptureCompareInput  dl_timer.o
-    0x0000114c   0x0000114c   0x00000040   Code   RO         1094    .text.DL_Timer_setCaptureCompareOutCtl  dl_timer.o
-    0x0000118c   0x0000118c   0x0000002c   Code   RO         1042    .text.DL_Timer_setCaptureCompareValue  dl_timer.o
-    0x000011b8   0x000011b8   0x00000030   Code   RO         1032    .text.DL_Timer_setClockConfig  dl_timer.o
-    0x000011e8   0x000011e8   0x0000001c   Code   RO         1040    .text.DL_Timer_setCounterValueAfterEnable  dl_timer.o
-    0x00001204   0x00001204   0x00000018   Code   RO         1038    .text.DL_Timer_setLoadValue  dl_timer.o
-    0x0000121c   0x0000121c   0x00000018   Code   RO         1337    .text.DL_Timer_startCounter  bsp_camera_usart.o
-    0x00001234   0x00001234   0x00000016   Code   RO         1158    .text.DL_UART_disable  dl_uart.o
-    0x0000124a   0x0000124a   0x00000016   Code   RO           87    .text.DL_UART_enable  ti_msp_dl_config.o
-    0x00001260   0x00001260   0x0000001c   Code   RO           85    .text.DL_UART_enableInterrupt  ti_msp_dl_config.o
-    0x0000127c   0x0000127c   0x00000018   Code   RO           53    .text.DL_UART_enablePower  ti_msp_dl_config.o
-    0x00001294   0x00001294   0x00000012   Code   RO         1283    .text.DL_UART_getPendingInterrupt  usart.o
-    0x000012a6   0x000012a6   0x00000012   Code   RO         1319    .text.DL_UART_getPendingInterrupt  bsp_camera_usart.o
-    0x000012b8   0x000012b8   0x00000012   Code   RO         1419    .text.DL_UART_getPendingInterrupt  bsp_motor_usart.o
-    0x000012ca   0x000012ca   0x00000002   PAD
-    0x000012cc   0x000012cc   0x00000048   Code   RO         1156    .text.DL_UART_init  dl_uart.o
-    0x00001314   0x00001314   0x00000018   Code   RO         1275    .text.DL_UART_isBusy  usart.o
-    0x0000132c   0x0000132c   0x00000010   Code   RO         1285    .text.DL_UART_receiveData  usart.o
-    0x0000133c   0x0000133c   0x00000010   Code   RO         1321    .text.DL_UART_receiveData  bsp_camera_usart.o
-    0x0000134c   0x0000134c   0x00000014   Code   RO         1421    .text.DL_UART_receiveData  bsp_motor_usart.o
-    0x00001360   0x00001360   0x00000018   Code   RO           47    .text.DL_UART_reset  ti_msp_dl_config.o
-    0x00001378   0x00001378   0x0000004c   Code   RO           83    .text.DL_UART_setBaudRateDivisor  ti_msp_dl_config.o
-    0x000013c4   0x000013c4   0x00000024   Code   RO         1162    .text.DL_UART_setClockConfig  dl_uart.o
-    0x000013e8   0x000013e8   0x0000001e   Code   RO           81    .text.DL_UART_setOversampling  ti_msp_dl_config.o
-    0x00001406   0x00001406   0x00000016   Code   RO         1277    .text.DL_UART_transmitData  usart.o
-    0x0000141c   0x0000141c   0x000000ac   Code   RO         1387    .text.Deal_Control_Rxtemp  app_motor_usart.o
-    0x000014c8   0x000014c8   0x000000e8   Code   RO           25    .text.SYSCFG_DL_GPIO_init  ti_msp_dl_config.o
-    0x000015b0   0x000015b0   0x0000005c   Code   RO           29    .text.SYSCFG_DL_SERVO_PWM_init  ti_msp_dl_config.o
-    0x0000160c   0x0000160c   0x00000022   Code   RO           27    .text.SYSCFG_DL_SYSCTL_init  ti_msp_dl_config.o
-    0x0000162e   0x0000162e   0x0000000e   Code   RO           37    .text.SYSCFG_DL_SYSTICK_init  ti_msp_dl_config.o
-    0x0000163c   0x0000163c   0x00000044   Code   RO           31    .text.SYSCFG_DL_UART_0_init  ti_msp_dl_config.o
-    0x00001680   0x00001680   0x00000044   Code   RO           33    .text.SYSCFG_DL_UART_1_init  ti_msp_dl_config.o
-    0x000016c4   0x000016c4   0x00000044   Code   RO           35    .text.SYSCFG_DL_UART_3_init  ti_msp_dl_config.o
-    0x00001708   0x00001708   0x0000003c   Code   RO           21    .text.SYSCFG_DL_init  ti_msp_dl_config.o
-    0x00001744   0x00001744   0x00000070   Code   RO           23    .text.SYSCFG_DL_initPower  ti_msp_dl_config.o
-    0x000017b4   0x000017b4   0x00000024   Code   RO         1323    .text.TIMG12_IRQHandler  bsp_camera_usart.o
-    0x000017d8   0x000017d8   0x0000005c   Code   RO         1281    .text.UART0_IRQHandler  usart.o
-    0x00001834   0x00001834   0x00000034   Code   RO         1417    .text.UART1_IRQHandler  bsp_motor_usart.o
-    0x00001868   0x00001868   0x0000006c   Code   RO         1317    .text.UART3_IRQHandler  bsp_camera_usart.o
-    0x000018d4   0x000018d4   0x00000036   Code   RO         1267    .text.USART_Init    usart.o
-    0x0000190a   0x0000190a   0x00000002   PAD
-    0x0000190c   0x0000190c   0x00000028   Code   RO         1269    .text.__NVIC_ClearPendingIRQ  usart.o
-    0x00001934   0x00001934   0x0000002c   Code   RO         1333    .text.__NVIC_ClearPendingIRQ  bsp_camera_usart.o
-    0x00001960   0x00001960   0x00000028   Code   RO         1271    .text.__NVIC_EnableIRQ  usart.o
-    0x00001988   0x00001988   0x0000002c   Code   RO         1335    .text.__NVIC_EnableIRQ  bsp_camera_usart.o
-    0x000019b4   0x000019b4   0x0000002c   Code   RO         1279    .text.fputc         usart.o
-    0x000019e0   0x000019e0   0x00000028   Code   RO            2    .text.main          empty.o
-    0x00001a08   0x00001a08   0x00000020   Code   RO         1502    i.__0printf         mc_p.l(printfa.o)
-    0x00001a28   0x00001a28   0x0000002e   Code   RO         1642    i.__ARM_clz         mf_p.l(depilogue.o)
-    0x00001a56   0x00001a56   0x00000002   PAD
-    0x00001a58   0x00001a58   0x0000000e   Code   RO         1655    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x00001a66   0x00001a66   0x00000002   PAD
-    0x00001a68   0x00001a68   0x00000002   Code   RO         1656    i.__scatterload_null  mc_p.l(handlers.o)
-    0x00001a6a   0x00001a6a   0x00000006   PAD
-    0x00001a70   0x00001a70   0x0000000e   Code   RO         1657    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x00001a7e   0x00001a7e   0x00000002   PAD
-    0x00001a80   0x00001a80   0x00000174   Code   RO         1509    i._fp_digits        mc_p.l(printfa.o)
-    0x00001bf4   0x00001bf4   0x000006ec   Code   RO         1510    i._printf_core      mc_p.l(printfa.o)
-    0x000022e0   0x000022e0   0x00000020   Code   RO         1511    i._printf_post_padding  mc_p.l(printfa.o)
-    0x00002300   0x00002300   0x0000002c   Code   RO         1512    i._printf_pre_padding  mc_p.l(printfa.o)
-    0x0000232c   0x0000232c   0x00000003   Data   RO           97    .rodata.gSERVO_PWMClockConfig  ti_msp_dl_config.o
-    0x0000232f   0x0000232f   0x00000001   PAD
-    0x00002330   0x00002330   0x00000008   Data   RO           98    .rodata.gSERVO_PWMConfig  ti_msp_dl_config.o
-    0x00002338   0x00002338   0x00000002   Data   RO           99    .rodata.gUART_0ClockConfig  ti_msp_dl_config.o
-    0x0000233a   0x0000233a   0x0000000a   Data   RO          100    .rodata.gUART_0Config  ti_msp_dl_config.o
-    0x00002344   0x00002344   0x00000002   Data   RO          101    .rodata.gUART_1ClockConfig  ti_msp_dl_config.o
-    0x00002346   0x00002346   0x0000000a   Data   RO          102    .rodata.gUART_1Config  ti_msp_dl_config.o
-    0x00002350   0x00002350   0x00000002   Data   RO          103    .rodata.gUART_3ClockConfig  ti_msp_dl_config.o
-    0x00002352   0x00002352   0x0000000a   Data   RO          104    .rodata.gUART_3Config  ti_msp_dl_config.o
-    0x0000235c   0x0000235c   0x00000003   Data   RO         1356    .rodata.g_camera_time_clock_config  bsp_camera_usart.o
-    0x0000235f   0x0000235f   0x00000001   PAD
-    0x00002360   0x00002360   0x00000014   Data   RO         1357    .rodata.g_camera_time_timer_config  bsp_camera_usart.o
-    0x00002374   0x00002374   0x0000000f   Data   RO            4    .rodata.str1.1      empty.o
-    0x00002383   0x00002383   0x000000a9   Data   RO         1359    .rodata.str1.1      bsp_camera_usart.o
-    0x0000242c   0x0000242c   0x00000020   Data   RO         1654    Region$$Table       anon$$obj.o
-
-
-    Execution Region RW_IRAM2 (Exec base: 0x20200000, Load base: 0x00002450, Size: 0x00000848, Max: 0x00008000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00002778, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20200000   0x00002450   0x00000004   Data   RW         1559    .data               mc_p.l(stdout.o)
-    0x20200004   0x00002454   0x00000004   PAD
-    0x20200008        -       0x00000001   Zero   RW         1394    .bss.Deal_Control_Rxtemp.start_flag  app_motor_usart.o
-    0x20200009   0x00002454   0x00000001   PAD
-    0x2020000a        -       0x00000002   Zero   RW         1393    .bss.Deal_Control_Rxtemp.step  app_motor_usart.o
-    0x2020000c        -       0x000000bc   Zero   RW           95    .bss.gSERVO_PWMBackup  ti_msp_dl_config.o
-    0x202000c8        -       0x00000030   Zero   RW           96    .bss.gUART_3Backup  ti_msp_dl_config.o
-    0x202000f8        -       0x00000008   Zero   RW         1358    .bss.g_camera_frame  bsp_camera_usart.o
-    0x20200100        -       0x00000001   Zero   RW         1354    .bss.g_camera_frame_index  bsp_camera_usart.o
-    0x20200101        -       0x00000001   Zero   RW         1355    .bss.g_camera_has_seq  bsp_camera_usart.o
-    0x20200102        -       0x00000001   Zero   RW         1353    .bss.g_camera_parse_state  bsp_camera_usart.o
-    0x20200103   0x00002454   0x00000001   PAD
-    0x20200104        -       0x00000004   Zero   RW         1351    .bss.g_camera_time_ms  bsp_camera_usart.o
-    0x20200108        -       0x00000080   Zero   RW         1352    .bss.g_camera_uart_rx_buffer  bsp_camera_usart.o
-    0x20200188        -       0x00000002   Zero   RW         1348    .bss.g_camera_uart_rx_head  bsp_camera_usart.o
-    0x2020018a   0x00002454   0x00000002   PAD
-    0x2020018c        -       0x00000004   Zero   RW         1350    .bss.g_camera_uart_rx_overflow_count  bsp_camera_usart.o
-    0x20200190        -       0x00000002   Zero   RW         1349    .bss.g_camera_uart_rx_tail  bsp_camera_usart.o
-    0x20200192        -       0x00000100   Zero   RW         1395    .bss.g_recv_buff    app_motor_usart.o
-    0x20200292        -       0x00000100   Zero   RW         1397    .bss.g_recv_buff_deal  app_motor_usart.o
-    0x20200392        -       0x00000001   Zero   RW         1396    .bss.g_recv_flag    app_motor_usart.o
-    0x20200393        -       0x00000080   Zero   RW         1287    .bss.recv0_buff     usart.o
-    0x20200413        -       0x00000001   Zero   RW         1289    .bss.recv0_flag     usart.o
-    0x20200414        -       0x00000002   Zero   RW         1288    .bss.recv0_length   usart.o
-    0x20200416   0x00002454   0x00000002   PAD
-    0x20200418        -       0x00000030   Zero   RW         1347    .bss.vision         bsp_camera_usart.o
-    0x20200448        -       0x00000400   Zero   RW           11    STACK               startup_mspm0g350x_uvision.o
+    0x00000000   0x00000000   0x000000c0   Data   RO           18    RESET               startup_mspm0g350x_uvision.o
+    0x000000c0   0x000000c0   0x00000000   Code   RO         1481  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
+    0x000000c0   0x000000c0   0x00000004   Code   RO         1550    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
+    0x000000c4   0x000000c4   0x00000004   Code   RO         1553    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
+    0x000000c8   0x000000c8   0x00000000   Code   RO         1555    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
+    0x000000c8   0x000000c8   0x00000000   Code   RO         1557    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
+    0x000000c8   0x000000c8   0x00000008   Code   RO         1558    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
+    0x000000d0   0x000000d0   0x00000000   Code   RO         1560    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
+    0x000000d0   0x000000d0   0x00000000   Code   RO         1562    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
+    0x000000d0   0x000000d0   0x00000004   Code   RO         1551    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
+    0x000000d4   0x000000d4   0x00000014   Code   RO           19    .text               startup_mspm0g350x_uvision.o
+    0x000000e8   0x000000e8   0x00000024   Code   RO         1488    .text               mc_p.l(memcpya.o)
+    0x0000010c   0x0000010c   0x00000024   Code   RO         1490    .text               mc_p.l(memseta.o)
+    0x00000130   0x00000130   0x0000007a   Code   RO         1538    .text               mf_p.l(fmul.o)
+    0x000001aa   0x000001aa   0x00000016   Code   RO         1542    .text               mf_p.l(fflti.o)
+    0x000001c0   0x000001c0   0x00000032   Code   RO         1544    .text               mf_p.l(ffixi.o)
+    0x000001f2   0x000001f2   0x0000003e   Code   RO         1567    .text               mc_p.l(uidiv_div0.o)
+    0x00000230   0x00000230   0x00000060   Code   RO         1573    .text               mc_p.l(uldiv.o)
+    0x00000290   0x00000290   0x00000000   Code   RO         1586    .text               mc_p.l(iusefp.o)
+    0x00000290   0x00000290   0x00000082   Code   RO         1587    .text               mf_p.l(fepilogue.o)
+    0x00000312   0x00000312   0x00000002   PAD
+    0x00000314   0x00000314   0x00000164   Code   RO         1589    .text               mf_p.l(dadd.o)
+    0x00000478   0x00000478   0x000000d0   Code   RO         1591    .text               mf_p.l(dmul.o)
+    0x00000548   0x00000548   0x000000f0   Code   RO         1593    .text               mf_p.l(ddiv.o)
+    0x00000638   0x00000638   0x00000040   Code   RO         1595    .text               mf_p.l(dfixul.o)
+    0x00000678   0x00000678   0x00000028   Code   RO         1597    .text               mf_p.l(cdrcmple.o)
+    0x000006a0   0x000006a0   0x00000030   Code   RO         1599    .text               mc_p.l(init.o)
+    0x000006d0   0x000006d0   0x00000020   Code   RO         1601    .text               mc_p.l(llshl.o)
+    0x000006f0   0x000006f0   0x00000022   Code   RO         1603    .text               mc_p.l(llushr.o)
+    0x00000712   0x00000712   0x00000026   Code   RO         1605    .text               mc_p.l(llsshr.o)
+    0x00000738   0x00000738   0x000000be   Code   RO         1645    .text               mf_p.l(depilogue.o)
+    0x000007f6   0x000007f6   0x00000046   Code   RO         1346    .text.Camera_Checksum  bsp_camera_usart.o
+    0x0000083c   0x0000083c   0x00000110   Code   RO         1344    .text.Camera_HandleFrame  bsp_camera_usart.o
+    0x0000094c   0x0000094c   0x00000048   Code   RO         1348    .text.Camera_IsNewSequence  bsp_camera_usart.o
+    0x00000994   0x00000994   0x000000a8   Code   RO         1314    .text.Camera_ParseByte  bsp_camera_usart.o
+    0x00000a3c   0x00000a3c   0x00000018   Code   RO         1304    .text.Camera_ResetParser  bsp_camera_usart.o
+    0x00000a54   0x00000a54   0x00000054   Code   RO         1308    .text.Camera_Time_Init  bsp_camera_usart.o
+    0x00000aa8   0x00000aa8   0x00000026   Code   RO         1312    .text.Camera_Uart_NextIndex  bsp_camera_usart.o
+    0x00000ace   0x00000ace   0x00000002   PAD
+    0x00000ad0   0x00000ad0   0x00000078   Code   RO         1350    .text.Camera_UpdateSequence  bsp_camera_usart.o
+    0x00000b48   0x00000b48   0x00000008   Code   RO         1316    .text.Camera_Vision_GetTimeMs  bsp_camera_usart.o
+    0x00000b50   0x00000b50   0x0000007c   Code   RO         1306    .text.Camera_Vision_Init  bsp_camera_usart.o
+    0x00000bcc   0x00000bcc   0x00000040   Code   RO         1318    .text.Camera_Vision_IsUsable  bsp_camera_usart.o
+    0x00000c0c   0x00000c0c   0x0000005c   Code   RO         1310    .text.Camera_Vision_Process  bsp_camera_usart.o
+    0x00000c68   0x00000c68   0x00000014   Code   RO          170    .text.DL_Common_delayCycles  dl_common.o
+    0x00000c7c   0x00000c7c   0x00000028   Code   RO           98    .text.DL_Common_updateReg  ti_msp_dl_config.o
+    0x00000ca4   0x00000ca4   0x00000028   Code   RO         1059    .text.DL_Common_updateReg  dl_timer.o
+    0x00000ccc   0x00000ccc   0x00000028   Code   RO         1165    .text.DL_Common_updateReg  dl_uart.o
+    0x00000cf4   0x00000cf4   0x00000014   Code   RO           70    .text.DL_GPIO_clearPins  ti_msp_dl_config.o
+    0x00000d08   0x00000d08   0x00000018   Code   RO           62    .text.DL_GPIO_enableOutput  ti_msp_dl_config.o
+    0x00000d20   0x00000d20   0x00000014   Code   RO           54    .text.DL_GPIO_enablePower  ti_msp_dl_config.o
+    0x00000d34   0x00000d34   0x00000030   Code   RO           66    .text.DL_GPIO_initDigitalInputFeatures  ti_msp_dl_config.o
+    0x00000d64   0x00000d64   0x00000014   Code   RO           68    .text.DL_GPIO_initDigitalOutput  ti_msp_dl_config.o
+    0x00000d78   0x00000d78   0x0000001c   Code   RO           64    .text.DL_GPIO_initPeripheralInputFunction  ti_msp_dl_config.o
+    0x00000d94   0x00000d94   0x0000001c   Code   RO           60    .text.DL_GPIO_initPeripheralOutputFunction  ti_msp_dl_config.o
+    0x00000db0   0x00000db0   0x00000018   Code   RO           48    .text.DL_GPIO_reset  ti_msp_dl_config.o
+    0x00000dc8   0x00000dc8   0x0000000c   Code   RO           76    .text.DL_SYSCTL_disableHFXT  ti_msp_dl_config.o
+    0x00000dd4   0x00000dd4   0x00000014   Code   RO           78    .text.DL_SYSCTL_disableSYSPLL  ti_msp_dl_config.o
+    0x00000de8   0x00000de8   0x00000014   Code   RO           80    .text.DL_SYSCTL_enableMFCLK  ti_msp_dl_config.o
+    0x00000dfc   0x00000dfc   0x00000018   Code   RO           72    .text.DL_SYSCTL_setBORThreshold  ti_msp_dl_config.o
+    0x00000e14   0x00000e14   0x0000001c   Code   RO           74    .text.DL_SYSCTL_setSYSOSCFreq  ti_msp_dl_config.o
+    0x00000e30   0x00000e30   0x0000000c   Code   RO           96    .text.DL_SYSTICK_enable  ti_msp_dl_config.o
+    0x00000e3c   0x00000e3c   0x00000028   Code   RO           94    .text.DL_SYSTICK_init  ti_msp_dl_config.o
+    0x00000e64   0x00000e64   0x00000014   Code   RO           82    .text.DL_Timer_enableClock  ti_msp_dl_config.o
+    0x00000e78   0x00000e78   0x0000001c   Code   RO         1336    .text.DL_Timer_enableInterrupt  bsp_camera_usart.o
+    0x00000e94   0x00000e94   0x00000014   Code   RO           56    .text.DL_Timer_enablePower  ti_msp_dl_config.o
+    0x00000ea8   0x00000ea8   0x00000018   Code   RO         1334    .text.DL_Timer_enablePower  bsp_camera_usart.o
+    0x00000ec0   0x00000ec0   0x00000012   Code   RO         1330    .text.DL_Timer_getPendingInterrupt  bsp_camera_usart.o
+    0x00000ed2   0x00000ed2   0x00000002   PAD
+    0x00000ed4   0x00000ed4   0x000000e8   Code   RO         1125    .text.DL_Timer_initFourCCPWMMode  dl_timer.o
+    0x00000fbc   0x00000fbc   0x000000fc   Code   RO         1041    .text.DL_Timer_initTimerMode  dl_timer.o
+    0x000010b8   0x000010b8   0x0000010c   Code   RO         1127    .text.DL_Timer_initTwoCCPWMMode  dl_timer.o
+    0x000011c4   0x000011c4   0x00000010   Code   RO           50    .text.DL_Timer_reset  ti_msp_dl_config.o
+    0x000011d4   0x000011d4   0x00000010   Code   RO         1332    .text.DL_Timer_reset  bsp_camera_usart.o
+    0x000011e4   0x000011e4   0x00000014   Code   RO           84    .text.DL_Timer_setCCPDirection  ti_msp_dl_config.o
+    0x000011f8   0x000011f8   0x00000030   Code   RO         1095    .text.DL_Timer_setCaptCompUpdateMethod  dl_timer.o
+    0x00001228   0x00001228   0x00000034   Code   RO         1103    .text.DL_Timer_setCaptureCompareAction  dl_timer.o
+    0x0000125c   0x0000125c   0x0000003c   Code   RO         1049    .text.DL_Timer_setCaptureCompareCtl  dl_timer.o
+    0x00001298   0x00001298   0x00000034   Code   RO         1055    .text.DL_Timer_setCaptureCompareInput  dl_timer.o
+    0x000012cc   0x000012cc   0x00000040   Code   RO         1099    .text.DL_Timer_setCaptureCompareOutCtl  dl_timer.o
+    0x0000130c   0x0000130c   0x0000002c   Code   RO         1047    .text.DL_Timer_setCaptureCompareValue  dl_timer.o
+    0x00001338   0x00001338   0x00000030   Code   RO         1037    .text.DL_Timer_setClockConfig  dl_timer.o
+    0x00001368   0x00001368   0x0000001c   Code   RO         1045    .text.DL_Timer_setCounterValueAfterEnable  dl_timer.o
+    0x00001384   0x00001384   0x00000018   Code   RO         1043    .text.DL_Timer_setLoadValue  dl_timer.o
+    0x0000139c   0x0000139c   0x00000014   Code   RO         1263    .text.DL_Timer_startCounter  servo.o
+    0x000013b0   0x000013b0   0x00000018   Code   RO         1342    .text.DL_Timer_startCounter  bsp_camera_usart.o
+    0x000013c8   0x000013c8   0x00000016   Code   RO         1163    .text.DL_UART_disable  dl_uart.o
+    0x000013de   0x000013de   0x00000016   Code   RO           92    .text.DL_UART_enable  ti_msp_dl_config.o
+    0x000013f4   0x000013f4   0x0000001c   Code   RO           90    .text.DL_UART_enableInterrupt  ti_msp_dl_config.o
+    0x00001410   0x00001410   0x00000018   Code   RO           58    .text.DL_UART_enablePower  ti_msp_dl_config.o
+    0x00001428   0x00001428   0x00000012   Code   RO         1288    .text.DL_UART_getPendingInterrupt  usart.o
+    0x0000143a   0x0000143a   0x00000012   Code   RO         1324    .text.DL_UART_getPendingInterrupt  bsp_camera_usart.o
+    0x0000144c   0x0000144c   0x00000012   Code   RO         1424    .text.DL_UART_getPendingInterrupt  bsp_motor_usart.o
+    0x0000145e   0x0000145e   0x00000002   PAD
+    0x00001460   0x00001460   0x00000048   Code   RO         1161    .text.DL_UART_init  dl_uart.o
+    0x000014a8   0x000014a8   0x00000018   Code   RO         1280    .text.DL_UART_isBusy  usart.o
+    0x000014c0   0x000014c0   0x00000010   Code   RO         1290    .text.DL_UART_receiveData  usart.o
+    0x000014d0   0x000014d0   0x00000010   Code   RO         1326    .text.DL_UART_receiveData  bsp_camera_usart.o
+    0x000014e0   0x000014e0   0x00000014   Code   RO         1426    .text.DL_UART_receiveData  bsp_motor_usart.o
+    0x000014f4   0x000014f4   0x00000018   Code   RO           52    .text.DL_UART_reset  ti_msp_dl_config.o
+    0x0000150c   0x0000150c   0x0000004c   Code   RO           88    .text.DL_UART_setBaudRateDivisor  ti_msp_dl_config.o
+    0x00001558   0x00001558   0x00000024   Code   RO         1167    .text.DL_UART_setClockConfig  dl_uart.o
+    0x0000157c   0x0000157c   0x0000001e   Code   RO           86    .text.DL_UART_setOversampling  ti_msp_dl_config.o
+    0x0000159a   0x0000159a   0x00000016   Code   RO         1282    .text.DL_UART_transmitData  usart.o
+    0x000015b0   0x000015b0   0x000000ac   Code   RO         1392    .text.Deal_Control_Rxtemp  app_motor_usart.o
+    0x0000165c   0x0000165c   0x000000e8   Code   RO           30    .text.SYSCFG_DL_GPIO_init  ti_msp_dl_config.o
+    0x00001744   0x00001744   0x0000005c   Code   RO           34    .text.SYSCFG_DL_SERVO_PWM_init  ti_msp_dl_config.o
+    0x000017a0   0x000017a0   0x00000022   Code   RO           32    .text.SYSCFG_DL_SYSCTL_init  ti_msp_dl_config.o
+    0x000017c2   0x000017c2   0x0000000e   Code   RO           42    .text.SYSCFG_DL_SYSTICK_init  ti_msp_dl_config.o
+    0x000017d0   0x000017d0   0x00000044   Code   RO           36    .text.SYSCFG_DL_UART_0_init  ti_msp_dl_config.o
+    0x00001814   0x00001814   0x00000044   Code   RO           38    .text.SYSCFG_DL_UART_1_init  ti_msp_dl_config.o
+    0x00001858   0x00001858   0x00000044   Code   RO           40    .text.SYSCFG_DL_UART_3_init  ti_msp_dl_config.o
+    0x0000189c   0x0000189c   0x0000003c   Code   RO           26    .text.SYSCFG_DL_init  ti_msp_dl_config.o
+    0x000018d8   0x000018d8   0x0000006c   Code   RO           28    .text.SYSCFG_DL_initPower  ti_msp_dl_config.o
+    0x00001944   0x00001944   0x00000010   Code   RO         1259    .text.Servo_Init    servo.o
+    0x00001954   0x00001954   0x00000050   Code   RO         1261    .text.Servo_SetAngle  servo.o
+    0x000019a4   0x000019a4   0x00000024   Code   RO         1328    .text.TIMG12_IRQHandler  bsp_camera_usart.o
+    0x000019c8   0x000019c8   0x00000060   Code   RO         1286    .text.UART0_IRQHandler  usart.o
+    0x00001a28   0x00001a28   0x00000034   Code   RO         1422    .text.UART1_IRQHandler  bsp_motor_usart.o
+    0x00001a5c   0x00001a5c   0x0000006c   Code   RO         1322    .text.UART3_IRQHandler  bsp_camera_usart.o
+    0x00001ac8   0x00001ac8   0x00000036   Code   RO         1272    .text.USART_Init    usart.o
+    0x00001afe   0x00001afe   0x00000002   PAD
+    0x00001b00   0x00001b00   0x000000e8   Code   RO            4    .text.Vision_Servo_Test_Update  empty.o
+    0x00001be8   0x00001be8   0x00000028   Code   RO         1274    .text.__NVIC_ClearPendingIRQ  usart.o
+    0x00001c10   0x00001c10   0x0000002c   Code   RO         1338    .text.__NVIC_ClearPendingIRQ  bsp_camera_usart.o
+    0x00001c3c   0x00001c3c   0x00000028   Code   RO         1276    .text.__NVIC_EnableIRQ  usart.o
+    0x00001c64   0x00001c64   0x0000002c   Code   RO         1340    .text.__NVIC_EnableIRQ  bsp_camera_usart.o
+    0x00001c90   0x00001c90   0x0000002c   Code   RO         1284    .text.fputc         usart.o
+    0x00001cbc   0x00001cbc   0x00000034   Code   RO            2    .text.main          empty.o
+    0x00001cf0   0x00001cf0   0x00000020   Code   RO         1507    i.__0printf         mc_p.l(printfa.o)
+    0x00001d10   0x00001d10   0x0000002e   Code   RO         1647    i.__ARM_clz         mf_p.l(depilogue.o)
+    0x00001d3e   0x00001d3e   0x00000002   PAD
+    0x00001d40   0x00001d40   0x0000000e   Code   RO         1660    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x00001d4e   0x00001d4e   0x00000002   PAD
+    0x00001d50   0x00001d50   0x00000002   Code   RO         1661    i.__scatterload_null  mc_p.l(handlers.o)
+    0x00001d52   0x00001d52   0x00000006   PAD
+    0x00001d58   0x00001d58   0x0000000e   Code   RO         1662    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x00001d66   0x00001d66   0x00000002   PAD
+    0x00001d68   0x00001d68   0x00000174   Code   RO         1514    i._fp_digits        mc_p.l(printfa.o)
+    0x00001edc   0x00001edc   0x000006ec   Code   RO         1515    i._printf_core      mc_p.l(printfa.o)
+    0x000025c8   0x000025c8   0x00000020   Code   RO         1516    i._printf_post_padding  mc_p.l(printfa.o)
+    0x000025e8   0x000025e8   0x0000002c   Code   RO         1517    i._printf_pre_padding  mc_p.l(printfa.o)
+    0x00002614   0x00002614   0x00000003   Data   RO          102    .rodata.gSERVO_PWMClockConfig  ti_msp_dl_config.o
+    0x00002617   0x00002617   0x00000001   PAD
+    0x00002618   0x00002618   0x00000008   Data   RO          103    .rodata.gSERVO_PWMConfig  ti_msp_dl_config.o
+    0x00002620   0x00002620   0x00000002   Data   RO          104    .rodata.gUART_0ClockConfig  ti_msp_dl_config.o
+    0x00002622   0x00002622   0x0000000a   Data   RO          105    .rodata.gUART_0Config  ti_msp_dl_config.o
+    0x0000262c   0x0000262c   0x00000002   Data   RO          106    .rodata.gUART_1ClockConfig  ti_msp_dl_config.o
+    0x0000262e   0x0000262e   0x0000000a   Data   RO          107    .rodata.gUART_1Config  ti_msp_dl_config.o
+    0x00002638   0x00002638   0x00000002   Data   RO          108    .rodata.gUART_3ClockConfig  ti_msp_dl_config.o
+    0x0000263a   0x0000263a   0x0000000a   Data   RO          109    .rodata.gUART_3Config  ti_msp_dl_config.o
+    0x00002644   0x00002644   0x00000003   Data   RO         1361    .rodata.g_camera_time_clock_config  bsp_camera_usart.o
+    0x00002647   0x00002647   0x00000001   PAD
+    0x00002648   0x00002648   0x00000014   Data   RO         1362    .rodata.g_camera_time_timer_config  bsp_camera_usart.o
+    0x0000265c   0x0000265c   0x00000052   Data   RO            6    .rodata.str1.1      empty.o
+    0x000026ae   0x000026ae   0x000000a9   Data   RO         1364    .rodata.str1.1      bsp_camera_usart.o
+    0x00002757   0x00002757   0x00000001   PAD
+    0x00002758   0x00002758   0x00000020   Data   RO         1659    Region$$Table       anon$$obj.o
+
+
+    Execution Region RW_IRAM2 (Exec base: 0x20200000, Load base: 0x00002778, Size: 0x00000850, Max: 0x00008000, ABSOLUTE)
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x20200000   0x00002778   0x00000004   Data   RW         1564    .data               mc_p.l(stdout.o)
+    0x20200004   0x0000277c   0x00000002   Data   RW            8    .data.Vision_Servo_Test_Update.last_angle  empty.o
+    0x20200006   0x0000277e   0x00000002   PAD
+    0x20200008        -       0x00000001   Zero   RW         1399    .bss.Deal_Control_Rxtemp.start_flag  app_motor_usart.o
+    0x20200009   0x0000277e   0x00000001   PAD
+    0x2020000a        -       0x00000002   Zero   RW         1398    .bss.Deal_Control_Rxtemp.step  app_motor_usart.o
+    0x2020000c        -       0x00000004   Zero   RW            7    .bss.Vision_Servo_Test_Update.last_update_ms  empty.o
+    0x20200010        -       0x000000bc   Zero   RW          100    .bss.gSERVO_PWMBackup  ti_msp_dl_config.o
+    0x202000cc        -       0x00000030   Zero   RW          101    .bss.gUART_3Backup  ti_msp_dl_config.o
+    0x202000fc        -       0x00000008   Zero   RW         1363    .bss.g_camera_frame  bsp_camera_usart.o
+    0x20200104        -       0x00000001   Zero   RW         1359    .bss.g_camera_frame_index  bsp_camera_usart.o
+    0x20200105        -       0x00000001   Zero   RW         1360    .bss.g_camera_has_seq  bsp_camera_usart.o
+    0x20200106        -       0x00000001   Zero   RW         1358    .bss.g_camera_parse_state  bsp_camera_usart.o
+    0x20200107   0x0000277e   0x00000001   PAD
+    0x20200108        -       0x00000004   Zero   RW         1356    .bss.g_camera_time_ms  bsp_camera_usart.o
+    0x2020010c        -       0x00000080   Zero   RW         1357    .bss.g_camera_uart_rx_buffer  bsp_camera_usart.o
+    0x2020018c        -       0x00000002   Zero   RW         1353    .bss.g_camera_uart_rx_head  bsp_camera_usart.o
+    0x2020018e   0x0000277e   0x00000002   PAD
+    0x20200190        -       0x00000004   Zero   RW         1355    .bss.g_camera_uart_rx_overflow_count  bsp_camera_usart.o
+    0x20200194        -       0x00000002   Zero   RW         1354    .bss.g_camera_uart_rx_tail  bsp_camera_usart.o
+    0x20200196        -       0x00000100   Zero   RW         1400    .bss.g_recv_buff    app_motor_usart.o
+    0x20200296        -       0x00000100   Zero   RW         1402    .bss.g_recv_buff_deal  app_motor_usart.o
+    0x20200396        -       0x00000001   Zero   RW         1401    .bss.g_recv_flag    app_motor_usart.o
+    0x20200397        -       0x00000080   Zero   RW         1292    .bss.recv0_buff     usart.o
+    0x20200417        -       0x00000001   Zero   RW         1294    .bss.recv0_flag     usart.o
+    0x20200418        -       0x00000002   Zero   RW         1293    .bss.recv0_length   usart.o
+    0x2020041a   0x0000277e   0x00000002   PAD
+    0x2020041c        -       0x00000030   Zero   RW         1352    .bss.vision         bsp_camera_usart.o
+    0x2020044c   0x0000277e   0x00000004   PAD
+    0x20200450        -       0x00000400   Zero   RW           16    STACK               startup_mspm0g350x_uvision.o
 
 
 
@@ -3620,20 +3672,21 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        172         20          0          0        516       4644   app_motor_usart.o
-      1448        120        192          0        199      13969   bsp_camera_usart.o
+      1512        124        192          0        199      13969   bsp_camera_usart.o
         90          8          0          0          0       4148   bsp_motor_usart.o
         20          0          0          0          0        589   dl_common.o
       1212        180          0          0          0      23693   dl_timer.o
        170          8          0          0          0      10642   dl_uart.o
-        40          4         15          0          0        490   empty.o
+       284         28         82          2          4       1389   empty.o
+       116          8          0          0          0       3668   servo.o
         20          4        192          0       1024        624   startup_mspm0g350x_uvision.o
-      1436        144         47          0        236      26602   ti_msp_dl_config.o
-       350         20          0          0        131       6144   usart.o
+      1432        140         47          0        236      26602   ti_msp_dl_config.o
+       354         24          0          0        131       6144   usart.o
 
     ----------------------------------------------------------------------
-      4966        508        480          0       2112      91545   Object Totals
+      5390        544        548          4       2120      96112   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         8          0          2          0          6          0   (incl. Padding)
+         8          0          3          2         10          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -3665,20 +3718,24 @@ Image component sizes
        236          0          0          0          0        216   depilogue.o
         64         10          0          0          0         68   dfixul.o
        208          6          0          0          0         88   dmul.o
+       130          0          0          0          0        144   fepilogue.o
+        50          0          0          0          0         60   ffixi.o
+        22          0          0          0          0         68   fflti.o
+       122          0          0          0          0         72   fmul.o
 
     ----------------------------------------------------------------------
-      3846        148          0          4          4       1664   Library Totals
-        18          4          0          0          4          0   (incl. Padding)
+      4166        144          0          4          0       2008   Library Totals
+        14          0          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Library Name
 
       2684        116          0          4          0       1000   mc_p.l
-      1144         28          0          0          0        664   mf_p.l
+      1468         28          0          0          0       1008   mf_p.l
 
     ----------------------------------------------------------------------
-      3846        148          0          4          4       1664   Library Totals
+      4166        144          0          4          0       2008   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -3687,15 +3744,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      8812        656        480          4       2116      92401   Grand Totals
-      8812        656        480          4       2116      92401   ELF Image Totals
-      8812        656        480          4          0          0   ROM Totals
+      9556        688        548          8       2120      97116   Grand Totals
+      9556        688        548          8       2120      97116   ELF Image Totals
+      9556        688        548          8          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 9292 (   9.07kB)
-    Total RW  Size (RW Data + ZI Data)              2120 (   2.07kB)
-    Total ROM Size (Code + RO Data + RW Data)       9296 (   9.08kB)
+    Total RO  Size (Code + RO Data)                10104 (   9.87kB)
+    Total RW  Size (RW Data + ZI Data)              2128 (   2.08kB)
+    Total ROM Size (Code + RO Data + RW Data)      10112 (   9.88kB)
 
 ==============================================================================
 
