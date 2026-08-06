@@ -1,5 +1,6 @@
 #include "ti_msp_dl_config.h"
 #include <stdint.h>
+#include <stdio.h>
 
 // /* UniFlash 串口 BSL 要求 Flash 镜像长度按 8 字节对齐，当前工程补 4 字节。 */
 // __attribute__((used))
@@ -17,9 +18,9 @@
 int main(void)
 {
 	SYSCFG_DL_init();
-	// USART_Init();
-	// Camera_Vision_Init();
-	// printf("please wait...");
+	USART_Init();
+	Camera_Vision_Init();
+	printf("please wait...");
     
     // Set_Motor(MOTOR_TYPE);
     
@@ -31,7 +32,7 @@ int main(void)
 
 	while(1)
 	{
-		// Camera_Vision_Process();
+		Camera_Vision_Process();
 		// Four_LineWalking();//四路巡线，启动！	Four-way line patrol, start!
 	}
 	

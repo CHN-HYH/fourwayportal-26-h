@@ -47,29 +47,17 @@ static uint16_t Camera_Uart_NextIndex(uint16_t index)
     return index;
 }
 
-static uint8_t Camera_Crc8(const uint8_t *data, uint8_t length)
+static uint8_t Camera_Checksum(const uint8_t *data, uint8_t length)
 {
-    uint8_t crc = 0;
+    uint8_t checksum = 0U;
     uint8_t i;
-    uint8_t bit;
 
-    for (i = 0; i < length; i++)
+    for (i = 0U; i < length; i++)
     {
-        crc ^= data[i];
-        for (bit = 0; bit < 8U; bit++)
-        {
-            if ((crc & 0x80U) != 0U)
-            {
-                crc = (uint8_t)((crc << 1U) ^ 0x07U);
-            }
-            else
-            {
-                crc <<= 1U;
-            }
-        }
+        checksum = (uint8_t)(checksum + data[i]);
     }
 
-    return crc;
+    return checksum;
 }
 
 static void Camera_ResetParser(void)
@@ -124,17 +112,17 @@ static void Camera_HandleFrame(void)
 {
     uint8_t flags;
     uint8_t seq;
-    uint8_t crc;
+    uint8_t checksum;
     uint16_t x;
     uint32_t now_ms;
 
-    crc = Camera_Crc8(g_camera_frame, CAMERA_UART_FRAME_LEN - 1U);
-    if (crc != g_camera_frame[CAMERA_UART_FRAME_LEN - 1U])
+    checksum = Camera_Checksum(g_camera_frame, CAMERA_UART_FRAME_LEN - 1U);
+    if (checksum != g_camera_frame[CAMERA_UART_FRAME_LEN - 1U])
     {
-        vision.crc_error_count++;
+        vision.checksum_error_count++;
 #if CAMERA_VISION_DEBUG_ENABLE
-        printf("[VIS] crc_err calc=%02X rx=%02X\r\n",
-            (unsigned int)crc,
+        printf("[VIS] checksum_err calc=%02X rx=%02X\r\n",
+            (unsigned int)checksum,
             (unsigned int)g_camera_frame[CAMERA_UART_FRAME_LEN - 1U]);
 #endif
         return;

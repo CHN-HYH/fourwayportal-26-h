@@ -19,7 +19,7 @@ typedef struct
     uint32_t last_valid_ms;
     uint32_t frame_count;
     uint32_t valid_frame_count;
-    uint32_t crc_error_count;
+    uint32_t checksum_error_count;
     uint32_t seq_lost_count;
     uint32_t seq_repeat_count;
     uint32_t seq_discontinuity_count;
