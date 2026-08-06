@@ -1,9 +1,9 @@
 #include "ti_msp_dl_config.h"
 #include <stdint.h>
 
-/* UniFlash 串口 BSL 要求 Flash 镜像长度按 8 字节对齐，当前工程补 4 字节。 */
-__attribute__((used))
-const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
+// /* UniFlash 串口 BSL 要求 Flash 镜像长度按 8 字节对齐，当前工程补 4 字节。 */
+// __attribute__((used))
+// const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 #include "delay.h"
 #include "key.h"
 #include "usart.h"
@@ -15,7 +15,7 @@ const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 #define MOTOR_TYPE 2   //1:520电机 2:310电机 3:测速码盘TT电机 4:TT直流减速电机 5:L型520电机
                        //1:520 motor 2:310 motor 3:speed code disc TT motor 4:TT DC reduction motor 5:L type 520 motor
 int main(void)
-{	
+{
 	SYSCFG_DL_init();
 	// USART_Init();
 	// Camera_Vision_Init();
@@ -31,7 +31,6 @@ int main(void)
 
 	while(1)
 	{
-		Key_GetEvent();
 		// Camera_Vision_Process();
 		// Four_LineWalking();//四路巡线，启动！	Four-way line patrol, start!
 	}

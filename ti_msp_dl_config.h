@@ -78,6 +78,20 @@ extern "C" {
 
 
 
+/* Defines for SERVO_PWM */
+#define SERVO_PWM_INST                                                     TIMA0
+#define SERVO_PWM_INST_IRQHandler                               TIMA0_IRQHandler
+#define SERVO_PWM_INST_INT_IRQN                                 (TIMA0_INT_IRQn)
+#define SERVO_PWM_INST_CLK_FREQ                                          1000000
+/* GPIO defines for channel 1 */
+#define GPIO_SERVO_PWM_C1_PORT                                             GPIOB
+#define GPIO_SERVO_PWM_C1_PIN                                      DL_GPIO_PIN_9
+#define GPIO_SERVO_PWM_C1_IOMUX                                  (IOMUX_PINCM26)
+#define GPIO_SERVO_PWM_C1_IOMUX_FUNC                 IOMUX_PINCM26_PF_TIMA0_CCP1
+#define GPIO_SERVO_PWM_C1_IDX                                DL_TIMER_CC_1_INDEX
+
+
+
 /* Defines for UART_0 */
 #define UART_0_INST                                                        UART0
 #define UART_0_INST_FREQUENCY                                            4000000
@@ -182,6 +196,7 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+void SYSCFG_DL_SERVO_PWM_init(void);
 void SYSCFG_DL_UART_0_init(void);
 void SYSCFG_DL_UART_1_init(void);
 void SYSCFG_DL_UART_3_init(void);
