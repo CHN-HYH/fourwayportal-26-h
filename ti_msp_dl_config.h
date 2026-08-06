@@ -146,6 +146,33 @@ extern "C" {
 /* Defines for X4: GPIOA.27 with pinCMx 60 on package pin 31 */
 #define Sensor_X4_PIN                                           (DL_GPIO_PIN_27)
 #define Sensor_X4_IOMUX                                          (IOMUX_PINCM60)
+/* Port definition for Pin Group LED */
+#define LED_PORT                                                         (GPIOB)
+
+/* Defines for LED1: GPIOB.2 with pinCMx 15 on package pin 50 */
+#define LED_LED1_PIN                                             (DL_GPIO_PIN_2)
+#define LED_LED1_IOMUX                                           (IOMUX_PINCM15)
+/* Defines for LED2: GPIOB.3 with pinCMx 16 on package pin 51 */
+#define LED_LED2_PIN                                             (DL_GPIO_PIN_3)
+#define LED_LED2_IOMUX                                           (IOMUX_PINCM16)
+/* Port definition for Pin Group KEY_A */
+#define KEY_A_PORT                                                       (GPIOA)
+
+/* Defines for K1: GPIOA.2 with pinCMx 7 on package pin 42 */
+#define KEY_A_K1_PIN                                             (DL_GPIO_PIN_2)
+#define KEY_A_K1_IOMUX                                            (IOMUX_PINCM7)
+/* Defines for K4: GPIOA.23 with pinCMx 53 on package pin 24 */
+#define KEY_A_K4_PIN                                            (DL_GPIO_PIN_23)
+#define KEY_A_K4_IOMUX                                           (IOMUX_PINCM53)
+/* Port definition for Pin Group KEY_B */
+#define KEY_B_PORT                                                       (GPIOB)
+
+/* Defines for K2: GPIOB.19 with pinCMx 45 on package pin 16 */
+#define KEY_B_K2_PIN                                            (DL_GPIO_PIN_19)
+#define KEY_B_K2_IOMUX                                           (IOMUX_PINCM45)
+/* Defines for K3: GPIOB.20 with pinCMx 48 on package pin 19 */
+#define KEY_B_K3_PIN                                            (DL_GPIO_PIN_20)
+#define KEY_B_K3_IOMUX                                           (IOMUX_PINCM48)
 
 
 

@@ -11,6 +11,9 @@
  */
 const GPIO    = scripting.addModule("/ti/driverlib/GPIO", {}, false);
 const GPIO1   = GPIO.addInstance();
+const GPIO2   = GPIO.addInstance();
+const GPIO3   = GPIO.addInstance();
+const GPIO4   = GPIO.addInstance();
 const SYSCTL  = scripting.addModule("/ti/driverlib/SYSCTL");
 const SYSTICK = scripting.addModule("/ti/driverlib/SYSTICK");
 const UART    = scripting.addModule("/ti/driverlib/UART", {}, false);
@@ -42,6 +45,39 @@ GPIO1.associatedPins[3].$name        = "X4";
 GPIO1.associatedPins[3].direction    = "INPUT";
 GPIO1.associatedPins[3].assignedPort = "PORTA";
 GPIO1.associatedPins[3].pin.$assign  = "PA27";
+
+GPIO2.$name                          = "LED";
+GPIO2.associatedPins.create(2);
+GPIO2.associatedPins[0].$name        = "LED1";
+GPIO2.associatedPins[0].direction    = "OUTPUT";
+GPIO2.associatedPins[0].assignedPort = "PORTB";
+GPIO2.associatedPins[0].pin.$assign  = "PB2";
+GPIO2.associatedPins[1].$name        = "LED2";
+GPIO2.associatedPins[1].direction    = "OUTPUT";
+GPIO2.associatedPins[1].assignedPort = "PORTB";
+GPIO2.associatedPins[1].pin.$assign  = "PB3";
+
+GPIO3.$name                          = "KEY_A";
+GPIO3.associatedPins.create(2);
+GPIO3.associatedPins[0].$name        = "K1";
+GPIO3.associatedPins[0].direction    = "INPUT";
+GPIO3.associatedPins[0].assignedPort = "PORTA";
+GPIO3.associatedPins[0].pin.$assign  = "PA2";
+GPIO3.associatedPins[1].$name        = "K4";
+GPIO3.associatedPins[1].direction    = "INPUT";
+GPIO3.associatedPins[1].assignedPort = "PORTA";
+GPIO3.associatedPins[1].pin.$assign  = "PA23";
+
+GPIO4.$name                          = "KEY_B";
+GPIO4.associatedPins.create(2);
+GPIO4.associatedPins[0].$name        = "K2";
+GPIO4.associatedPins[0].direction    = "INPUT";
+GPIO4.associatedPins[0].assignedPort = "PORTB";
+GPIO4.associatedPins[0].pin.$assign  = "PB19";
+GPIO4.associatedPins[1].$name        = "K3";
+GPIO4.associatedPins[1].direction    = "INPUT";
+GPIO4.associatedPins[1].assignedPort = "PORTB";
+GPIO4.associatedPins[1].pin.$assign  = "PB20";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 
