@@ -6,6 +6,7 @@ __attribute__((used))
 const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 #include "delay.h"
 #include "usart.h"
+#include "bsp_camera_usart.h"
 #include "app_motor_usart.h"
 #include "Four_linewalking.h"
 #include "app_motor.h"
@@ -16,6 +17,7 @@ const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 int main(void)
 {	
 	USART_Init();
+	Camera_Vision_Init();
 	printf("please wait...");
     
     Set_Motor(MOTOR_TYPE);
@@ -28,6 +30,7 @@ int main(void)
 
 	while(1)
 	{
+		Camera_Vision_Process();
 		Four_LineWalking();//四路巡线，启动！	Four-way line patrol, start!
 	}
 	

@@ -8,7 +8,10 @@
 - 当前未处理问题：
   - P1：UART 发送无限等待；ISR 与主循环共享接收缓冲区缺少同步；循迹分支顺序和 80 ms 阻塞延时；`sprintf` 无长度限制。
   - P2：`Deal_data_real()` 未接入主流程；`V_y` 未使用；PID `error_last` 未更新；SysTick 延时硬编码和回卷计数风险；`Motor_Usart_init()` 只有声明没有实现。
-- UART3 摄像头接收配置：UART3 使用 PA13(RX)/PA14(TX)，MFCLK 4 MHz，115200 8N1，启用 RX 中断；外部发送端 TX 应连接 PA13，双方必须共地。`BSP/bsp_camera_usart.c/.h` 提供 256 字节原始接收缓冲、有效长度、接收标志和清空函数，已加入 Keil 工程；尚未实现摄像头协议解析。
+- UART3 摄像头输入：UART3 使用 PA13(RX)/PA14(TX)，MFCLK 4 MHz，115200 8N1，启用 RX 中断；外部发送端 TX 应连接 PA13，双方必须共地。`BSP/bsp_camera_usart.c/.h` 已实现 128 字节环形缓冲、AA 55 帧状态机、CRC-8（poly 0x07、init 0x00）和 `vision` 状态；UART3 ISR 仅收字节，主循环调用 `Camera_Vision_Process()` 解析。TIMG12 提供独立的 1 ms 计时，未影响原 SysTick 延时。
 - 本阶段未执行 Keil/TI 编译、烧录和实车验证。
-- 已完成 UART3 摄像头链路验证：摄像头经 PA13 向 MSPM0 UART3 发送数据，MSP 曾通过 UART0 的 PA10 原样输出供串口助手确认；测试回发逻辑已移除。当前 UART3 ISR 仅将原始字节写入接收缓冲，待实现 8 字节协议解析。
+- 已完成 UART3 摄像头链路验证：摄像头经 PA13 向 MSPM0 UART3 发送数据，MSP 曾通过 UART0 的 PA10 原样输出供串口助手确认；测试回发逻辑已移除。当前 UART3 ISR 仅将原始字节写入接收缓冲，主循环负责 8 字节协议解析。
 - UniFlash 串口 BSL 的镜像 8 字节对齐：修改前 `Keil/empty.map` 的 `LR_IROM1 Size` 为 `0x9BC`（余 4）；已在 `empty.c` 函数外加入 `__attribute__((used)) const uint32_t g_uniflash_padding = 0xFFFFFFFFU`。重新编译后预期为 `0x9C0`；必须以新生成的 `OBJ/empty.hex` 和 `.map` 为准验证，不能手改旧 hex。
+- 摄像头协议处理：仅 CRC 正确帧更新 `last_rx_ms`；仅 `FLAGS & 1` 且 `x < 320` 的新序号帧更新 x、`last_valid_ms` 和 valid。无效标志、越界、重复序号、跳号、CRC 错误和环形缓冲溢出均单独记录，控制可通过 `Camera_Vision_IsUsable()` 使用 250 ms 失效阈值。舵机标定、像素到 cm 换算和 PID 尚未接入。
+- UART0 解析联调输出：`BSP/bsp_camera_usart.c` 中的 `CAMERA_VISION_DEBUG_ENABLE` 当前为 `1U`。主循环每处理一帧会输出有效帧（seq/x/width）、无目标帧、CRC 错误、坐标越界或重复序号；验证完成后设为 `0U`，避免逐帧串口打印占用主循环时间。
+- 2026-08-05 摄像头到 MSPM0 实测：UART0 调试日志累计 676 帧，SEQ 全程连续且包含 255->0 正常回绕；未出现 CRC 错误、坐标越界或重复序号。有效帧 x 范围为 57~289，width 范围为 8~102；带时间戳的 630 帧平均间隔 77.2 ms、最大 124 ms。通信和协议解析已验证正常；`valid=0` 连续出现时应由后续控制进入安全状态，width 很小的有效候选帧暂只记录、待实车标定质量阈值。
