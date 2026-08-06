@@ -22,6 +22,8 @@ const PWM1    = PWM.addInstance();
 const UART1   = UART.addInstance();
 const UART2   = UART.addInstance();
 const UART3   = UART.addInstance();
+const I2C     = scripting.addModule("/ti/driverlib/I2C", {}, false);
+const I2C1    = I2C.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
@@ -135,6 +137,14 @@ UART3.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
 UART3.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
 UART3.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 
+I2C1.$name                           = "I2C_0";
+I2C1.basicEnableController           = true;
+I2C1.basicControllerStandardBusSpeed = "Fast";
+I2C1.peripheral.sdaPin.$assign       = "PA28";
+I2C1.peripheral.sclPin.$assign       = "PA31";
+I2C1.sdaPinConfig.$name               = "ti_driverlib_gpio_GPIOPinGeneric6";
+I2C1.sclPinConfig.$name               = "ti_driverlib_gpio_GPIOPinGeneric7";
+
 /**
  * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
@@ -144,3 +154,4 @@ Board.peripheral.$suggestSolution          = "DEBUGSS";
 Board.peripheral.swclkPin.$suggestSolution = "PA20";
 Board.peripheral.swdioPin.$suggestSolution = "PA19";
 UART1.peripheral.$suggestSolution          = "UART0";
+I2C1.peripheral.$suggestSolution           = "I2C0";
