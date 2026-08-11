@@ -12,24 +12,27 @@
 #define u32 uint32_t
 
 
-//Íâ²¿ÉùÃ÷Çø	External declaration area
-typedef enum _motor_type  //´ËÀàĞÍÓÃ×öÅĞ¶ÏËÀÇø	This type is used to determine the dead zone
+//å¤–éƒ¨å£°æ˜åŒº	External declaration area
+typedef enum _motor_type  //æ­¤ç±»å‹ç”¨åšåˆ¤æ–­æ­»åŒº	This type is used to determine the dead zone
 {
-	MOTOR_TYPE_NONE = 0x00,       // ±£Áô	reserve
-	MOTOR_520 ,       //520µç»ú °üº¬LĞÍ	520 motor including L type
-	MOTOR_310 ,       //310µç»ú	310 motor
-	MOTOR_TT_Encoder ,//ttµç»ú,´ø±àÂëÆ÷	tt motor with encoder
-	MOTOR_TT , 		  // ttµç»ú,²»´ø±àÂëÆ÷	tt motor, without encoder
+	MOTOR_TYPE_NONE = 0x00,       // ä¿ç•™	reserve
+	MOTOR_520 ,       //520ç”µæœº åŒ…å«Lå‹	520 motor including L type
+	MOTOR_310 ,       //310ç”µæœº	310 motor
+	MOTOR_TT_Encoder ,//ttç”µæœº,å¸¦ç¼–ç å™¨	tt motor with encoder
+	MOTOR_TT , 		  // ttç”µæœº,ä¸å¸¦ç¼–ç å™¨	tt motor, without encoder
 
-	Motor_TYPE_MAX    // ×îºóÒ»¸öµç»úÀàĞÍ£¬½ö×÷ÎªÅĞ¶Ï	The last motor type is for judgment only
+	Motor_TYPE_MAX    // æœ€åä¸€ä¸ªç”µæœºç±»å‹ï¼Œä»…ä½œä¸ºåˆ¤æ–­	The last motor type is for judgment only
 } motor_type_t;
 
 
 
-//Òı³ö±àÂëÆ÷±äÁ¿£¬¹©Íâ²¿Ê¹ÓÃ	Lead out encoder variables for external use
+/* å››è·¯ç”µæœºçš„ 10 ms ç¼–ç å™¨å¢é‡ï¼Œä¾›å¤–éƒ¨è¯»å–ã€‚ */
 extern int Encoder_Offset[4];
+/* å››è·¯ç”µæœºçš„ç´¯è®¡ç¼–ç å™¨å€¼ï¼Œä¾›å¤–éƒ¨è¯»å–ã€‚ */
 extern int Encoder_Now[4];
+/* å››è·¯ç”µæœºçš„å®æ—¶é€Ÿåº¦ï¼Œä¾›å¤–éƒ¨è¯»å–ã€‚ */
 extern float g_Speed[4];
+/* æ”¶åˆ°å®Œæ•´é©±åŠ¨æ¿å¸§åç½®ä½ï¼Œç”±ä¸»å¾ªç¯æŒ‰éœ€æ¸…é™¤ã€‚ */
 extern uint8_t g_recv_flag;
 
 
@@ -38,10 +41,14 @@ void send_motor_deadzone(uint16_t data);
 void send_pulse_line(uint16_t data);
 void send_pulse_phase(uint16_t data);
 void send_wheel_diameter(float data);
-void send_motor_PID(float P,float I,float D);
-void send_upload_data(bool ALLEncoder_Switch,bool TenEncoder_Switch,bool Speed_Switch);
-void Contrl_Speed(int16_t M1_speed,int16_t M2_speed,int16_t M3_speed,int16_t M4_speed);
-void Contrl_Pwm(int16_t M1_pwm,int16_t M2_pwm,int16_t M3_pwm,int16_t M4_pwm);
+/* è®¾ç½®ç”µæœºé©±åŠ¨æ¿ PID çš„æ¯”ä¾‹ã€ç§¯åˆ†å’Œå¾®åˆ†å‚æ•°ã€‚ */
+void send_motor_PID(float p, float i, float d);
+/* é…ç½®ä¸Šä¼ æ€»ç¼–ç å™¨ã€10 ms ç¼–ç å™¨å¢é‡å’Œé€Ÿåº¦æ•°æ®çš„å¼€å…³ã€‚ */
+void send_upload_data(bool all, bool step, bool speed);
+/* ä¸‹å‘å››è·¯ç”µæœºçš„é€Ÿåº¦æ§åˆ¶é‡ã€‚ */
+void Contrl_Speed(int16_t m1, int16_t m2, int16_t m3, int16_t m4);
+/* ä¸‹å‘å››è·¯ç”µæœºçš„ PWM æ§åˆ¶é‡ã€‚ */
+void Contrl_Pwm(int16_t m1, int16_t m2, int16_t m3, int16_t m4);
 
 void Deal_Control_Rxtemp(uint8_t rxtemp);
 void Deal_data_real(void);

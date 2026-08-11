@@ -1,51 +1,51 @@
 #include "bsp_motor_usart.h"
 
 /************************************************
-º¯ÊıÃû³Æ £º Send_Motor_U8		Function name: Send_Motor_U8
-¹¦    ÄÜ £º USART1·¢ËÍÒ»¸ö×Ö·û	Function: USART1 sends a character
-²Î    Êı £º Data --- Êı¾İ		Parameter: Data --- data
-·µ »Ø Öµ £º ÎŞ					Return value: None
+å‡½æ•°åç§° ï¼š Send_Motor_U8		Function name: Send_Motor_U8
+åŠŸ    èƒ½ ï¼š USART1å‘é€ä¸€ä¸ªå­—ç¬¦	Function: USART1 sends a character
+å‚    æ•° ï¼š Data --- æ•°æ®		Parameter: Data --- data
+è¿” å› å€¼ ï¼š æ— 					Return value: None
 *************************************************/
-void Send_Motor_U8(uint8_t Data)
+void Send_Motor_U8(uint8_t data)
 {
 	while( DL_UART_isBusy(UART_1_INST) == true );
-	DL_UART_Main_transmitData(UART_1_INST, Data);
+	DL_UART_Main_transmitData(UART_1_INST, data);
 }
 
 /************************************************
-º¯ÊıÃû³Æ £º Send_Motor_ArrayU8	Function name: Send_Motor_ArrayU8
-¹¦    ÄÜ £º ´®¿Ú1·¢ËÍN¸ö×Ö·û		Function: Serial port 1 sends N characters
-²Î    Êı £º pData ---- ×Ö·û´®	Parameter: pData ---- string
-            Length --- ³¤¶È		Length --- length
-·µ »Ø Öµ £º ÎŞ					Return value: None
+å‡½æ•°åç§° ï¼š Send_Motor_ArrayU8	Function name: Send_Motor_ArrayU8
+åŠŸ    èƒ½ ï¼š ä¸²å£1å‘é€Nä¸ªå­—ç¬¦		Function: Serial port 1 sends N characters
+å‚    æ•° ï¼š pData ---- å­—ç¬¦ä¸²	Parameter: pData ---- string
+            Length --- é•¿åº¦		Length --- length
+è¿” å› å€¼ ï¼š æ— 					Return value: None
 *************************************************/
-void Send_Motor_ArrayU8(uint8_t *pData, uint16_t Length)
+void Send_Motor_ArrayU8(uint8_t *buf, uint16_t len)
 {
-	while (Length--)
+	while (len--)
 	{
-		Send_Motor_U8(*pData);
-		pData++;
+		Send_Motor_U8(*buf);
+		buf++;
 	}
 }
 
 
-/*  ´®¿ÚÖĞ¶Ï½ÓÊÕ´¦Àí */
+/*  ä¸²å£ä¸­æ–­æ¥æ”¶å¤„ç† */
 /* Serial port interrupt reception processing */
 void UART_1_INST_IRQHandler(void)
 {
-	uint8_t Rx2_Temp = 0;
+	uint8_t rx = 0U; /* UART1 åˆšæ¥æ”¶çš„å•ä¸ªå­—èŠ‚ã€‚ */
 	
 	switch( DL_UART_getPendingInterrupt(UART_1_INST) )
 	{
-		case DL_UART_IIDX_RX://Èç¹ûÊÇ½ÓÊÕÖĞ¶Ï	If it is a receive interrupt
+		case DL_UART_IIDX_RX://å¦‚æœæ˜¯æ¥æ”¶ä¸­æ–­	If it is a receive interrupt
 			
-			// ½ÓÊÕ·¢ËÍ¹ıÀ´µÄÊı¾İ±£´æ	Receive and save the data sent
-			Rx2_Temp = DL_UART_Main_receiveData(UART_1_INST);
-			//´¦Àí	deal with
-			Deal_Control_Rxtemp(Rx2_Temp);
+			// æ¥æ”¶å‘é€è¿‡æ¥çš„æ•°æ®ä¿å­˜	Receive and save the data sent
+			rx = DL_UART_Main_receiveData(UART_1_INST);
+			//å¤„ç†	deal with
+			Deal_Control_Rxtemp(rx);
 			break;
 		
-		default://ÆäËûµÄ´®¿ÚÖĞ¶Ï	Other serial port interrupts
+		default://å…¶ä»–çš„ä¸²å£ä¸­æ–­	Other serial port interrupts
 			break;
 	}	
 	

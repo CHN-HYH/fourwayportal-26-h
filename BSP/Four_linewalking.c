@@ -1,125 +1,125 @@
 #include "Four_linewalking.h"
 #include "usart.h"
 
-#define IRTrack_Trun_KP (450)
-#define IRTrack_Trun_KI (0) 
-#define IRTrack_Trun_KD (0) 
+#define IR_KP (450) /* 红外循迹位置环比例系数。 */
+#define IR_KI (0)   /* 红外循迹位置环积分系数。 */
+#define IR_KD (0)   /* 红外循迹位置环微分系数。 */
 
-int pid_output_IRR = 0;
-float err = 0;
+static int s_out = 0;   /* 循迹 PID 输出的转向控制量。 */
+static float s_err = 0; /* 当前循迹位置误差。 */
 
-int IRR_SPEED = 300;//��ʼֱ���ٶ�    Initial linear velocity
+static int s_spd = 300; /* 初始直线速度的 PWM 控制量。 */
 
-int Left_rui = 0;
-int Right_rui = 0;
-int turn = 0;
+int Left_rui = 0;  /* 预留左锐角标志，当前未参与控制。 */
+int Right_rui = 0; /* 预留右锐角标志，当前未参与控制。 */
+int turn = 0;      /* 预留转向状态，当前未参与控制。 */
 
-float APP_IR_PID_Calc(float actual_value)
+/* 根据当前循迹误差计算位置式 PID 转向量。 */
+static float pid(float val)
 {
 
-	float IRTrackTurn = 0;
-	int8_t error;
-	static int8_t error_last=0;
-	static float IRTrack_Integral;//����  Integral
+	float out = 0.0f;       /* 本次 PID 计算得到的转向量。 */
+	int8_t err;             /* 当前离散循迹误差。 */
+	static int8_t last = 0; /* 上次误差，供微分项使用。 */
+	static float sum;       /* 误差积分累计值。 */
 	
 
-	error=actual_value;
+	err = val;
 	
-	IRTrack_Integral +=error;
+	sum += err;
 	
-	//λ��ʽpid    Positional pid
-	IRTrackTurn=error*IRTrack_Trun_KP
-							+IRTrack_Trun_KI*IRTrack_Integral
-							+(error - error_last)*IRTrack_Trun_KD;
-	return IRTrackTurn;
+	//位置式pid    Positional pid
+	out = err * IR_KP + sum * IR_KI + (err - last) * IR_KD;
+	return out;
 }
 
-//��ȡX1X2X3X4�����ŵ�ƽ	Get the pin levels of X1X2X3X4
-void Four_GetLineWalking(int *LineL1, int *LineL2, int *LineR1, int *LineR2)
+//获取X1X2X3X4的引脚电平	Get the pin levels of X1X2X3X4
+/* 采样四路红外循迹传感器的当前电平。 */
+static void read_line(int *l1, int *l2, int *r1, int *r2)
 {
-	*LineL1 = LineWalk_L1_IN;
-	*LineL2 = LineWalk_L2_IN;
-	*LineR1 = LineWalk_R1_IN;
-	*LineR2 = LineWalk_R2_IN;
+	*l1 = LineWalk_L1_IN;
+	*l2 = LineWalk_L2_IN;
+	*r1 = LineWalk_R1_IN;
+	*r2 = LineWalk_R2_IN;
 }
 
 void Four_LineWalking(void)
 {
-	int LineL1 = 0, LineL2 = 0, LineR1 = 0, LineR2 = 0;
-	Four_GetLineWalking(&LineL1, &LineL2, &LineR1, &LineR2);//��ȡ���߼��״̬	Get black line detection status
+	int l1 = 0, l2 = 0, r1 = 0, r2 = 0; /* 四路红外传感器的当前电平。 */
+	read_line(&l1, &l2, &r1, &r2);//获取黑线检测状态	Get black line detection status
     //debug
-//    printf("L1:%d L2:%d R1:%d R2:%d\r\n",LineL1, LineL2, LineR1, LineR2);
+//    printf("L1:%d L2:%d R1:%d R2:%d\r\n",l1, l2, r1, r2);
 
     // 0 0 X 0
     // 1 0 X 0
     // 0 1 X 0
-    //��������Ǻ���ֱ�ǵ�ת��
+    //处理右锐角和右直角的转动
     //Processing the right acute angle and the right right angle rotation
-	if( (LineL1 == LOW || LineL2 == LOW) && LineR2 == LOW) 
+	if( (l1 == LOW || l2 == LOW) && r2 == LOW)
     {
-        err=13;
+		s_err = 13.0f;
 		delay_ms(80);
     }
    // 0 X 0 0       
    // 0 X 0 1 
    // 0 X 1 0       
-   //��������Ǻ���ֱ�ǵ�ת��
+   //处理左锐角和左直角的转动
     //Handling left acute angle and left right angle rotation
-    else if ( LineL1 == LOW && (LineR1 == LOW || LineR2 == LOW)) 
+    else if (l1 == LOW && (r1 == LOW || r2 == LOW))
 	{ 
-        err=-13;
+		s_err = -13.0f;
 		delay_ms(80);
     }
     // 0 X X X
-   //����߼�⵽
+   //最左边检测到
     //Most left detected
-    else if( LineL1 == LOW )
+    else if(l1 == LOW)
     {  
-        err=-9;
+		s_err = -9.0f;
 		delay_ms(10);
 	}
     // X X X 0
-   //���ұ߼�⵽
+   //最右边检测到
     //Most right detected
-    else if ( LineR2 == LOW)
+    else if(r2 == LOW)
     {  
-        err=9;
+		s_err = 9.0f;
 //		Contrl_Speed(500,500,-500,-500);
 		delay_ms(10);
 	}
     // X 0 1 X
-   //������С��
+   //处理左小弯
     //Processing of the left hand chicane
-    else if (LineL2 == LOW && LineR1 == HIGH) //�м�����ϵĴ�����΢������ת  Sensor on the black line in the center fine tunes the car to turn left
+    else if (l2 == LOW && r1 == HIGH) //中间黑线上的传感器微调车左转  Sensor on the black line in the center fine tunes the car to turn left
     {   
-		err=-1;
+		s_err = -1.0f;
 	}
     // X 1 0 X  
-   //������С��
+   //处理右小弯
     //Processing of the right-hand chicane
-	else if (LineL2 == HIGH && LineR1 == LOW) //�м�����ϵĴ�����΢������ת  The sensor on the center black line fine tunes the car to turn right
+	else if (l2 == HIGH && r1 == LOW) //中间黑线上的传感器微调车右转  The sensor on the center black line fine tunes the car to turn right
     {   
-		err=1;
+		s_err = 1.0f;
 	}
     // X 0 0 X
-   //����ֱ��
+   //处理直线
     //Processing straight lines
-    else if(LineL2 == LOW && LineR1 == LOW) // ���Ǻ�ɫ, ����ǰ��   It's all black, so speed up.
+    else if(l2 == LOW && r1 == LOW) // 都是黑色, 加速前进   It's all black, so speed up.
     {  
-        err=0;
+		s_err = 0.0f;
 	}	
     // 0 0 0 0
-    else if(LineL1 == LOW && LineL2 == LOW && LineR1 == LOW && LineR2 == LOW) // ���Ǻ�ɫ, ����ǰ�� It's all black, so speed up.
+    else if(l1 == LOW && l2 == LOW && r1 == LOW && r2 == LOW) // 都是黑色, 加速前进 It's all black, so speed up.
     {  
-		err = 0;
+		s_err = 0.0f;
 	}
     
-    //��Ϊ1 1 1 1ʱС��������һ��С������״̬ 
+    //当为1 1 1 1时小车保持上一个小车运行状态
     //When it is 1 1 1 1 the trolley keeps the previous trolley in operation 
     
-    pid_output_IRR = (int)(APP_IR_PID_Calc(err));
+	 s_out = (int)(pid(s_err));
 	
-	Motion_Car_Control(IRR_SPEED, 0, pid_output_IRR);
+	Motion_Car_Control(s_spd, 0, s_out);
     
 }
 

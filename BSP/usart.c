@@ -1,70 +1,70 @@
 #include "usart.h"
 #include "stdio.h"
 
-#define RE_0_BUFF_LEN_MAX	128
+#define UART0_RX_MAX	(128U) /* UART0 è°ƒè¯•æ¥æ”¶ç¼“å†²åŒºå­—èŠ‚æ•°ã€‚ */
 
-volatile uint8_t  recv0_buff[RE_0_BUFF_LEN_MAX] = {0};
-volatile uint16_t recv0_length = 0;
-volatile uint8_t  recv0_flag = 0;
+static volatile uint8_t s_rx[UART0_RX_MAX] = {0}; /* UART0 æ¥æ”¶ç¼“å†²åŒºã€‚ */
+static volatile uint16_t s_rx_len = 0U;           /* å½“å‰å·²æ¥æ”¶çš„å­—èŠ‚æ•°ã€‚ */
+static volatile uint8_t s_rx_ready = 0U;          /* UART0 æ”¶åˆ°æ•°æ®åçš„æ ‡å¿—ã€‚ */
 
 void USART_Init(void)
 {
-	// SYSCFG³õÊ¼»¯
+	// SYSCFGåˆå§‹åŒ–
 	// SYSCFG initialization
 	SYSCFG_DL_init();
-	//Çå³ı´®¿ÚÖĞ¶Ï±êÖ¾
+	//æ¸…é™¤ä¸²å£ä¸­æ–­æ ‡å¿—
 	//Clear the serial port interrupt flag
 	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
 	NVIC_ClearPendingIRQ(UART_1_INST_INT_IRQN);
     NVIC_ClearPendingIRQ(UART_3_INST_INT_IRQN);
-	//Ê¹ÄÜ´®¿ÚÖĞ¶Ï
+	//ä½¿èƒ½ä¸²å£ä¸­æ–­
 	//Enable serial port interrupt
 	NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
 	NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
     NVIC_EnableIRQ(UART_3_INST_INT_IRQN);
 }
 
-//´®¿Ú·¢ËÍÒ»¸ö×Ö½Ú
+//ä¸²å£å‘é€ä¸€ä¸ªå­—èŠ‚
 //The serial port sends a byte
 void USART_SendData(unsigned char data)
 {
-	//µ±´®¿Ú0Ã¦µÄÊ±ºòµÈ´ı
+	//å½“ä¸²å£0å¿™çš„æ—¶å€™ç­‰å¾…
 	//Wait when serial port 0 is busy
 	while( DL_UART_isBusy(UART_0_INST) == true );
-	//·¢ËÍ
+	//å‘é€
 	//send
 	DL_UART_Main_transmitData(UART_0_INST, data);
 }
 
 
 #if !defined(__MICROLIB)
-//²»Ê¹ÓÃÎ¢¿âµÄ»°¾ÍĞèÒªÌí¼ÓÏÂÃæµÄº¯Êı
+//ä¸ä½¿ç”¨å¾®åº“çš„è¯å°±éœ€è¦æ·»åŠ ä¸‹é¢çš„å‡½æ•°
 //If you don't use the micro library, you need to add the following function
 #if (__ARMCLIB_VERSION <= 6000000)
-//Èç¹û±àÒëÆ÷ÊÇAC5  ¾Í¶¨ÒåÏÂÃæÕâ¸ö½á¹¹Ìå
+//å¦‚æœç¼–è¯‘å™¨æ˜¯AC5  å°±å®šä¹‰ä¸‹é¢è¿™ä¸ªç»“æ„ä½“
 //If the compiler is AC5, define the following structure
 struct __FILE
 {
-	int handle;
+	int handle; /* C åº“æ–‡ä»¶å¥æŸ„å ä½å­—æ®µï¼ŒUART é‡å®šå‘ä¸ä½¿ç”¨å…¶å€¼ã€‚ */
 };
 #endif
 
 FILE __stdout;
 
-//¶¨Òå_sys_exit()ÒÔ±ÜÃâÊ¹ÓÃ°ëÖ÷»úÄ£Ê½
+//å®šä¹‰_sys_exit()ä»¥é¿å…ä½¿ç”¨åŠä¸»æœºæ¨¡å¼
 //Define _sys_exit() to avoid using semihosting mode
-void _sys_exit(int x)
+void _sys_exit(int status)
 {
-	x = x;
+	status = status;
 }
 #endif
 
 
-//printfº¯ÊıÖØ¶¨Òå
+//printfå‡½æ•°é‡å®šä¹‰
 //printf function redefinition
 int fputc(int ch, FILE *stream)
 {
-	//µ±´®¿Ú0Ã¦µÄÊ±ºòµÈ´ı£¬²»Ã¦µÄÊ±ºòÔÙ·¢ËÍ´«½øÀ´µÄ×Ö·û
+	//å½“ä¸²å£0å¿™çš„æ—¶å€™ç­‰å¾…ï¼Œä¸å¿™çš„æ—¶å€™å†å‘é€ä¼ è¿›æ¥çš„å­—ç¬¦
 	//Wait when serial port 0 is busy, and send the incoming characters when it is not busy
 	while( DL_UART_isBusy(UART_0_INST) == true );
 	
@@ -73,37 +73,37 @@ int fputc(int ch, FILE *stream)
 	return ch;
 }
 
-//´®¿ÚµÄÖĞ¶Ï·şÎñº¯Êı
+//ä¸²å£çš„ä¸­æ–­æœåŠ¡å‡½æ•°
 //Serial port interrupt service function
 void UART_0_INST_IRQHandler(void)
 {
-	uint8_t receivedData = 0;
+	uint8_t rx = 0U; /* UART0 ç¡¬ä»¶åˆšæ¥æ”¶çš„å­—èŠ‚ã€‚ */
 	
-	//Èç¹û²úÉúÁË´®¿ÚÖĞ¶Ï
+	//å¦‚æœäº§ç”Ÿäº†ä¸²å£ä¸­æ–­
 	//If a serial port interrupt occurs
 	switch( DL_UART_getPendingInterrupt(UART_0_INST) )
 	{
-		case DL_UART_IIDX_RX://Èç¹ûÊÇ½ÓÊÕÖĞ¶Ï	If it is a receive interrupt
+		case DL_UART_IIDX_RX://å¦‚æœæ˜¯æ¥æ”¶ä¸­æ–­	If it is a receive interrupt
 			
-			// ½ÓÊÕ·¢ËÍ¹ıÀ´µÄÊı¾İ±£´æ	Receive and save the data sent
-			receivedData = DL_UART_Main_receiveData(UART_0_INST);
+			// æ¥æ”¶å‘é€è¿‡æ¥çš„æ•°æ®ä¿å­˜	Receive and save the data sent
+			rx = DL_UART_Main_receiveData(UART_0_INST);
 		
-			// ¼ì²é»º³åÇøÊÇ·ñÒÑÂú	Check if the buffer is full
-			if (recv0_length < RE_0_BUFF_LEN_MAX - 1)
+			// æ£€æŸ¥ç¼“å†²åŒºæ˜¯å¦å·²æ»¡	Check if the buffer is full
+			if (s_rx_len < UART0_RX_MAX - 1U)
 			{
-				recv0_buff[recv0_length++] = receivedData;
+				s_rx[s_rx_len++] = rx;
 			}
 			else
 			{
-				recv0_length = 0;
+				s_rx_len = 0U;
 			}
 
-			// ±ê¼Ç½ÓÊÕ±êÖ¾	Mark receiving flag
-			recv0_flag = 1;
+			// æ ‡è®°æ¥æ”¶æ ‡å¿—	Mark receiving flag
+			s_rx_ready = 1U;
 		
 			break;
 		
-		default://ÆäËûµÄ´®¿ÚÖĞ¶Ï	Other serial port interrupts
+		default://å…¶ä»–çš„ä¸²å£ä¸­æ–­	Other serial port interrupts
 			break;
 	}
 }

@@ -1,36 +1,36 @@
 #include "app_motor.h"
 
-static float speed_lr = 0;
-static float speed_fb = 0;
-static float speed_spin = 0;
-static int speed_L1_setup = 0;
-static int speed_L2_setup = 0;
-static int speed_R1_setup = 0;
-static int speed_R2_setup = 0;
+static float s_lr = 0.0f;  /* 预留横移分量，当前底盘未参与混控。 */
+static float s_fb = 0.0f;  /* 前后行驶的 PWM 控制量。 */
+static float s_turn = 0.0f; /* 转向叠加到左右轮的 PWM 控制量。 */
+static int s_l1 = 0;       /* 左前轮的 PWM 控制量。 */
+static int s_l2 = 0;       /* 左后轮的 PWM 控制量。 */
+static int s_r1 = 0;       /* 右前轮的 PWM 控制量。 */
+static int s_r2 = 0;       /* 右后轮的 PWM 控制量。 */
 
-// ���ص�ǰС����������͵�һ��
-static float Motion_Get_APB(void)
+/* 返回当前小车轮子轴间距和的一半。 */
+static float get_apb(void)
 {
     return Car_APB;
 }
 
-void Set_Motor(int MOTOR_TYPE)
+void Set_Motor(int type)
 {
-    if(MOTOR_TYPE == 1)
+    if(type == 1)
     {
-        send_motor_type(1);//���õ������	Configure motor type
+        send_motor_type(1);//配置电机类型	Configure motor type
         delay_ms(100);
-        send_pulse_phase(30);//���ü��ٱ� �����ֲ�ó�	Configure the reduction ratio. Check the motor manual to find out
+        send_pulse_phase(30);//配置减速比 查电机手册得出	Configure the reduction ratio. Check the motor manual to find out
         delay_ms(100);
-        send_pulse_line(11);//���ôŻ��� �����ֲ�ó�	Configure the magnetic ring wire. Check the motor manual to get the result.
+        send_pulse_line(11);//配置磁环线 查电机手册得出	Configure the magnetic ring wire. Check the motor manual to get the result.
         delay_ms(100);
-        send_wheel_diameter(67.00);//��������ֱ��,�����ó�		Configure the wheel diameter and measure it
+        send_wheel_diameter(67.00);//配置轮子直径,测量得出		Configure the wheel diameter and measure it
         delay_ms(100);
-        send_motor_deadzone(1900);//���õ������,ʵ��ó�	Configure the motor dead zone, and the experiment shows
+        send_motor_deadzone(1900);//配置电机死区,实验得出	Configure the motor dead zone, and the experiment shows
         delay_ms(100);
     }
     
-    else if(MOTOR_TYPE == 2)
+    else if(type == 2)
     {
         send_motor_type(2);
         delay_ms(100);
@@ -44,7 +44,7 @@ void Set_Motor(int MOTOR_TYPE)
         delay_ms(100);
     }
     
-    else if(MOTOR_TYPE == 3)
+    else if(type == 3)
     {
         send_motor_type(3);
         delay_ms(100);
@@ -58,7 +58,7 @@ void Set_Motor(int MOTOR_TYPE)
         delay_ms(100);
     }
     
-    else if(MOTOR_TYPE == 4)
+    else if(type == 4)
     {
         send_motor_type(4);
         delay_ms(100);
@@ -68,7 +68,7 @@ void Set_Motor(int MOTOR_TYPE)
         delay_ms(100);
     }
     
-    else if(MOTOR_TYPE == 5)
+    else if(type == 5)
     {
         send_motor_type(1);
         delay_ms(100);
@@ -83,36 +83,36 @@ void Set_Motor(int MOTOR_TYPE)
     }
 }
 
-//ֱ�ӿ���pwm
-void Motion_Car_Control(int16_t V_x, int16_t V_y, int16_t V_z)
+//直接控制pwm
+void Motion_Car_Control(int16_t vx, int16_t vy, int16_t vz)
 {
-	float robot_APB = Motion_Get_APB();
-	speed_lr = 0;
-    speed_fb = V_x;
-    speed_spin = (V_z / 1000.0f) * robot_APB;
-    if (V_x == 0 && V_y == 0 && V_z == 0)
+	float apb = get_apb(); /* 底盘轴距和的一半，单位与配置值一致。 */
+	s_lr = 0.0f;
+    s_fb = vx;
+    s_turn = (vz / 1000.0f) * apb;
+    if (vx == 0 && vy == 0 && vz == 0)
     {
         Contrl_Speed(0,0,0,0);
         return;
     }
 
-    speed_L1_setup = speed_fb + speed_spin;
-    speed_L2_setup = speed_fb + speed_spin;
-    speed_R1_setup = speed_fb  - speed_spin;
-    speed_R2_setup = speed_fb  - speed_spin;
+    s_l1 = s_fb + s_turn;
+    s_l2 = s_fb + s_turn;
+    s_r1 = s_fb - s_turn;
+    s_r2 = s_fb - s_turn;
 		
-    if (speed_L1_setup > 1000) speed_L1_setup = 1000;
-    if (speed_L1_setup < -1000) speed_L1_setup = -1000;
-    if (speed_L2_setup > 1000) speed_L2_setup = 1000;
-    if (speed_L2_setup < -1000) speed_L2_setup = -1000;
-    if (speed_R1_setup > 1000) speed_R1_setup = 1000;
-    if (speed_R1_setup < -1000) speed_R1_setup = -1000;
-    if (speed_R2_setup > 1000) speed_R2_setup = 1000;
-    if (speed_R2_setup < -1000) speed_R2_setup = -1000;
+    if (s_l1 > 1000) s_l1 = 1000;
+    if (s_l1 < -1000) s_l1 = -1000;
+    if (s_l2 > 1000) s_l2 = 1000;
+    if (s_l2 < -1000) s_l2 = -1000;
+    if (s_r1 > 1000) s_r1 = 1000;
+    if (s_r1 < -1000) s_r1 = -1000;
+    if (s_r2 > 1000) s_r2 = 1000;
+    if (s_r2 < -1000) s_r2 = -1000;
     
-    //printf("%d\t,%d\t,%d\t,%d\r\n",speed_L1_setup,speed_L2_setup,speed_R1_setup,speed_R2_setup);
+    //printf("%d\t,%d\t,%d\t,%d\r\n",s_l1,s_l2,s_r1,s_r2);
     
-    Contrl_Speed(speed_L1_setup, speed_L2_setup, speed_R1_setup, speed_R2_setup);
+    Contrl_Speed(s_l1, s_l2, s_r1, s_r2);
 		
 }
 

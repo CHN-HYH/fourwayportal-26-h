@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-// /* UniFlash ´®¿Ú BSL ÒªÇó Flash ¾µÏñ³¤¶È°´ 8 ×Ö½Ú¶ÔÆë£¬µ±Ç°¹¤³Ì²¹ 4 ×Ö½Ú¡£ */
+// /* UniFlash ä¸²å£ BSL è¦æ±‚ Flash é•œåƒé•¿åº¦æŒ‰ 8 å­—èŠ‚å¯¹é½ï¼Œå½“å‰å·¥ç¨‹è¡¥ 4 å­—èŠ‚ã€‚ */
 // __attribute__((used))
 // const uint32_t g_uniflash_padding = 0xFFFFFFFFU;
 #include "delay.h"
@@ -14,19 +14,22 @@
 #include "Four_linewalking.h"
 #include "app_motor.h"
 
-#define MOTOR_TYPE 2   //1:520µç»ú 2:310µç»ú 3:²âËÙÂëÅÌTTµç»ú 4:TTÖ±Á÷¼õËÙµç»ú 5:LĞÍ520µç»ú
+#define MOTOR_TYPE 2   //1:520ç”µæœº 2:310ç”µæœº 3:æµ‹é€Ÿç ç›˜TTç”µæœº 4:TTç›´æµå‡é€Ÿç”µæœº 5:Lå‹520ç”µæœº
                        //1:520 motor 2:310 motor 3:speed code disc TT motor 4:TT DC reduction motor 5:L type 520 motor
 int main(void)
 {
+	/* åˆå§‹åŒ–ç³»ç»Ÿæ—¶é’Ÿã€GPIOã€å®šæ—¶å™¨å’Œ PWM å¤–è®¾ã€‚ */
 	SYSCFG_DL_init();
+	/* åˆå§‹åŒ–è°ƒè¯•ä¸²å£ä¸æ‘„åƒå¤´æ•°æ®æ¥æ”¶ã€‚ */
 	USART_Init();
 	Camera_Vision_Init();
+	/* åˆå§‹åŒ–é’¢ç è§†è§‰æ§åˆ¶ï¼Œå¹¶è®©æ‘†æ†å›åˆ°å¹³è¡¡åŸºå‡†ã€‚ */
 	Vision_Servo_Test_Init();
 	printf("please wait...");
     
     // Set_Motor(MOTOR_TYPE);
     
-    // //ĞŞ¸Äµç»úPID£¬ÕâÀïµÄ²ÎÊıÊÇÎªËÄÇı310µ×ÅÌÅäÖÃµÄ£¬ÆäËûµ×ÅÌĞèÒª×Ô¼º²âÊÔĞŞ¸Ä
+    // //ä¿®æ”¹ç”µæœºPIDï¼Œè¿™é‡Œçš„å‚æ•°æ˜¯ä¸ºå››é©±310åº•ç›˜é…ç½®çš„ï¼Œå…¶ä»–åº•ç›˜éœ€è¦è‡ªå·±æµ‹è¯•ä¿®æ”¹
     // //Modify the motor PID, the parameters here are configured for the 4WD 310 chassis, other chassis need to test and modify their own!
 	// send_motor_PID(1.9,0.2,0.8);
     
@@ -34,9 +37,10 @@ int main(void)
 
 	while(1)
 	{
+		/* å…ˆè§£æ UART3 ç¼“å†²åŒºï¼Œå†ç”¨æœ€æ–°æœ‰æ•ˆè§†è§‰å¸§è®¡ç®—æ§åˆ¶é‡ã€‚ */
 		Camera_Vision_Process();
+		// Four_LineWalking();//å››è·¯å·¡çº¿ï¼Œå¯åŠ¨ï¼	Four-way line patrol, start!
 		Vision_Servo_Test_Update();
-		// Four_LineWalking();//ËÄÂ·Ñ²Ïß£¬Æô¶¯£¡	Four-way line patrol, start!
 	}
 	
 }
