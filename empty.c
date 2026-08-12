@@ -26,7 +26,6 @@ int main(void)
 	/* 初始化钢珠视觉控制，并让摆杆回到平衡基准。 */
 	Vision_Servo_Test_Init();
 	printf("please wait...");
-    
     // Set_Motor(MOTOR_TYPE);
     
     // //修改电机PID，这里的参数是为四驱310底盘配置的，其他底盘需要自己测试修改

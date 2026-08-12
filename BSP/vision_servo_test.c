@@ -4,21 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/* 以下角度是舵机控制输入角度，不是摆杆实际倾角。 */
-#define SV_X0          (160.0f)  /* 摆杆中心的图像横坐标。 */
-#define SV_CM_PX       (0.10f)   /* 每个像素对应的摆杆距离，单位 cm。 */
-#define SV_POS_REF     (5.0f)    /* 钢珠目标位置，单位 cm。 */
-
-#define SV_ANG0        (15.0f)   /* 摆杆水平时的舵机基准角。 */
-#define SV_ANG_MIN     (0.0f)    /* 舵机允许的最小输入角。 */
-#define SV_ANG_MAX     (30.0f)   /* 舵机允许的最大输入角。 */
-#define SV_DIR         (-1.0f)   /* 正位置误差对应的舵机调节方向。 */
-
-#define SV_KP          (1.00f)   /* 位置误差到角度增量的比例系数。 */
-#define SV_KD          (0.20f)   /* 钢珠速度的制动系数。 */
-#define SV_VEL_A       (0.35f)   /* 速度低通滤波系数。 */
-#define SV_DBG         (0U)      /* 串口调试开关，闭环控制时保持关闭。 */
-
 static uint32_t s_frame = 0U;    /* 上次已处理的有效视觉帧计数。 */
 static uint32_t s_ms = 0U;       /* 上一有效帧的时间戳，单位 ms。 */
 static float s_pos = 0.0f;       /* 上一有效帧的钢珠位置，单位 cm。 */
@@ -47,6 +32,14 @@ static void set_ang(float req)
     uint16_t ang;   /* 下发给舵机驱动的整数角度。 */
 
     lim = clampf(req, SV_ANG_MIN, SV_ANG_MAX);
+
+    /* 限制每帧的角度变化，避免一次大倾角使钢珠突然加速。 */
+    if (s_ang != 0xFFFFU)
+    {
+        lim = clampf(lim,
+                     (float)s_ang - SV_STEP_MAX,
+                     (float)s_ang + SV_STEP_MAX);
+    }
     ang = (uint16_t)(lim + 0.5f);
 
     if (ang != s_ang)
@@ -68,7 +61,7 @@ void Vision_Servo_Test_Init(void)
     set_ang(SV_ANG0);
 }
 
-/* 主循环调用：每个新有效视觉帧执行一次闭环控制。 */
+/* 主循环调用：使用带保持角补偿的 PD 闭环让钢珠稳定在固定的 +12 cm 位置。 */
 void Vision_Servo_Test_Update(void)
 {
     uint32_t now;       /* 当前时间戳，单位 ms。 */
@@ -78,7 +71,7 @@ void Vision_Servo_Test_Update(void)
     float vel;          /* 原始速度，单位 cm/s。 */
     float err;          /* 目标位置与当前位置的误差，单位 cm。 */
     float out;          /* PD 计算得到的角度增量。 */
-    float ang;          /* 加基准后的目标舵机角度。 */
+    float ang;          /* 加保持角后的目标舵机角度。 */
 
     if (Camera_Vision_IsUsable() == 0U)
     {
@@ -125,13 +118,16 @@ void Vision_Servo_Test_Update(void)
     s_pos = pos;
 
     err = SV_POS_REF - pos;
-    /* 误差提供驱动力，速度项在接近目标时提前反向制动。 */
+
+    /* 42° 是 +12 cm 的实测保持角，省去从零慢慢积累补偿量的等待。 */
     out = SV_KP * err - SV_KD * s_vel;
-    ang = SV_ANG0 + SV_DIR * out;
+    ang = SV_ANG_HOLD + SV_DIR * out;
+    ang = clampf(ang, SV_ANG_MIN, SV_ANG_RUN_MAX);
     set_ang(ang);
 
 #if SV_DBG
-    printf("[SERVO] pos=%.2f vel=%.2f err=%.2f angle=%u\r\n",
+    printf("[SERVO] ref=%.1f pos=%.2f vel=%.2f err=%.2f angle=%u\r\n",
+        (double)SV_POS_REF,
         (double)pos,
         (double)s_vel,
         (double)err,

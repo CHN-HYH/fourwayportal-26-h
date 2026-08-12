@@ -4,6 +4,13 @@
 /* 逐帧打印会占用串口时间，闭环控制时保持关闭。 */
 #define CAMERA_VISION_DEBUG_ENABLE     (0U)
 
+/*
+ * 数据流：UART3 中断每次只收一个字节放入 s_rx；主循环调用
+ * Camera_Vision_Process() 后才从 s_rx 取字节、拼成完整帧并更新 vision。
+ * 这样中断执行很短，不会被校验、打印等较慢操作占用。
+ */
+
+/* 三个状态依次等待 AA、55，再收集后面的 6 个字节。 */
 typedef enum
 {
     CAMERA_PARSE_WAIT_AA = 0,
@@ -11,8 +18,10 @@ typedef enum
     CAMERA_PARSE_COLLECT
 } CameraParseState;
 
+/* 解析后的最新视觉结果，舵机控制等其他模块只读取这里。 */
 volatile CameraVisionState vision = {0};
 
+/* s_head 由中断推进，s_tail 由主循环推进，二者组成一个环形队列。 */
 static volatile uint8_t s_rx[CAMERA_UART_RX_BUFFER_LEN] = {0}; /* UART3 ISR 写入、主循环读取的环形缓冲区。 */
 static volatile uint16_t s_head = 0U;      /* 环形缓冲区的写入位置。 */
 static volatile uint16_t s_tail = 0U;      /* 环形缓冲区的读取位置。 */
@@ -78,6 +87,7 @@ static void Camera_UpdateSequence(uint8_t seq)
 
     if (s_has_seq != 0U)
     {
+        /* uint8_t 相减会自然处理 0xFF 回绕到 0 的正常情况。 */
         delta = (uint8_t)(seq - vision.seq);
         if (delta == 0U)
         {
@@ -86,6 +96,7 @@ static void Camera_UpdateSequence(uint8_t seq)
         }
         if (delta != 1U)
         {
+            /* 跳号只作通信统计，仍然接受当前最新帧给控制使用。 */
             if (delta < 128U)
             {
                 vision.seq_lost += (uint32_t)(delta - 1U);
@@ -123,6 +134,7 @@ static void Camera_HandleFrame(void)
     uint16_t x;       /* 本帧目标横向坐标，单位 px。 */
     uint32_t now;     /* 正确帧到达时刻，单位 ms。 */
 
+    /* 先确认数据没有在串口传输中损坏，校验失败的帧完全不用。 */
     sum = Camera_Checksum(s_frame, CAMERA_UART_FRAME_LEN - 1U);
     if (sum != s_frame[CAMERA_UART_FRAME_LEN - 1U])
     {
@@ -139,9 +151,11 @@ static void Camera_HandleFrame(void)
     flags = s_frame[2];
     seq = s_frame[3];
 
+    /* 这一帧校验正确，先记录链路仍有数据到达。 */
     vision.frame_n++;
     vision.rx_ms = now;
 
+    /* 重复包可能来自串口重发，不能重复驱动舵机。 */
     if (Camera_IsNewSequence(seq) == 0U)
     {
 #if CAMERA_VISION_DEBUG_ENABLE
@@ -153,6 +167,7 @@ static void Camera_HandleFrame(void)
     vision.flags = flags;
     vision.width = s_frame[6];
 
+    /* FLAGS.bit0 为 0 表示摄像头当前没有可靠目标。 */
     if ((flags & 0x01U) == 0U)
     {
         vision.valid = 0U;
@@ -163,6 +178,7 @@ static void Camera_HandleFrame(void)
         return;
     }
 
+    /* X 用低字节在前的小端格式发送，合成为 16 位坐标。 */
     x = (uint16_t)s_frame[4] | ((uint16_t)s_frame[5] << 8U);
     if (x >= CAMERA_VISION_IMAGE_WIDTH)
     {
@@ -175,6 +191,7 @@ static void Camera_HandleFrame(void)
         return;
     }
 
+    /* 只有有效且坐标没有越界的帧，才允许更新控制所用的 x。 */
     vision.x = x;
     vision.valid = 1U;
     vision.valid_ms = now;
@@ -191,6 +208,7 @@ static void Camera_ParseByte(uint8_t data)
     switch (s_parse)
     {
         case CAMERA_PARSE_WAIT_AA:
+            /* 未找到帧头时忽略所有杂字节，只等第一个 AA。 */
             if (data == 0xAAU)
             {
                 s_frame[0] = data;
@@ -199,6 +217,7 @@ static void Camera_ParseByte(uint8_t data)
             break;
 
         case CAMERA_PARSE_WAIT_55:
+            /* 已收到 AA，只有紧跟 55 才算完整帧头。 */
             if (data == 0x55U)
             {
                 s_frame[1] = data;
@@ -212,6 +231,7 @@ static void Camera_ParseByte(uint8_t data)
             break;
 
         case CAMERA_PARSE_COLLECT:
+            /* 帧头已确认，把剩余字节依次放入 8 字节帧缓冲区。 */
             s_frame[s_i++] = data;
             if (s_i >= CAMERA_UART_FRAME_LEN)
             {
@@ -247,6 +267,7 @@ void Camera_Uart_ClearBuffer(void)
 {
     uint32_t mask = __get_PRIMASK(); /* 进入临界区前的中断屏蔽状态。 */
 
+    /* 清空时暂停 UART3 中断，避免中断同时修改 s_head。 */
     __disable_irq();
     s_head = 0U;
     s_tail = 0U;
@@ -258,6 +279,7 @@ void Camera_Vision_Init(void)
 {
     uint32_t mask = __get_PRIMASK(); /* 进入临界区前的中断屏蔽状态。 */
 
+    /* 初始化共享状态时暂停中断，防止读写到一半的数据。 */
     __disable_irq();
     vision = (CameraVisionState){0};
     s_head = 0U;
@@ -274,6 +296,7 @@ void Camera_Vision_Process(void)
 {
     uint8_t data; /* 从环形缓冲区取出的单个字节。 */
 
+    /* 把中断期间积累的字节全部取出，按协议状态机逐个解析。 */
     while (s_tail != s_head)
     {
         data = s_rx[s_tail];
@@ -291,6 +314,7 @@ uint32_t Camera_Vision_GetTimeMs(void)
 
 uint8_t Camera_Vision_IsUsable(void)
 {
+    /* 控制可用必须同时满足：最后结果有效，且距离有效帧未超时。 */
     return (uint8_t)((vision.valid != 0U) &&
         ((uint32_t)(Camera_Vision_GetTimeMs() - vision.valid_ms) <
             CAMERA_VISION_TIMEOUT_MS));
@@ -298,6 +322,7 @@ uint8_t Camera_Vision_IsUsable(void)
 
 uint8_t Camera_Vision_IsLinkAlive(uint32_t timeout_ms)
 {
+    /* 这里只判断串口是否仍有正确帧到达，不关心帧内是否检测到钢珠。 */
     return (uint8_t)((vision.frame_n != 0U) &&
         ((uint32_t)(Camera_Vision_GetTimeMs() - vision.rx_ms) < timeout_ms));
 }
@@ -310,10 +335,12 @@ void UART3_IRQHandler(void)
     switch (DL_UART_getPendingInterrupt(UART_3_INST))
     {
         case DL_UART_IIDX_RX:
+            /* 中断中只做收字节入队，绝不在这里拼帧或控制舵机。 */
             rx = DL_UART_Main_receiveData(UART_3_INST);
             next = Camera_Uart_NextIndex(s_head);
             if (next == s_tail)
             {
+                /* 队列满时丢弃新字节，并留下溢出计数供排查。 */
                 s_overflow++;
             }
             else
@@ -333,6 +360,7 @@ void TIMG12_IRQHandler(void)
     switch (DL_TimerG_getPendingInterrupt(TIMG12))
     {
         case DL_TIMER_IIDX_ZERO:
+            /* TIMG12 每 1 ms 进入一次，用于视觉数据超时判断。 */
             s_ms++;
             break;
 
