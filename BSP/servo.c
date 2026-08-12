@@ -27,5 +27,5 @@ void Servo_SetAngle(uint16_t angle)
 
     DL_TimerA_setCaptureCompareValue(SERVO_PWM_INST,
                                      SERVO_PERIOD_TICKS - pulse,
-                                     DL_TIMER_CC_1_INDEX);
+                                     DL_TIMER_CC_0_INDEX);
 }
