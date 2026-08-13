@@ -8,8 +8,24 @@
 
 void Servo_Init(void)
 {
-    Servo_SetAngle(0U);
+    Servo_SetPulseUs(SERVO_MIN_PULSE_US);
     DL_TimerA_startCounter(SERVO_PWM_INST);
+}
+
+void Servo_SetPulseUs(uint16_t pulse_us)
+{
+    if (pulse_us < SERVO_MIN_PULSE_US)
+    {
+        pulse_us = SERVO_MIN_PULSE_US;
+    }
+    if (pulse_us > SERVO_MAX_PULSE_US)
+    {
+        pulse_us = SERVO_MAX_PULSE_US;
+    }
+
+    DL_TimerA_setCaptureCompareValue(SERVO_PWM_INST,
+                                     SERVO_PERIOD_TICKS - pulse_us,
+                                     DL_TIMER_CC_0_INDEX);
 }
 
 void Servo_SetAngle(uint16_t angle)
@@ -24,8 +40,5 @@ void Servo_SetAngle(uint16_t angle)
     pulse = SERVO_MIN_PULSE_US +
                (((uint32_t)angle * (SERVO_MAX_PULSE_US - SERVO_MIN_PULSE_US)) /
                 SERVO_MAX_ANGLE);
-
-    DL_TimerA_setCaptureCompareValue(SERVO_PWM_INST,
-                                     SERVO_PERIOD_TICKS - pulse,
-                                     DL_TIMER_CC_0_INDEX);
+    Servo_SetPulseUs((uint16_t)pulse);
 }

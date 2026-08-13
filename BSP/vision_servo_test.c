@@ -4,16 +4,19 @@
 #include <stdint.h>
 #include <stdio.h>
 
-static uint32_t s_frame = 0U;       /* 上次已处理的有效视觉帧计数。 */
-static uint32_t s_ms = 0U;          /* 上一有效视觉帧时间戳，单位 ms。 */
-static float s_pos = 0.0f;          /* 上一有效帧的钢珠位置，单位 cm。 */
-static float s_vel = 0.0f;          /* 低通后的钢珠速度，单位 cm/s。 */
-static float s_push = 0.0f;         /* 静止时克服摩擦的临时推力角，单位度。 */
-static float s_ang = SV_ANG0;       /* 上次下发的浮点舵机角度。 */
-static uint32_t s_still_ms = 0U;    /* 连续低速且未到位的累计时间，单位 ms。 */
-static uint8_t s_has_pos = 0U;      /* 是否已有位置可用于计算速度。 */
-static uint8_t s_lost = 0U;         /* 当前是否处于视觉短暂失效保持状态。 */
-static uint32_t s_lost_ms = 0U;     /* 视觉失效开始时刻，单位 ms。 */
+typedef struct
+{
+    float x;       /* 当前滤波位置。 */
+    float p;       /* 当前估计协方差。 */
+    uint8_t first; /* 是否为首个测量值。 */
+} sv_kalman_t;
+
+static uint32_t s_frame = 0U;      /* 上次已处理的有效视觉帧计数。 */
+static float s_sum = 0.0f;         /* 位置误差积分累计值。 */
+static float s_err_last = 0.0f;    /* 上一有效帧的位置误差。 */
+static float s_pulse = SV_PULSE_BASE; /* 上次下发的舵机脉宽，单位 us。 */
+static uint16_t s_pulse_out = (uint16_t)SV_PULSE_BASE; /* 实际写入 PWM 的整数脉宽。 */
+static sv_kalman_t s_kf;           /* 图像横坐标一维卡尔曼状态。 */
 
 /* 将浮点控制量限制在给定范围内。 */
 static float clampf(float v, float lo, float hi)
@@ -29,188 +32,134 @@ static float clampf(float v, float lo, float hi)
     return v;
 }
 
-/* 返回浮点数绝对值，避免引入额外数学库依赖。 */
+/* 返回浮点数绝对值。 */
 static float absf(float v)
 {
     return (v < 0.0f) ? -v : v;
 }
 
-/* 按角度限幅、限速后更新 PWM。 */
-static void set_ang(float req)
+/* 复位位置滤波器和 PID 状态。 */
+static void reset_ctl(void)
 {
-    float ang = clampf(req, SV_ANG_MIN, SV_ANG_MAX); /* 限幅后的舵机角度。 */
+    s_sum = 0.0f;
+    s_err_last = 0.0f;
+    s_kf.x = 0.0f;
+    s_kf.p = 0.01f;
+    s_kf.first = 1U;
+}
 
-    if (ang > s_ang)
+/* 对图像横坐标执行一维卡尔曼滤波。 */
+static float filter_x(float x)
+{
+    float gain; /* 本次卡尔曼增益。 */
+
+    if (s_kf.first != 0U)
     {
-        ang = clampf(ang, s_ang, s_ang + SV_STEP_UP);
-    }
-    else
-    {
-        ang = clampf(ang, s_ang - SV_STEP_DN, s_ang);
+        s_kf.x = x;
+        s_kf.first = 0U;
+        return x;
     }
 
-    if (absf(ang - s_ang) >= 0.5f)
+    s_kf.p += SV_KALMAN_Q;
+    gain = s_kf.p / (s_kf.p + SV_KALMAN_R);
+    s_kf.x += gain * (x - s_kf.x);
+    s_kf.p = (1.0f - gain) * s_kf.p;
+    return s_kf.x;
+}
+
+/* 按机械范围和单帧变化范围更新舵机脉宽。 */
+static void set_pulse(float req)
+{
+    float pulse = clampf(req, SV_PULSE_MIN, SV_PULSE_MAX); /* 限幅后的舵机脉宽。 */
+    uint16_t out; /* 四舍五入后写入 PWM 的整数脉宽。 */
+
+    pulse = clampf(pulse,
+                   s_pulse - SV_PULSE_STEP_US,
+                   s_pulse + SV_PULSE_STEP_US);
+    s_pulse = pulse;
+    out = (uint16_t)(pulse + 0.5f);
+    if (out != s_pulse_out)
     {
-        Servo_SetAngle((uint16_t)(ang + 0.5f));
-        s_ang = ang;
+        Servo_SetPulseUs(out);
+        s_pulse_out = out;
     }
 }
 
-/* 临时推力释放时直接更新角度，避免残余倾角继续加速钢珠。 */
-static void set_ang_now(float req)
-{
-    float ang = clampf(req, SV_ANG_MIN, SV_ANG_MAX); /* 立即下发的舵机角度。 */
-
-    Servo_SetAngle((uint16_t)(ang + 0.5f));
-    s_ang = ang;
-}
-
-/* 初始化 PWM、控制状态和摆杆平衡基准。 */
+/* 初始化视觉位置式 PID，并设置舵机基准脉宽。 */
 void Vision_Servo_Test_Init(void)
 {
     Servo_Init();
     s_frame = vision.valid_n;
-    s_ms = Camera_Vision_GetTimeMs();
-    s_pos = 0.0f;
-    s_vel = 0.0f;
-    s_push = 0.0f;
-    s_still_ms = 0U;
-    s_ang = SV_ANG0;
-    s_has_pos = 0U;
-    s_lost = 0U;
-    s_lost_ms = 0U;
-    Servo_SetAngle((uint16_t)SV_ANG0);
+    s_pulse = SV_PULSE_BASE;
+    s_pulse_out = (uint16_t)SV_PULSE_BASE;
+    reset_ctl();
+    Servo_SetPulseUs(s_pulse_out);
 }
 
-/* 主循环调用：执行位置、静摩擦补偿和速度制动控制。 */
+/* 主循环调用：对每个新视觉帧执行一次像素域位置式 PID。 */
 void Vision_Servo_Test_Update(void)
 {
-    uint32_t now;       /* 当前时间戳，单位 ms。 */
-    uint32_t frame;     /* 当前有效视觉帧计数。 */
-    uint32_t dt = 0U;   /* 相邻有效帧时间间隔，单位 ms。 */
-    float pos;          /* 当前钢珠位置，单位 cm。 */
-    float vel;          /* 当前帧差分速度，单位 cm/s。 */
-    float err;          /* 目标位置与当前位置的误差，单位 cm。 */
-    float ctl;          /* 死区处理后的比例控制误差，单位 cm。 */
-    float dt_s = 0.0f;  /* 相邻有效帧时间间隔，单位 s。 */
-    float req;          /* 本帧请求的舵机角度，单位度。 */
-    float out;          /* 控制器输出的舵机角度增量，单位度。 */
-    uint8_t drop_push = 0U; /* 本帧是否需要立即释放临时推力。 */
+    uint32_t frame; /* 当前有效视觉帧计数。 */
+    float x;        /* 卡尔曼滤波后的图像横坐标。 */
+    float pos;      /* 当前钢珠位置，单位 cm。 */
+    float err;      /* 目标横坐标与当前位置误差，单位 px。 */
+    float raw;      /* 本帧 PID 原始输出。 */
+    float offset;   /* 本帧 PID 产生的基准脉宽偏移，单位 us。 */
+    float req;      /* 本帧请求的舵机脉宽，单位 us。 */
 
-    now = Camera_Vision_GetTimeMs();
     if (Camera_Vision_IsUsable() == 0U)
     {
-        /* 单次漏检时保持末角度；持续失效才回水平并清状态。 */
-        if (s_lost == 0U)
-        {
-            s_lost = 1U;
-            s_lost_ms = now;
-        }
-        if ((uint32_t)(now - s_lost_ms) < SV_LOST_HOLD_MS)
-        {
-            return;
-        }
-
-        s_has_pos = 0U;
-        s_vel = 0.0f;
-        s_push = 0.0f;
-        s_still_ms = 0U;
-        s_ms = now;
-        set_ang(SV_ANG0);
+        reset_ctl();
         return;
     }
-    s_lost = 0U;
 
     frame = vision.valid_n;
     if (frame == s_frame)
     {
-        /* 同一帧不重复计算和驱动舵机。 */
         return;
     }
     s_frame = frame;
 
-    pos = ((float)vision.x - SV_X0) * SV_CM_PX;
-    if (s_has_pos != 0U)
+    x = filter_x((float)vision.x);
+    pos = (x - SV_X0) * SV_CM_PX;
+    err = SV_X_REF - x;
+
+    /* 到位后保持上一脉宽，不继续累计积分。 */
+    if (absf(err) < SV_DEADBAND_PX)
     {
-        dt = (uint32_t)(vision.valid_ms - s_ms);
-        if ((dt > 0U) && (dt <= SV_VEL_DT_MAX_MS))
-        {
-            dt_s = (float)dt / 1000.0f;
-            vel = (pos - s_pos) / dt_s;
-            s_vel = SV_VEL_ALPHA * vel + (1.0f - SV_VEL_ALPHA) * s_vel;
-        }
-        else
-        {
-            s_vel = 0.0f;
-        }
-    }
-    else
-    {
-        s_has_pos = 1U;
-        s_vel = 0.0f;
+#if SV_DBG
+        printf("[SERVO] ref=%.1f x=%.2f pos=%.2f err=%.2f sum=%.2f raw=0.00 offset=%.2f req=%.1f pulse=%u\r\n",
+            (double)SV_X_REF,
+            (double)x,
+            (double)pos,
+            (double)err,
+            (double)s_sum,
+            (double)(s_pulse - SV_PULSE_BASE),
+            (double)s_pulse,
+            (unsigned int)s_pulse_out);
+#endif
+        return;
     }
 
-    s_ms = vision.valid_ms;
-    s_pos = pos;
-    err = SV_POS_REF - pos;
-    ctl = (absf(err) <= SV_ERR_TOL) ? 0.0f : err;
+    s_sum = clampf(s_sum + err, -SV_I_MAX, SV_I_MAX);
+    raw = SV_KP * err + SV_KI * s_sum + SV_KD * (err - s_err_last);
+    raw = clampf(raw, -SV_OUT_MAX, SV_OUT_MAX);
+    s_err_last = err;
 
-    /* 先确认钢珠持续静止，再建立临时推力；运动或到位后立即释放。 */
-    if ((absf(err) <= SV_ERR_TOL) ||
-        (absf(s_vel) > SV_PUSH_VEL_MAX))
-    {
-        drop_push = (uint8_t)(absf(s_push) > 0.0f);
-        s_push = 0.0f;
-        s_still_ms = 0U;
-    }
-    else if (dt_s > 0.0f)
-    {
-        if (s_push * err < 0.0f)
-        {
-            s_push = 0.0f;
-            s_still_ms = 0U;
-        }
-
-        if (s_still_ms < SV_PUSH_WAIT_MS)
-        {
-            s_still_ms += dt;
-        }
-        else if (err > 0.0f)
-        {
-            s_push = clampf(s_push + SV_PUSH_RATE * dt_s,
-                            0.0f,
-                            SV_PUSH_MAX);
-        }
-        else
-        {
-            s_push = clampf(s_push - SV_PUSH_RATE * dt_s,
-                            -SV_PUSH_MAX,
-                            0.0f);
-        }
-    }
-
-    out = SV_KP * ctl + s_push - SV_KD * s_vel;
-    req = SV_ANG0 + SV_DIR * out;
-    if (drop_push != 0U)
-    {
-        set_ang_now(req);
-    }
-    else
-    {
-        set_ang(req);
-    }
+    offset = SV_DIR * raw * SV_OUT_SCALE_US;
+    req = SV_PULSE_BASE + offset;
+    set_pulse(req);
 
 #if SV_DBG
-    printf("[SERVO] ref=%.2f x=%.2f pos=%.2f vel=%.2f err=%.2f base=%.2f still=%lu push=%.2f req=%.1f angle=%u\r\n",
-        (double)SV_POS_REF,
-        (double)vision.x,
+    printf("[SERVO] ref=%.1f x=%.2f pos=%.2f err=%.2f sum=%.2f raw=%.2f offset=%.2f req=%.1f pulse=%u\r\n",
+        (double)SV_X_REF,
+        (double)x,
         (double)pos,
-        (double)s_vel,
         (double)err,
-        (double)SV_ANG0,
-        (unsigned long)s_still_ms,
-        (double)s_push,
+        (double)s_sum,
+        (double)raw,
+        (double)offset,
         (double)req,
-        (unsigned int)(uint16_t)(s_ang + 0.5f));
+        (unsigned int)s_pulse_out);
 #endif
 }
