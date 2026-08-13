@@ -1,179 +1,257 @@
 #include "oled.h"
-#include <stdint.h>
 #include "codetab.h"
 #include "delay.h"
+#include "oledfont_steel.h"
 #include "ti_msp_dl_config.h"
+#include <stdint.h>
 
-//ÏòOLED¼Ä´æÆ÷µØÖ·Ð´Ò»¸öbyteµÄÊý¾Ý	Write a byte of data to the OLED register address
-void I2C_WriteByte(uint8_t addr,uint8_t data)
+#define OLED_WIDTH       (128U)
+#define OLED_HEIGHT       (32U)
+#define OLED_PAGE_COUNT    (4U)
+#define OLED_FIFO_DATA_N   (7U)
+
+static uint8_t s_gram[OLED_WIDTH][OLED_PAGE_COUNT]; /* Steel é£Žæ ¼å±å¹•æ˜¾å­˜ã€‚ */
+
+static void OLED_WaitIdle(void)
+{
+    while ((DL_I2C_getControllerStatus(I2C_0_INST) &
+        DL_I2C_CONTROLLER_STATUS_IDLE) == 0U)
+    {
+    }
+}
+
+void I2C_WriteByte(uint8_t addr, uint8_t data)
 {
     uint8_t temp[2];
+
     temp[0] = addr;
     temp[1] = data;
- 
-    DL_I2C_fillControllerTXFIFO(I2C_0_INST, temp, 2);
-    while (!(DL_I2C_getControllerStatus(I2C_0_INST) & DL_I2C_CONTROLLER_STATUS_IDLE));
- 
-    DL_I2C_startControllerTransfer(I2C_0_INST, OLED_ADDRESS, DL_I2C_CONTROLLER_DIRECTION_TX, 2);
-    while (DL_I2C_getControllerStatus(I2C_0_INST) & DL_I2C_CONTROLLER_STATUS_BUSY_BUS);
-    while (!(DL_I2C_getControllerStatus(I2C_0_INST) & DL_I2C_CONTROLLER_STATUS_IDLE));
-    DL_I2C_flushControllerTXFIFO(I2C_0_INST);
+    OLED_WaitIdle();
+    DL_I2C_fillControllerTXFIFO(I2C_0_INST, temp, 2U);
+    DL_I2C_startControllerTransfer(I2C_0_INST, OLED_ADDRESS,
+        DL_I2C_CONTROLLER_DIRECTION_TX, 2U);
+    while ((DL_I2C_getControllerStatus(I2C_0_INST) &
+        DL_I2C_CONTROLLER_STATUS_BUSY_BUS) != 0U)
+    {
+    }
+    OLED_WaitIdle();
 }
 
-//Ð´Ö¸Áî		write command
-void WriteCmd(unsigned char I2C_Command)
+void WriteCmd(unsigned char command)
 {
-		I2C_WriteByte(0x00,I2C_Command);
+    I2C_WriteByte(0x00U, command);
 }
 
-//Ð´Êý¾Ý		Write Data
-void WriteData(unsigned char I2C_Data)
+void WriteData(unsigned char data)
 {
-		I2C_WriteByte(0x40,I2C_Data);
+    I2C_WriteByte(0x40U, data);
 }
 
-//³§¼Ò³õÊ¼»¯´úÂë		Factory initialization code
+void OLED_SetPos(unsigned char x, unsigned char y)
+{
+    WriteCmd((unsigned char)(0xB0U + y));
+    WriteCmd((unsigned char)(x & 0x0FU));
+    WriteCmd((unsigned char)(((x & 0xF0U) >> 4U) | 0x10U));
+}
+
+void OLED_Refresh(void)
+{
+    uint8_t page;
+    uint8_t col;
+
+    for (page = 0U; page < OLED_PAGE_COUNT; page++)
+    {
+        OLED_SetPos(0U, page);
+        for (col = 0U; col < OLED_WIDTH; col += OLED_FIFO_DATA_N)
+        {
+            uint8_t chunk[OLED_FIFO_DATA_N + 1U];
+            uint8_t batch = (uint8_t)((OLED_WIDTH - col > OLED_FIFO_DATA_N) ?
+                OLED_FIFO_DATA_N : (OLED_WIDTH - col));
+            uint8_t i;
+
+            chunk[0] = 0x40U;
+            for (i = 0U; i < batch; i++)
+            {
+                chunk[i + 1U] = s_gram[col + i][page];
+            }
+            OLED_WaitIdle();
+            DL_I2C_fillControllerTXFIFO(I2C_0_INST, chunk,
+                (uint32_t)(batch + 1U));
+            DL_I2C_startControllerTransfer(I2C_0_INST, OLED_ADDRESS,
+                DL_I2C_CONTROLLER_DIRECTION_TX, (uint32_t)(batch + 1U));
+            while ((DL_I2C_getControllerStatus(I2C_0_INST) &
+                DL_I2C_CONTROLLER_STATUS_BUSY_BUS) != 0U)
+            {
+            }
+            OLED_WaitIdle();
+        }
+    }
+}
+
+void OLED_Clear(void)
+{
+    uint8_t page;
+    uint8_t col;
+
+    for (page = 0U; page < OLED_PAGE_COUNT; page++)
+    {
+        for (col = 0U; col < OLED_WIDTH; col++)
+        {
+            s_gram[col][page] = 0U;
+        }
+    }
+    OLED_Refresh();
+}
+
+void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t mode)
+{
+    uint8_t mask;
+
+    if ((x >= OLED_WIDTH) || (y >= OLED_HEIGHT))
+    {
+        return;
+    }
+    mask = (uint8_t)(1U << (y & 0x07U));
+    if (mode != 0U)
+    {
+        s_gram[x][y / 8U] |= mask;
+    }
+    else
+    {
+        s_gram[x][y / 8U] &= (uint8_t)~mask;
+    }
+}
+
+void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr,
+    uint8_t size, uint8_t mode)
+{
+    uint8_t index;
+    uint8_t bytes;
+    uint8_t i;
+    uint8_t bit;
+    uint8_t x0 = x;
+    uint8_t y0 = y;
+
+    if ((chr < ' ') || (chr > '~'))
+    {
+        return;
+    }
+    index = (uint8_t)(chr - ' ');
+    if (size == 8U)
+    {
+        bytes = 6U;
+    }
+    else if (size == 12U)
+    {
+        bytes = 12U;
+    }
+    else
+    {
+        return;
+    }
+
+    for (i = 0U; i < bytes; i++)
+    {
+        uint8_t data = (size == 8U) ? F6x8[index][i] :
+            g_steel_font_6x12[index][i];
+
+        for (bit = 0U; bit < 8U; bit++)
+        {
+            OLED_DrawPoint(x, y, (uint8_t)(((data & 0x01U) != 0U) ?
+                mode : !mode));
+            data >>= 1U;
+            y++;
+        }
+        x++;
+        if ((size == 12U) && ((x - x0) == 6U))
+        {
+            x = x0;
+            y0 = (uint8_t)(y0 + 8U);
+        }
+        y = y0;
+    }
+}
+
+void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *text,
+    uint8_t size, uint8_t mode)
+{
+    while ((*text >= ' ') && (*text <= '~'))
+    {
+        OLED_ShowChar(x, y, *text, size, mode);
+        x = (uint8_t)(x + 6U);
+        text++;
+    }
+}
+
 void OLED_Init(void)
 {
-		delay_ms(100);
-		WriteCmd(0xAE); //display off
-		WriteCmd(0x20);	//Set Memory Addressing Mode	
-		WriteCmd(0x10);	//00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
-		WriteCmd(0xb0);	//Set Page Start Address for Page Addressing Mode,0-7
-		WriteCmd(0xc8);	//Set COM Output Scan Direction
-		WriteCmd(0x00); //---set low column address
-		WriteCmd(0x10); //---set high column address
-		WriteCmd(0x40); //--set start line address
-		WriteCmd(0x81); //--set contrast control register
-		WriteCmd(0xff); //¨¢¨¢?¨¨¦Ì¡Â?¨² 0x00~0xff
-		WriteCmd(0xa1); //--set segment re-map 0 to 127
-		WriteCmd(0xa6); //--set normal display
-		WriteCmd(0xa8); //--set multiplex ratio(1 to 64)
-		WriteCmd(0x3F); //
-		WriteCmd(0xa4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
-		WriteCmd(0xd3); //-set display offset
-		WriteCmd(0x00); //-not offset
-		WriteCmd(0xd5); //--set display clock divide ratio/oscillator frequency
-		WriteCmd(0xf0); //--set divide ratio
-		WriteCmd(0xd9); //--set pre-charge period
-		WriteCmd(0x22); //
-		WriteCmd(0xda); //--set com pins hardware configuration
-		WriteCmd(0x12);
-		WriteCmd(0xdb); //--set vcomh
-		WriteCmd(0x20); //0x20,0.77xVcc
-		WriteCmd(0x8d); //--set DC-DC enable
-		WriteCmd(0x14); //
-		WriteCmd(0xaf); //--turn on oled panel
-
+    delay_ms(200U);
+    WriteCmd(0xAEU);
+    WriteCmd(0x00U);
+    WriteCmd(0x10U);
+    WriteCmd(0x00U);
+    WriteCmd(0xB0U);
+    WriteCmd(0x81U);
+    WriteCmd(0xFFU);
+    WriteCmd(0xA1U);
+    WriteCmd(0xA6U);
+    WriteCmd(0xA8U);
+    WriteCmd(0x1FU);
+    WriteCmd(0xC8U);
+    WriteCmd(0xD3U);
+    WriteCmd(0x00U);
+    WriteCmd(0xD5U);
+    WriteCmd(0x80U);
+    WriteCmd(0xD9U);
+    WriteCmd(0x1FU);
+    WriteCmd(0xDAU);
+    WriteCmd(0x00U);
+    WriteCmd(0xDBU);
+    WriteCmd(0x40U);
+    WriteCmd(0x8DU);
+    WriteCmd(0x14U);
+    OLED_Clear();
+    WriteCmd(0xAFU);
 }
 
-//ÉèÖÃ¹â±êÆðÊ¼×ø±ê£¨x,y£©		Set the cursor starting coordinates (x, y)
-void OLED_SetPos(unsigned char x,unsigned char y)
+void OLED_Fill(unsigned char data)
 {
-		WriteCmd(0xb0+y);
-		WriteCmd( (x & 0xf0) >> 4 | 0x10 );
-		WriteCmd( (x & 0x0f) | 0x01 );
+    uint8_t page;
+    uint8_t col;
+
+    for (page = 0U; page < OLED_PAGE_COUNT; page++)
+    {
+        for (col = 0U; col < OLED_WIDTH; col++)
+        {
+            s_gram[col][page] = data;
+        }
+    }
+    OLED_Refresh();
 }
 
-//Ìî³äÕû¸öÆÁÄ»	Fill the entire screen
-void OLED_Fill(unsigned char Fill_Data)
-{
-		unsigned char m,n;
-		
-		for(m=0;m<8;m++)
-		{
-				WriteCmd(0xb0+m);
-				WriteCmd(0x00);
-				WriteCmd(0x10);
-				
-				for(n=0;n<128;n++)
-				{
-						WriteData(Fill_Data);
-				}
-		}
-}
-
-//ÇåÆÁ	clear screen
 void OLED_CLS(void)
 {
-		OLED_Fill(0x00);
+    OLED_Clear();
 }
 
-//½«OLED´ÓÐÝÃßÖÐ»½ÐÑ		Wake up the OLED from sleep
 void OLED_ON(void)
 {
-		WriteCmd(0xAF);
-		WriteCmd(0x8D);
-		WriteCmd(0x14);
+    WriteCmd(0x8DU);
+    WriteCmd(0x14U);
+    WriteCmd(0xAFU);
 }
 
-//ÈÃOLEDÐÝÃß -- ÐÝÃßÄ£Ê½ÏÂ,OLED¹¦ºÄ²»µ½10uA	Put OLED to sleep -- In sleep mode, OLED consumes less than 10uA
 void OLED_OFF(void)
 {
-		WriteCmd(0xAE);
-		WriteCmd(0x8D);
-		WriteCmd(0x10);
+    WriteCmd(0x8DU);
+    WriteCmd(0x10U);
+    WriteCmd(0xAEU);
 }
 
-void OLED_ShowStr(unsigned char x,unsigned char y,unsigned char ch[],unsigned char TextSize)
+void OLED_ShowStr(unsigned char x, unsigned char y,
+    unsigned char text[], unsigned char size)
 {
-		unsigned char c = 0,i = 0,j = 0;
-		
-		switch(TextSize)
-		{
-			case 1:
-			{
-					while(ch[j] != '\0')
-					{
-							c = ch[j] - 32;
-							if(x>126)
-							{
-									x = 0;
-									y++;
-							}
-							
-							OLED_SetPos(x,y);
-							
-							for(i=0;i<6;i++)
-							{
-									WriteData(F6x8[c][i]);
-							}
-							x+=6;
-							j++;
-					}
-			}
-			break;
-			
-			case 2:
-			{
-					while(ch[j] != '\0')
-					{
-							c = ch[j] - 32;
-							
-							if(x>120)
-							{
-									x = 0;
-									y++;
-							}
-							
-							OLED_SetPos(x,y);
-							
-							for(i=0;i<8;i++)
-							{
-									WriteData(F8X16[c*16+i]);	
-							}
-							
-							OLED_SetPos(x,y+1);
-							
-							for(i=0;i<8;i++)
-							{
-									WriteData(F8X16[c*16+i+8]);
-							}
-							x+=8;
-							j++;		
-					}
-			}
-			break;
-		}
+    OLED_ShowString(x, (uint8_t)(y * 8U), text,
+        (uint8_t)((size == 1U) ? 8U : 12U), 1U);
+    OLED_Refresh();
 }
-

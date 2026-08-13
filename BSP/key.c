@@ -1,52 +1,73 @@
 #include "key.h"
-#include "delay.h"
 #include "ti_msp_dl_config.h"
 
-/* 读取按键引脚，低电平表示按下。 */
-static uint8_t Key_IsPressed(GPIO_Regs *port, uint32_t pin)
+typedef enum
 {
-    return (uint8_t)((DL_GPIO_readPins(port, pin) & pin) == 0U);
+    KEY_STATE_RELEASED = 0U,
+    KEY_STATE_DEBOUNCE,
+    KEY_STATE_PRESSED,
+    KEY_STATE_LONG
+} KeyState;
+
+static uint8_t Key_IsK1Pressed(void)
+{
+    return (uint8_t)((DL_GPIO_readPins(KEY_A_PORT, KEY_A_K1_PIN) &
+        KEY_A_K1_PIN) == 0U);
 }
 
-/* 按 K1、K2、K3、K4 的优先顺序读取当前按下的按键。 */
-static KeyEvent Key_ReadPressed(void)
+KeyEvent Key_GetEvent(uint32_t current_ms)
 {
-    if (Key_IsPressed(KEY_A_PORT, KEY_A_K1_PIN) != 0U)
-    {
-        return KEY_EVENT_K1;
-    }
-    if (Key_IsPressed(KEY_B_PORT, KEY_B_K2_PIN) != 0U)
-    {
-        return KEY_EVENT_K2;
-    }
-    if (Key_IsPressed(KEY_B_PORT, KEY_B_K3_PIN) != 0U)
-    {
-        return KEY_EVENT_K3;
-    }
-    if (Key_IsPressed(KEY_A_PORT, KEY_A_K4_PIN) != 0U)
-    {
-        return KEY_EVENT_K4;
-    }
+    static KeyState state = KEY_STATE_RELEASED; /* K1 当前扫描状态。 */
+    static uint32_t debounce_ms = 0U;           /* 本次消抖开始时刻。 */
+    static uint32_t press_ms = 0U;              /* 确认按下的时刻。 */
+    uint8_t pressed = Key_IsK1Pressed();
 
-    return KEY_EVENT_NONE;
-}
-
-KeyEvent Key_GetEvent(void)
-{
-    static KeyEvent last_key = KEY_EVENT_NONE; /* 上次已确认的按键，用于防止长按重复触发。 */
-    KeyEvent key = Key_ReadPressed();          /* 本次检测到的按键。 */
-
-    if (key == KEY_EVENT_NONE)
+    switch (state)
     {
-        last_key = KEY_EVENT_NONE;
-        return KEY_EVENT_NONE;
-    }
+        case KEY_STATE_RELEASED:
+            if (pressed != 0U)
+            {
+                state = KEY_STATE_DEBOUNCE;
+                debounce_ms = current_ms;
+            }
+            break;
 
-    delay_ms(KEY_DEBOUNCE_DELAY_MS);
-    if ((Key_ReadPressed() == key) && (last_key == KEY_EVENT_NONE))
-    {
-        last_key = key;
-        return key;
+        case KEY_STATE_DEBOUNCE:
+            if (pressed == 0U)
+            {
+                state = KEY_STATE_RELEASED;
+            }
+            else if ((uint32_t)(current_ms - debounce_ms) >=
+                KEY_DEBOUNCE_DELAY_MS)
+            {
+                state = KEY_STATE_PRESSED;
+                press_ms = current_ms;
+            }
+            break;
+
+        case KEY_STATE_PRESSED:
+            if (pressed == 0U)
+            {
+                state = KEY_STATE_RELEASED;
+                return KEY_EVENT_SHORT;
+            }
+            if ((uint32_t)(current_ms - press_ms) >= KEY_LONG_PRESS_MS)
+            {
+                state = KEY_STATE_LONG;
+                return KEY_EVENT_LONG;
+            }
+            break;
+
+        case KEY_STATE_LONG:
+            if (pressed == 0U)
+            {
+                state = KEY_STATE_RELEASED;
+            }
+            break;
+
+        default:
+            state = KEY_STATE_RELEASED;
+            break;
     }
 
     return KEY_EVENT_NONE;

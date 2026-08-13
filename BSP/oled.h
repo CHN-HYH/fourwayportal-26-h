@@ -21,8 +21,15 @@ void OLED_Fill(unsigned char Fill_Data);
 void OLED_CLS(void);
 void OLED_ON(void);
 void OLED_OFF(void);
+/* Steel 工程的 128x32 显存绘制接口。 */
+void OLED_Refresh(void);
+void OLED_Clear(void);
+void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t mode);
+void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr,
+    uint8_t size, uint8_t mode);
+void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *text,
+    uint8_t size, uint8_t mode);
 /* 按指定字号显示 ASCII 字符串。 */
 void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize);
 
 #endif
-

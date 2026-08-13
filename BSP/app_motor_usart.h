@@ -33,7 +33,7 @@ extern int Encoder_Now[4];
 /* 四路电机的实时速度，供外部读取。 */
 extern float g_Speed[4];
 /* 收到完整驱动板帧后置位，由主循环按需清除。 */
-extern uint8_t g_recv_flag;
+extern volatile uint8_t g_recv_flag;
 
 
 void send_motor_type(motor_type_t data);
@@ -52,6 +52,8 @@ void Contrl_Pwm(int16_t m1, int16_t m2, int16_t m3, int16_t m4);
 
 void Deal_Control_Rxtemp(uint8_t rxtemp);
 void Deal_data_real(void);
+/* 返回成功解析的速度帧累计数量。 */
+uint32_t Motor_GetSpeedUpdateCount(void);
 
 #endif
 

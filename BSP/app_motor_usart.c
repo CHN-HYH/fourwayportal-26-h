@@ -8,9 +8,10 @@ float g_Speed[4];     /* 四路电机的实时速度。 */
 int Encoder_Offset[4]; /* 四路电机的 10 ms 编码器增量。 */
 int Encoder_Now[4];   /* 四路电机的累计编码器值。 */
 
-uint8_t g_recv_flag; /* 接收到一帧完整驱动板数据的标志。 */
+volatile uint8_t g_recv_flag; /* 接收到一帧完整驱动板数据的标志。 */
 static uint8_t s_rx[RX_N];      /* ISR 正在接收的协议帧内容。 */
 static uint8_t s_rx_done[RX_N]; /* 收到结束符后的完整协议帧内容。 */
+static uint32_t s_speed_n = 0U; /* 成功解析的速度帧累计数量。 */
 
 //////////********************发送部分********************///////////
 //////////******************Sending part*****************///////////
@@ -147,26 +148,39 @@ void Deal_Control_Rxtemp(uint8_t byte)
 //Format the data saved from the driver board and prepare it for printing
 void Deal_data_real(void)
 {
+	static uint8_t frame_buf[RX_N]; /* 主循环持有的完整帧快照。 */
 	static uint8_t buf[RX_N]; /* 去掉协议头后的可分割数据。 */
 	uint8_t len = 0;          /* 当前数据区长度。 */
 	uint16_t frame = 0;       /* 已接收完整帧的实际长度。 */
+	uint32_t mask;            /* 复制共享缓冲区前的中断屏蔽状态。 */
 
-	while (frame < RX_N && s_rx_done[frame] != '\0')
+	if (g_recv_flag == 0U)
+	{
+		return;
+	}
+
+	mask = __get_PRIMASK();
+	__disable_irq();
+	memcpy(frame_buf, s_rx_done, RX_N);
+	g_recv_flag = 0U;
+	__set_PRIMASK(mask);
+
+	while (frame < RX_N && frame_buf[frame] != '\0')
 	{
 		frame++;
 	}
-	if (frame < 5 || frame >= RX_N || s_rx_done[4] != ':')
+	if (frame < 5 || frame >= RX_N || frame_buf[4] != ':')
 	{
 		return;
 	}
 	
 	//总体的编码器	Overall encoder
-	 if ((strncmp("MAll",(char*)s_rx_done,4)==0))
+	 if ((strncmp("MAll",(char*)frame_buf,4)==0))
     {
         len = (uint8_t)(frame - 5);
         for (uint8_t i = 0; i < len; i++)
         {
-            buf[i] = s_rx_done[i+5]; //去掉冒号	Remove the colon
+			buf[i] = frame_buf[i+5]; //去掉冒号	Remove the colon
         }  
 				buf[len] = '\0';
 
@@ -186,12 +200,12 @@ void Deal_data_real(void)
 				
 		}
 		//10ms的实时编码器数据	10ms real-time encoder data
-		else if	((strncmp("MTEP",(char*)s_rx_done,4)==0))
+		else if	((strncmp("MTEP",(char*)frame_buf,4)==0))
     {
         len = (uint8_t)(frame - 5);
         for (uint8_t i = 0; i < len; i++)
         {
-            buf[i] = s_rx_done[i+5]; //去掉冒号	Remove the colon
+			buf[i] = frame_buf[i+5]; //去掉冒号	Remove the colon
         }  
 				buf[len] = '\0';
 
@@ -209,12 +223,12 @@ void Deal_data_real(void)
 				}
 		}
 		//速度	Speed
-		else if	((strncmp("MSPD",(char*)s_rx_done,4)==0))
+		else if	((strncmp("MSPD",(char*)frame_buf,4)==0))
     {
         len = (uint8_t)(frame - 5);
         for (uint8_t i = 0; i < len; i++)
         {
-            buf[i] = s_rx_done[i+5]; //去掉冒号	Remove the colon
+			buf[i] = frame_buf[i+5]; //去掉冒号	Remove the colon
         }  
 				buf[len] = '\0';
 				
@@ -230,5 +244,11 @@ void Deal_data_real(void)
 						strcpy(num[i],part[i]);
 						g_Speed[i] = atof(num[i]);
 				}
+				s_speed_n++;
 		}
+}
+
+uint32_t Motor_GetSpeedUpdateCount(void)
+{
+	return s_speed_n;
 }
