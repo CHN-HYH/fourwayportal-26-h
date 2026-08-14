@@ -295,13 +295,18 @@ void Camera_Vision_Init(void)
 void Camera_Vision_Process(void)
 {
     uint8_t data; /* 从环形缓冲区取出的单个字节。 */
+    uint32_t frame = vision.frame_n; /* 本次调用前已解析的正确帧数。 */
 
-    /* 把中断期间积累的字节全部取出，按协议状态机逐个解析。 */
+    /* 每次最多交付一帧，保证控制和日志不会跳过积压的中间坐标。 */
     while (s_tail != s_head)
     {
         data = s_rx[s_tail];
         s_tail = Camera_Uart_NextIndex(s_tail);
         Camera_ParseByte(data);
+        if (vision.frame_n != frame)
+        {
+            break;
+        }
     }
 
     vision.rx_overflow = s_overflow;

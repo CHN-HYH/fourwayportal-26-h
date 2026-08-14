@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-/* 初始化 TIMA0 CCP0 的 50 Hz 舵机 PWM 输出。 */
+/* 初始化 TIMA0 CCP0 的 PB8 舵机输出，并回到中位。 */
 void Servo_Init(void);
-/* 直接设置高电平脉宽，超出 500 到 2500 us 时自动限幅。 */
-void Servo_SetPulseUs(uint16_t pulse_us);
-/* 设置目标角度，超出 0 到 180 度时自动限幅。 */
-void Servo_SetAngle(uint16_t angle);
+/* 设置相对 1500 us 中位的脉宽偏移。 */
+void Servo_SetPos(int offset_us);
+/* 设置 0 到 180 度的舵机角度。 */
+void Set_Servo_Angle(unsigned int angle);
 
 #endif

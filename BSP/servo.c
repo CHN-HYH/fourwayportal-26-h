@@ -1,44 +1,95 @@
 #include "servo.h"
 #include "ti_msp_dl_config.h"
 
-#define SERVO_MIN_PULSE_US      (500U)   /* 0 度对应的高电平宽度，单位 us。 */
-#define SERVO_MAX_PULSE_US      (2500U)  /* 180 度对应的高电平宽度，单位 us。 */
-#define SERVO_MAX_ANGLE         (180U)   /* 支持的最大输入角度，单位度。 */
-#define SERVO_PERIOD_TICKS      (20000U) /* 50 Hz PWM 周期，定时器时钟为 1 MHz。 */
-
 void Servo_Init(void)
 {
-    Servo_SetPulseUs(SERVO_MIN_PULSE_US);
-    DL_TimerA_startCounter(SERVO_PWM_INST);
+    DL_TimerA_startCounter(PWM_Servo_INST);
+    DL_TimerA_setCaptureCompareValue(PWM_Servo_INST, 60U, DL_TIMER_CC_0_INDEX);
 }
 
-void Servo_SetPulseUs(uint16_t pulse_us)
+void Set_Servo_Angle(unsigned int angle)
 {
-    if (pulse_us < SERVO_MIN_PULSE_US)
-    {
-        pulse_us = SERVO_MIN_PULSE_US;
-    }
-    if (pulse_us > SERVO_MAX_PULSE_US)
-    {
-        pulse_us = SERVO_MAX_PULSE_US;
-    }
+    float cc;
+    float delta;
+    float max_step = 10.0f; /* 单次最大变化量，单位 CC。 */
+    static float cc_last = 60.0f; /* 上一次舵机位置，单位 CC。 */
 
-    DL_TimerA_setCaptureCompareValue(SERVO_PWM_INST,
-                                     SERVO_PERIOD_TICKS - pulse_us,
+    if (angle > 180U)
+    {
+        angle = 180U;
+    }
+    cc = 20.0f + ((float)angle / 180.0f) * 80.0f;
+    delta = cc - cc_last;
+    if ((delta > -3.0f) && (delta < 3.0f))
+    {
+        return;
+    }
+    if (delta > max_step)
+    {
+        cc = cc_last + max_step;
+    }
+    if (delta < -max_step)
+    {
+        cc = cc_last - max_step;
+    }
+    cc_last = cc;
+
+    if (cc < 20.0f)
+    {
+        cc = 20.0f;
+    }
+    if (cc > 100.0f)
+    {
+        cc = 100.0f;
+    }
+    DL_TimerA_setCaptureCompareValue(PWM_Servo_INST,
+                                     (unsigned int)(cc + 0.5f),
                                      DL_TIMER_CC_0_INDEX);
+    DL_TimerA_startCounter(PWM_Servo_INST);
 }
 
-void Servo_SetAngle(uint16_t angle)
+void Servo_SetPos(int offset_us)
 {
-    uint32_t pulse; /* 根据目标角度换算出的高电平宽度，单位 us。 */
+    int us = 1500 + offset_us; /* 目标高电平时间，单位 us。 */
+    float cc;
+    float delta;
+    float max_step = 10.0f; /* 单次最大变化量，单位 CC。 */
+    static float cc_last = 60.0f; /* 上一次舵机位置，单位 CC。 */
 
-    if (angle > SERVO_MAX_ANGLE)
+    if (us < 500)
     {
-        angle = SERVO_MAX_ANGLE;
+        us = 500;
     }
+    if (us > 2500)
+    {
+        us = 2500;
+    }
+    cc = (float)us / 25.0f;
+    delta = cc - cc_last;
+    if ((delta > -3.0f) && (delta < 3.0f))
+    {
+        return;
+    }
+    if (delta > max_step)
+    {
+        cc = cc_last + max_step;
+    }
+    if (delta < -max_step)
+    {
+        cc = cc_last - max_step;
+    }
+    cc_last = cc;
 
-    pulse = SERVO_MIN_PULSE_US +
-               (((uint32_t)angle * (SERVO_MAX_PULSE_US - SERVO_MIN_PULSE_US)) /
-                SERVO_MAX_ANGLE);
-    Servo_SetPulseUs((uint16_t)pulse);
+    if (cc < 20.0f)
+    {
+        cc = 20.0f;
+    }
+    if (cc > 100.0f)
+    {
+        cc = 100.0f;
+    }
+    DL_TimerA_setCaptureCompareValue(PWM_Servo_INST,
+                                     (unsigned int)(cc + 0.5f),
+                                     DL_TIMER_CC_0_INDEX);
+    DL_TimerA_startCounter(PWM_Servo_INST);
 }

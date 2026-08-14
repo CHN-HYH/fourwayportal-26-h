@@ -78,17 +78,17 @@ extern "C" {
 
 
 
-/* Defines for SERVO_PWM */
-#define SERVO_PWM_INST                                                     TIMA0
-#define SERVO_PWM_INST_IRQHandler                               TIMA0_IRQHandler
-#define SERVO_PWM_INST_INT_IRQN                                 (TIMA0_INT_IRQn)
-#define SERVO_PWM_INST_CLK_FREQ                                          1000000
+/* Defines for PWM_Servo */
+#define PWM_Servo_INST                                                     TIMA0
+#define PWM_Servo_INST_IRQHandler                               TIMA0_IRQHandler
+#define PWM_Servo_INST_INT_IRQN                                 (TIMA0_INT_IRQn)
+#define PWM_Servo_INST_CLK_FREQ                                            40000
 /* GPIO defines for channel 0 */
-#define GPIO_SERVO_PWM_C0_PORT                                             GPIOB
-#define GPIO_SERVO_PWM_C0_PIN                                      DL_GPIO_PIN_8
-#define GPIO_SERVO_PWM_C0_IOMUX                                  (IOMUX_PINCM25)
-#define GPIO_SERVO_PWM_C0_IOMUX_FUNC                 IOMUX_PINCM25_PF_TIMA0_CCP0
-#define GPIO_SERVO_PWM_C0_IDX                                DL_TIMER_CC_0_INDEX
+#define GPIO_PWM_Servo_C0_PORT                                             GPIOB
+#define GPIO_PWM_Servo_C0_PIN                                      DL_GPIO_PIN_8
+#define GPIO_PWM_Servo_C0_IOMUX                                  (IOMUX_PINCM25)
+#define GPIO_PWM_Servo_C0_IOMUX_FUNC                 IOMUX_PINCM25_PF_TIMA0_CCP0
+#define GPIO_PWM_Servo_C0_IDX                                DL_TIMER_CC_0_INDEX
 
 
 
@@ -212,7 +212,7 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
-void SYSCFG_DL_SERVO_PWM_init(void);
+void SYSCFG_DL_PWM_Servo_init(void);
 void SYSCFG_DL_I2C_0_init(void);
 void SYSCFG_DL_UART_0_init(void);
 void SYSCFG_DL_UART_1_init(void);
