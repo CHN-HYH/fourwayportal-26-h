@@ -83,17 +83,25 @@ static void pid_stop(pid_t *pid, float err)
 static float pid_calc(pid_t *pid, float val)
 {
     float delta_error;
+    float abs_error;
+    float i_scale;
     float out;
 
     pid->err = pid->target - val;
     delta_error = pid->err - pid->last_err;
     pid->delta_err = delta_error;
+    abs_error = (pid->err >= 0.0f) ? pid->err : -pid->err;
 
-    /* 大误差阶段清除积分，避免钢珠启动前积累过大的倾斜量。 */
-    if ((pid->err <= -INTEGRAL_ERR_PX) ||
-        (pid->err >= INTEGRAL_ERR_PX))
+    /* 大误差时清零，过渡区平滑预积分，目标附近沿用低速积分。 */
+    if (abs_error >= INTEGRAL_START_PX)
     {
         pid->integral = 0.0f;
+    }
+    else if (abs_error > INTEGRAL_ERR_PX)
+    {
+        i_scale = (INTEGRAL_START_PX - abs_error) /
+                  (INTEGRAL_START_PX - INTEGRAL_ERR_PX);
+        pid->integral += pid->err * i_scale;
     }
     else if ((delta_error > -INTEGRAL_DERR_PX) &&
              (delta_error < INTEGRAL_DERR_PX))

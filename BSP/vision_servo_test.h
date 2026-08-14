@@ -13,8 +13,8 @@
 
 /* 位置式 PID 参数。 */
 #define PID_KP             (0.034f)  /*** 比例系数，决定位置误差对应的基本控制量。 */
-#define PID_KI             (0.005f) /*** 积分系数，用于逐步克服静摩擦和稳态误差。 */
-#define PID_KD             (0.475f)   /*** 差分系数，用于抑制快速接近目标时的过冲。 */
+#define PID_KI             (0.0052f) /*** 积分系数，用于逐步克服静摩擦和稳态误差。 */
+#define PID_KD             (0.4325f)   /*** 差分系数，用于抑制快速接近目标时的过冲。 */
 #define PID_I_LIMIT        (1300.0f) /*** 积分累计绝对值上限，防止积分持续饱和。 */
 
 /* 控制器内部使用的标准图像坐标标定。 */
@@ -34,9 +34,10 @@
 #define PWM_CC_MAX         (70.0f) /* 舵机允许输出的最大比较值。 */
 #define PWM_CC_SCALE       (0.80f) /* PID 输出换算为舵机比较值的比例。 */
 #define DEADBAND_PX        (8.0f)  /* 到位判定及静摩擦补偿使用的误差阈值。 */
-#define STOP_ERR_PX        (10.0f)  /*** 触发 PID 停止的绝对误差阈值。 */
-#define STOP_FRAMES        (6U)    /*** 连续满足停止误差的有效帧数。 */
-#define INTEGRAL_ERR_PX    (110.0f) /* 允许累计积分的绝对误差上限。 */
+#define STOP_ERR_PX        (9.0f)  /*** 触发 PID 停止的绝对误差阈值。 */
+#define STOP_FRAMES        (4U)    /*** 连续满足停止误差的有效帧数。 */
+#define INTEGRAL_START_PX  (190.0f) /* 积分开始平滑介入的绝对误差上限。 */
+#define INTEGRAL_ERR_PX    (110.0f) /* 积分完全生效的绝对误差上限。 */
 #define INTEGRAL_DERR_PX   (4.0f)  /* 允许累计积分的单帧误差变化上限。 */
 #define STATIC_DERR_PX     (1.0f)  /* 判定钢珠接近静止的单帧误差变化上限。 */
 #define STATIC_CC_POS      (65.0f) /* 正方向克服静摩擦所需的舵机比较值。 */
