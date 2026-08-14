@@ -5,7 +5,6 @@
 #define SV_TEST_ORIGIN_TARGET_CM (0.0f)  /* 上电等待和序列起点位置，单位 cm。 */
 #define SV_TEST_FIRST_TARGET_CM  (5.0f)  /* 第一段目标位置，单位 cm。 */
 #define SV_TEST_SECOND_TARGET_CM (-5.0f) /* 第二段目标位置，单位 cm。 */
-#define SV_STABLE_FRAMES         (6U)    /* 连续到位的有效帧数。 */
 #define SV_TEST_TIMEOUT_MS       (5000U) /* K4 启动后整段动作的总时间要求，单位 ms。 */
 
 /* 串口调试输出开关。 */
@@ -34,6 +33,8 @@
 #define PWM_CC_MAX         (70.0f) /* 舵机允许输出的最大比较值。 */
 #define PWM_CC_SCALE       (0.80f) /* PID 输出换算为舵机比较值的比例。 */
 #define DEADBAND_PX        (8.0f)  /* 到位判定及静摩擦补偿使用的误差阈值。 */
+#define STOP_ERR_PX        (5.0f)  /* 触发 PID 停止的绝对误差阈值。 */
+#define STOP_FRAMES        (6U)    /* 连续满足停止误差的有效帧数。 */
 #define INTEGRAL_DERR_PX   (4.0f)  /* 允许累计积分的单帧误差变化上限。 */
 #define STATIC_DERR_PX     (1.0f)  /* 判定钢珠接近静止的单帧误差变化上限。 */
 #define STATIC_CC_POS      (65.0f) /* 正方向克服静摩擦所需的舵机比较值。 */

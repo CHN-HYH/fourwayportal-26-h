@@ -43,6 +43,8 @@ static uint32_t s_valid_ms;          /* 上一次参与控制的有效帧时刻�
 static uint8_t s_static_pulse_left;  /* 静摩擦启动脉冲剩余帧数。 */
 static uint8_t s_static_cooldown;    /* 再次启动补偿前的冷却帧数。 */
 static uint8_t s_static_active;      /* 本帧是否使用了静摩擦补偿。 */
+static uint8_t s_stop_active;        /* PID 是否已经因连续到位而停止。 */
+static uint8_t s_stop_n;             /* 连续满足停止误差的有效帧数。 */
 
 static void pid_init(pid_t *pid)
 {
@@ -54,6 +56,27 @@ static void static_comp_reset(void)
     s_static_pulse_left = 0U;
     s_static_cooldown = 0U;
     s_static_active = 0U;
+}
+
+static void stop_reset(void)
+{
+    s_stop_active = 0U;
+    s_stop_n = 0U;
+}
+
+/* 停止 PID 后清除内部输出，保留当前舵机 CC 不变。 */
+static void pid_stop(pid_t *pid, float err)
+{
+    pid->err = err;
+    pid->last_err = err;
+    pid->integral = 0.0f;
+    pid->p_term = 0.0f;
+    pid->i_term = 0.0f;
+    pid->d_term = 0.0f;
+    pid->delta_err = 0.0f;
+    pid->raw = 0.0f;
+    pid->out = 0.0f;
+    static_comp_reset();
 }
 
 /* 位置式 PID：u=Kp*e+Ki*sum(e)+Kd*(e-e_last)。 */
@@ -342,6 +365,7 @@ void Vision_Servo_Test_Init(void)
     s_cc_last = PWM_CC_CENTER;
     s_valid_ms = 0U;
     static_comp_reset();
+    stop_reset();
 #if SV_LINK_DEBUG
     printf("[SERVO] init pin=PB8 timer=TIMA0_CCP0 cc=60\r\n");
 #endif
@@ -359,7 +383,7 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     float gain;
     float cc;
     float req;
-    uint8_t reached;
+    uint8_t in_stop;
     uint32_t valid_ms;
     uint8_t first = 0U; /* 当前是否为控制器初始化后的第一帧。 */
     uint8_t history_reset = 0U; /* 视觉间隔过长时重建位置和差分历史。 */
@@ -379,6 +403,7 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         pid_init(&s_pid);
         kalman_init(&s_kf, KALMAN_Q, KALMAN_R);
         static_comp_reset();
+        stop_reset();
         s_inited = 1U;
         first = 1U;
     }
@@ -389,6 +414,7 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         kalman_init(&s_kf, KALMAN_Q, KALMAN_R);
         s_pid.integral = 0.0f;
         static_comp_reset();
+        stop_reset();
         history_reset = 1U;
     }
     s_valid_ms = valid_ms;
@@ -402,6 +428,7 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     {
         s_pid.integral = 0.0f;
         static_comp_reset();
+        stop_reset();
         target_changed = 1U;
     }
     s_pid.target = target_x;
@@ -409,8 +436,8 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     delta_error = error - s_pid.last_err;
     pos_cm = ctrl_x_to_pos_cm(x);
     gain = position_gain(pos_cm);
-    reached = ((error > -DEADBAND_PX) &&
-               (error < DEADBAND_PX));
+    in_stop = ((error > -STOP_ERR_PX) &&
+               (error < STOP_ERR_PX));
 
     s_pid.kp = PID_KP * gain;
     s_pid.ki = PID_KI;
@@ -430,9 +457,48 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         s_pid.integral = 0.0f;
     }
 
+    if (in_stop == 0U)
+    {
+        s_stop_n = 0U;
+        if (s_stop_active != 0U)
+        {
+            stop_reset();
+            s_pid.integral = 0.0f;
+            static_comp_reset();
+            s_pid.last_err = error;
+            delta_error = 0.0f;
+        }
+    }
+    else if (s_stop_active != 0U)
+    {
+        pid_stop(&s_pid, error);
+        req = s_cc_last;
+        cc = s_cc_last;
+        print_frame(input_x, x, target_x, error, delta_error, gain,
+                    req, cc, 1U);
+        return VISION_SERVO_REACHED;
+    }
+    else
+    {
+        if (s_stop_n < STOP_FRAMES)
+        {
+            s_stop_n++;
+        }
+        if (s_stop_n >= STOP_FRAMES)
+        {
+            s_stop_active = 1U;
+            pid_stop(&s_pid, error);
+            req = s_cc_last;
+            cc = s_cc_last;
+            print_frame(input_x, x, target_x, error, delta_error, gain,
+                        req, cc, 1U);
+            return VISION_SERVO_REACHED;
+        }
+    }
+
     req = pid_to_cc(&s_pid, x, gain);
     cc = set_cc(req);
     print_frame(input_x, x, target_x, error, delta_error, gain,
-                req, cc, reached);
-    return (reached != 0U) ? VISION_SERVO_REACHED : VISION_SERVO_MOVING;
+                req, cc, 0U);
+    return VISION_SERVO_MOVING;
 }

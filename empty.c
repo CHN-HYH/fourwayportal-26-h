@@ -23,7 +23,6 @@ int main(void)
 	KeyEvent key_event;         /* 当前检测到的一次性按键事件。 */
 	float target_cm = SV_TEST_ORIGIN_TARGET_CM; /* 当前阶段目标位置。 */
 	uint8_t stage = 0U;       /* 0：原点等待；1：确认原点；2：前往 5 cm；3：前往 -5 cm；4：保持 -5 cm。 */
-	uint8_t stable_n = 0U;    /* 当前目标连续到位的有效帧数。 */
 	uint8_t timeout_printed = 0U; /* 是否已经输出过超时提示。 */
 	uint32_t control_start_ms; /* K4 启动动作的时刻，单位 ms。 */
 	uint32_t elapsed_ms;       /* K4 启动后已经使用的时间，单位 ms。 */
@@ -52,7 +51,6 @@ int main(void)
 		{
 			target_cm = SV_TEST_ORIGIN_TARGET_CM;
 			stage = 1U;
-			stable_n = 0U;
 			timeout_printed = 0U;
 			control_start_ms = Camera_Vision_GetTimeMs();
 			printf("[CONTROL] key4 sequence target=0.0cm\r\n");
@@ -64,40 +62,28 @@ int main(void)
 		control_result = Vision_Servo_Test_Update(target_cm);
 		elapsed_ms = Camera_Vision_GetTimeMs() - control_start_ms;
 
-		if ((stage >= 1U) && (stage <= 3U))
+		if ((stage >= 1U) && (stage <= 3U) &&
+		    (control_result == VISION_SERVO_REACHED))
 		{
-			if (control_result == VISION_SERVO_REACHED)
+			if (stage == 1U)
 			{
-				stable_n++;
+				stage = 2U;
+				target_cm = SV_TEST_FIRST_TARGET_CM;
+				printf("[CONTROL] target=5.0cm elapsed=%lums\r\n",
+				       (unsigned long)elapsed_ms);
 			}
-			else if (control_result == VISION_SERVO_MOVING)
+			else if (stage == 2U)
 			{
-				stable_n = 0U;
+				stage = 3U;
+				target_cm = SV_TEST_SECOND_TARGET_CM;
+				printf("[CONTROL] target=-5.0cm elapsed=%lums\r\n",
+				       (unsigned long)elapsed_ms);
 			}
-
-			if (stable_n >= SV_STABLE_FRAMES)
+			else
 			{
-				stable_n = 0U;
-				if (stage == 1U)
-				{
-					stage = 2U;
-					target_cm = SV_TEST_FIRST_TARGET_CM;
-					printf("[CONTROL] target=5.0cm elapsed=%lums\r\n",
-					       (unsigned long)elapsed_ms);
-				}
-				else if (stage == 2U)
-				{
-					stage = 3U;
-					target_cm = SV_TEST_SECOND_TARGET_CM;
-					printf("[CONTROL] target=-5.0cm elapsed=%lums\r\n",
-					       (unsigned long)elapsed_ms);
-				}
-				else
-				{
-					stage = 4U;
-					printf("[CONTROL] target=-5.0cm stable elapsed=%lums\r\n",
-					       (unsigned long)elapsed_ms);
-				}
+				stage = 4U;
+				printf("[CONTROL] target=-5.0cm stable elapsed=%lums\r\n",
+				       (unsigned long)elapsed_ms);
 			}
 		}
 
