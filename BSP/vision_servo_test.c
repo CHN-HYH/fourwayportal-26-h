@@ -89,9 +89,14 @@ static float pid_calc(pid_t *pid, float val)
     delta_error = pid->err - pid->last_err;
     pid->delta_err = delta_error;
 
-    /* 钢珠运动较慢时才累计积分，避免往返运动期间长期积分饱和。 */
-    if ((delta_error > -INTEGRAL_DERR_PX) &&
-        (delta_error < INTEGRAL_DERR_PX))
+    /* 大误差阶段清除积分，避免钢珠启动前积累过大的倾斜量。 */
+    if ((pid->err <= -INTEGRAL_ERR_PX) ||
+        (pid->err >= INTEGRAL_ERR_PX))
+    {
+        pid->integral = 0.0f;
+    }
+    else if ((delta_error > -INTEGRAL_DERR_PX) &&
+             (delta_error < INTEGRAL_DERR_PX))
     {
         pid->integral += pid->err;
     }
@@ -194,6 +199,7 @@ static float set_cc(float req)
 {
     float cc = req;
     float delta;
+    float limit = RATE_LIMIT;
 
     if (cc < PWM_CC_MIN)
     {
@@ -205,13 +211,19 @@ static float set_cc(float req)
     }
 
     delta = cc - s_cc_last;
-    if (delta > RATE_LIMIT)
+    /* 舵机输出与误差变化同向时是在抑制钢珠运动，允许更快制动。 */
+    if (((s_pid.delta_err > STATIC_DERR_PX) && (delta > 0.0f)) ||
+        ((s_pid.delta_err < -STATIC_DERR_PX) && (delta < 0.0f)))
     {
-        cc = s_cc_last + RATE_LIMIT;
+        limit = BRAKE_RATE_LIMIT;
     }
-    if (delta < -RATE_LIMIT)
+    if (delta > limit)
     {
-        cc = s_cc_last - RATE_LIMIT;
+        cc = s_cc_last + limit;
+    }
+    if (delta < -limit)
+    {
+        cc = s_cc_last - limit;
     }
     s_cc_last = cc;
 
@@ -249,7 +261,9 @@ static float kalman_filter(kalman_t *kf, float in)
 /* 将当前协议坐标换算到控制器原始标定的坐标域。 */
 static float input_to_ctrl_x(float input_x)
 {
-    float pos_cm = (input_x - INPUT_CENTER_X) * INPUT_CM_PER_PX;
+    float cm_px = (input_x >= INPUT_CENTER_X) ?
+                  INPUT_CM_PX_POS : INPUT_CM_PX_NEG;
+    float pos_cm = (input_x - INPUT_CENTER_X) * cm_px;
 
     if (pos_cm >= 0.0f)
     {
@@ -322,7 +336,8 @@ static void print_frame(float input_x,
 {
 #if SV_FRAME_DEBUG
     float pos_cm = ctrl_x_to_pos_cm(x); /* 滤波后的钢珠位置，单位 cm。 */
-    float x_flt = INPUT_CENTER_X + pos_cm / INPUT_CM_PER_PX;
+    float cm_px = (pos_cm >= 0.0f) ? INPUT_CM_PX_POS : INPUT_CM_PX_NEG;
+    float x_flt = INPUT_CENTER_X + pos_cm / cm_px;
 
     printf("[BALL] n=%lu raw_x=%.1f flt_x=%.2f pos=%.2f target=%.1f "
            "err=%.2f derr=%.2f gain=%.2f p=%.2f i=%.2f d=%.2f out=%.2f "
