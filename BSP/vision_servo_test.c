@@ -7,47 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* 位置式 PID 参数。 */
-#define PID_KP             (0.028f)
-#define PID_KI             (0.0047f)
-#define PID_KD             (0.45f)
-#define PID_I_LIMIT        (1300.0f)
-
-/* 控制器使用的标准图像坐标标定。 */
-#define CTRL_CENTER_X      (360.0f)
-#define CTRL_MIN_X         (99.0f)
-#define CTRL_MAX_X         (599.0f)
-#define PIPE_HALF_CM       (12.5f)
-
-/* 当前串口协议坐标到实际位置的标定。 */
-#define INPUT_CENTER_X     (158.0f)
-#define INPUT_CM_PER_PX    (0.082f)
-
-/* 舵机 CC 和控制保护参数。 */
-#define PWM_CC_CENTER      (60.0f)
-#define PWM_CC_MIN         (50.0f)
-#define PWM_CC_MAX         (70.0f)
-#define PWM_CC_SCALE       (0.80f)
-#define DEADBAND_PX        (10.0f)
-#define HOLD_ENTER_ERR_PX  (8.0f)
-#define INTEGRAL_DERR_PX   (4.0f)
-#define STATIC_DERR_PX     (1.0f)
-#define STATIC_CC_POS      (65.0f)
-#define STATIC_CC_NEG      (54.0f)
-#define STATIC_PULSE_FRAMES   (3U)
-#define STATIC_COOLDOWN_FRAMES (4U)
-#define RATE_LIMIT         (2.0f)
-#define HISTORY_TIMEOUT_MS (300U)
-#define KALMAN_Q           (1.0f)
-#define KALMAN_R           (0.3f)
-
-/* 以 +5 cm 为基准，根据钢珠到 +12 cm 转轴的距离调整动态控制强度。 */
-#define PIVOT_POS_CM       (12.0f)
-#define GAIN_REF_ARM_CM    (7.0f)
-#define GAIN_MIN_ARM_CM    (1.0f)
-#define GAIN_SCALE_MIN     (0.55f)
-#define GAIN_SCALE_MAX     (1.10f)
-
 typedef struct
 {
     float kp;       /* 比例系数。 */
@@ -84,8 +43,6 @@ static uint32_t s_valid_ms;          /* 上一次参与控制的有效帧时刻�
 static uint8_t s_static_pulse_left;  /* 静摩擦启动脉冲剩余帧数。 */
 static uint8_t s_static_cooldown;    /* 再次启动补偿前的冷却帧数。 */
 static uint8_t s_static_active;      /* 本帧是否使用了静摩擦补偿。 */
-static uint8_t s_target_hold_active; /* 非零目标是否已经锁定保持角度。 */
-static float s_target_hold_cc;       /* 非零目标到位时保存的舵机 CC。 */
 
 static void pid_init(pid_t *pid)
 {
@@ -97,12 +54,6 @@ static void static_comp_reset(void)
     s_static_pulse_left = 0U;
     s_static_cooldown = 0U;
     s_static_active = 0U;
-}
-
-static void target_hold_reset(void)
-{
-    s_target_hold_active = 0U;
-    s_target_hold_cc = PWM_CC_CENTER;
 }
 
 /* 位置式 PID：u=Kp*e+Ki*sum(e)+Kd*(e-e_last)。 */
@@ -344,7 +295,7 @@ static void print_frame(float input_x,
                         float gain,
                         float req,
                         float cc,
-                        uint8_t hold)
+                        uint8_t reached)
 {
 #if SV_FRAME_DEBUG
     float pos_cm = ctrl_x_to_pos_cm(x); /* 滤波后的钢珠位置，单位 cm。 */
@@ -352,7 +303,7 @@ static void print_frame(float input_x,
 
     printf("[BALL] n=%lu raw_x=%.1f flt_x=%.2f pos=%.2f target=%.1f "
            "err=%.2f derr=%.2f gain=%.2f p=%.2f i=%.2f d=%.2f out=%.2f "
-           "req=%.2f cc=%.2f pwm=%u kick=%u hold=%u\r\n",
+           "req=%.2f cc=%.2f pwm=%u kick=%u reached=%u\r\n",
            (unsigned long)vision.valid_n,
            (double)input_x,
            (double)x_flt,
@@ -369,7 +320,7 @@ static void print_frame(float input_x,
            (double)cc,
            (unsigned int)(cc + 0.5f),
            (unsigned int)s_static_active,
-           (unsigned int)hold);
+           (unsigned int)reached);
 #else
     (void)input_x;
     (void)x;
@@ -379,7 +330,7 @@ static void print_frame(float input_x,
     (void)gain;
     (void)req;
     (void)cc;
-    (void)hold;
+    (void)reached;
 #endif
 }
 
@@ -391,7 +342,6 @@ void Vision_Servo_Test_Init(void)
     s_cc_last = PWM_CC_CENTER;
     s_valid_ms = 0U;
     static_comp_reset();
-    target_hold_reset();
 #if SV_LINK_DEBUG
     printf("[SERVO] init pin=PB8 timer=TIMA0_CCP0 cc=60\r\n");
 #endif
@@ -409,7 +359,7 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     float gain;
     float cc;
     float req;
-    uint8_t hold_ready;
+    uint8_t reached;
     uint32_t valid_ms;
     uint8_t first = 0U; /* 当前是否为控制器初始化后的第一帧。 */
     uint8_t history_reset = 0U; /* 视觉间隔过长时重建位置和差分历史。 */
@@ -429,7 +379,6 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         pid_init(&s_pid);
         kalman_init(&s_kf, KALMAN_Q, KALMAN_R);
         static_comp_reset();
-        target_hold_reset();
         s_inited = 1U;
         first = 1U;
     }
@@ -440,7 +389,6 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         kalman_init(&s_kf, KALMAN_Q, KALMAN_R);
         s_pid.integral = 0.0f;
         static_comp_reset();
-        target_hold_reset();
         history_reset = 1U;
     }
     s_valid_ms = valid_ms;
@@ -454,7 +402,6 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     {
         s_pid.integral = 0.0f;
         static_comp_reset();
-        target_hold_reset();
         target_changed = 1U;
     }
     s_pid.target = target_x;
@@ -462,8 +409,8 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     delta_error = error - s_pid.last_err;
     pos_cm = ctrl_x_to_pos_cm(x);
     gain = position_gain(pos_cm);
-    hold_ready = ((error > -HOLD_ENTER_ERR_PX) &&
-                  (error < HOLD_ENTER_ERR_PX));
+    reached = ((error > -DEADBAND_PX) &&
+               (error < DEADBAND_PX));
 
     s_pid.kp = PID_KP * gain;
     s_pid.ki = PID_KI;
@@ -483,82 +430,9 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         s_pid.integral = 0.0f;
     }
 
-    if ((error <= -DEADBAND_PX) || (error >= DEADBAND_PX))
-    {
-        target_hold_reset();
-    }
-    else if ((s_target_hold_active != 0U) && (hold_ready == 0U))
-    {
-        /* 误差离开内层范围时，解除原角度锁定。 */
-        target_hold_reset();
-    }
-
-    /* 零点目标进入误差范围后回到水平位，避免水平偏置继续推动钢珠。 */
-    if ((error > -DEADBAND_PX) && (error < DEADBAND_PX))
-    {
-        if ((target_cm > -0.01f) && (target_cm < 0.01f))
-        {
-            if (hold_ready == 0U)
-            {
-                req = pid_to_cc(&s_pid, x, gain);
-                cc = set_cc(req);
-                print_frame(input_x, x, target_x, error, delta_error, gain,
-                            req, cc, 0U);
-                return VISION_SERVO_MOVING;
-            }
-
-            s_pid.err = error;
-            s_pid.last_err = error;
-            s_pid.integral = 0.0f;
-            s_pid.p_term = s_pid.kp * error;
-            s_pid.i_term = 0.0f;
-            s_pid.d_term = 0.0f;
-            s_pid.delta_err = 0.0f;
-            s_pid.raw = 0.0f;
-            s_pid.out = 0.0f;
-            static_comp_reset();
-            req = PWM_CC_CENTER;
-            cc = set_cc(req);
-            print_frame(input_x, x, target_x, error, delta_error, gain,
-                        req, cc, 1U);
-            return VISION_SERVO_HOLDING;
-        }
-
-        if (hold_ready == 0U)
-        {
-            req = pid_to_cc(&s_pid, x, gain);
-            cc = set_cc(req);
-            print_frame(input_x, x, target_x, error, delta_error, gain,
-                        req, cc, 0U);
-            return VISION_SERVO_MOVING;
-        }
-
-        /* 非零目标低速到位后锁定当前角度，避免积分继续累加把钢珠推走。 */
-        if (s_target_hold_active == 0U)
-        {
-            s_target_hold_cc = s_cc_last;
-            s_target_hold_active = 1U;
-        }
-        s_pid.err = error;
-        s_pid.last_err = error;
-        s_pid.integral = 0.0f;
-        s_pid.p_term = 0.0f;
-        s_pid.i_term = 0.0f;
-        s_pid.d_term = 0.0f;
-        s_pid.delta_err = 0.0f;
-        s_pid.raw = 0.0f;
-        s_pid.out = 0.0f;
-        static_comp_reset();
-        req = s_target_hold_cc;
-        cc = set_cc(req);
-        print_frame(input_x, x, target_x, error, delta_error, gain,
-                    req, cc, 1U);
-        return VISION_SERVO_HOLDING;
-    }
-
     req = pid_to_cc(&s_pid, x, gain);
     cc = set_cc(req);
     print_frame(input_x, x, target_x, error, delta_error, gain,
-                req, cc, 0U);
-    return VISION_SERVO_MOVING;
+                req, cc, reached);
+    return (reached != 0U) ? VISION_SERVO_REACHED : VISION_SERVO_MOVING;
 }
