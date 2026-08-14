@@ -23,6 +23,7 @@ int main(void)
 	float target_cm = SV_TEST_FIRST_TARGET_CM; /* 当前阶段目标位置。 */
 	uint8_t stage = 0U;       /* 0：前往 +5 cm；1：前往 -5 cm；2：保持 -5 cm。 */
 	uint8_t stable_n = 0U;    /* 当前目标连续到位的有效帧数。 */
+	uint8_t stable_limit;     /* 当前阶段需要连续到位的有效帧数。 */
 	uint8_t timeout_printed = 0U; /* 是否已经输出过超时提示。 */
 	uint32_t control_start_ms; /* 两阶段动作开始时刻，单位 ms。 */
 	uint32_t elapsed_ms;       /* 两阶段动作已经使用的时间，单位 ms。 */
@@ -54,6 +55,8 @@ int main(void)
 
 		if (stage < 2U)
 		{
+			stable_limit = (stage == 0U) ?
+				SV_TEST_FIRST_STABLE_FRAMES : SV_TEST_SECOND_STABLE_FRAMES;
 			if (control_result == VISION_SERVO_HOLDING)
 			{
 				stable_n++;
@@ -63,7 +66,7 @@ int main(void)
 				stable_n = 0U;
 			}
 
-			if (stable_n >= SV_TEST_STABLE_FRAMES)
+			if (stable_n >= stable_limit)
 			{
 				stable_n = 0U;
 				if (stage == 0U)
