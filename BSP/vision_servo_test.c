@@ -9,9 +9,6 @@
 
 typedef struct
 {
-    float kp;       /* 比例系数。 */
-    float ki;       /* 积分系数。 */
-    float kd;       /* 微分系数。 */
     float err;      /* 当前误差。 */
     float last_err; /* 上一次误差。 */
     float integral; /* 误差积分。 */
@@ -21,7 +18,6 @@ typedef struct
     float d_term;   /* 本帧差分项。 */
     float delta_err; /* 相邻有效帧的误差变化。 */
     float raw;      /* 本帧 PID 浮点输出。 */
-    float out;      /* 控制器浮点输出。 */
 } pid_t;
 
 typedef struct
@@ -30,7 +26,6 @@ typedef struct
     float p;        /* 估计误差协方差。 */
     float q;        /* 过程噪声。 */
     float r;        /* 测量噪声。 */
-    float gain;     /* 卡尔曼增益。 */
     uint8_t first;  /* 首次采样标志。 */
 } kalman_t;
 
@@ -64,49 +59,81 @@ static void stop_reset(void)
     s_stop_n = 0U;
 }
 
-/* 停止 PID 后清除内部输出，保留当前舵机 CC 不变。 */
+/* 停止 PID 后冻结积分并清除内部输出，保留当前舵机 CC 不变。 */
 static void pid_stop(pid_t *pid, float err)
 {
     pid->err = err;
     pid->last_err = err;
-    pid->integral = 0.0f;
     pid->p_term = 0.0f;
     pid->i_term = 0.0f;
     pid->d_term = 0.0f;
     pid->delta_err = 0.0f;
     pid->raw = 0.0f;
-    pid->out = 0.0f;
     static_comp_reset();
 }
 
+/* 按统一距离阶段计算积分和微分权重。 */
+static void distance_scale(float abs_error, float *i_scale, float *d_scale)
+{
+    *i_scale = 1.0f;
+    *d_scale = 1.0f;
+
+    if (abs_error >= DIST_FAR_PX)
+    {
+        *i_scale = 0.0f;
+        *d_scale = D_MIN_SCALE;
+    }
+    else if (abs_error > DIST_MID_PX)
+    {
+        *i_scale = (DIST_FAR_PX - abs_error) /
+                   (DIST_FAR_PX - DIST_MID_PX);
+        *d_scale = D_MIN_SCALE;
+    }
+    else if (abs_error > DIST_NEAR_PX)
+    {
+        *d_scale = D_MIN_SCALE + (1.0f - D_MIN_SCALE) *
+                   (DIST_MID_PX - abs_error) /
+                   (DIST_MID_PX - DIST_NEAR_PX);
+    }
+}
+
 /* 位置式 PID：u=Kp*e+Ki*sum(e)+Kd*(e-e_last)。 */
-static float pid_calc(pid_t *pid, float val)
+static float pid_calc(pid_t *pid, float val, float gain)
 {
     float delta_error;
     float abs_error;
+    float abs_delta;
     float i_scale;
+    float i_gain;
+    float d_scale;
     float out;
 
     pid->err = pid->target - val;
     delta_error = pid->err - pid->last_err;
     pid->delta_err = delta_error;
     abs_error = (pid->err >= 0.0f) ? pid->err : -pid->err;
+    abs_delta = (delta_error >= 0.0f) ? delta_error : -delta_error;
+    distance_scale(abs_error, &i_scale, &d_scale);
 
-    /* 大误差时清零，过渡区平滑预积分，目标附近沿用低速积分。 */
-    if (abs_error >= INTEGRAL_START_PX)
+    /* 远距离清积分，中距离预积分，近距离叠加速度权重。 */
+    if (abs_error >= DIST_FAR_PX)
     {
         pid->integral = 0.0f;
     }
-    else if (abs_error > INTEGRAL_ERR_PX)
+    else
     {
-        i_scale = (INTEGRAL_START_PX - abs_error) /
-                  (INTEGRAL_START_PX - INTEGRAL_ERR_PX);
+        if ((abs_error <= DIST_MID_PX) &&
+            (abs_delta >= (INTEGRAL_DERR_PX * 3.0f)))
+        {
+            i_scale = 0.0f;
+        }
+        else if ((abs_error <= DIST_MID_PX) &&
+                 (abs_delta > INTEGRAL_DERR_PX))
+        {
+            i_scale *= ((INTEGRAL_DERR_PX * 3.0f) - abs_delta) /
+                       (INTEGRAL_DERR_PX * 2.0f);
+        }
         pid->integral += pid->err * i_scale;
-    }
-    else if ((delta_error > -INTEGRAL_DERR_PX) &&
-             (delta_error < INTEGRAL_DERR_PX))
-    {
-        pid->integral += pid->err;
     }
     if (pid->integral > PID_I_LIMIT)
     {
@@ -117,39 +144,36 @@ static float pid_calc(pid_t *pid, float val)
         pid->integral = -PID_I_LIMIT;
     }
 
-    pid->p_term = pid->kp * pid->err;
-    pid->i_term = pid->ki * pid->integral;
-    pid->d_term = pid->kd * delta_error;
+    pid->p_term = PID_KP * pid->err;
+    pid->i_term = PID_KI * pid->integral;
+    /* 钢珠偏离目标时使用完整 D，接近目标时采用距离阶段权重。 */
+    if ((pid->err * delta_error) >= 0.0f)
+    {
+        d_scale = 1.0f;
+    }
+    pid->d_term = PID_KD * delta_error * d_scale;
+    i_gain = (gain < I_GAIN_MIN) ? I_GAIN_MIN : gain;
+    /* P、D 按位置缩放，积分保留最低强度以减少对启动脉冲的依赖。 */
+    pid->p_term *= gain;
+    pid->i_term *= i_gain;
+    pid->d_term *= gain;
     out = pid->p_term + pid->i_term + pid->d_term;
     pid->last_err = pid->err;
-    if (out > 500.0f)
-    {
-        out = 500.0f;
-    }
-    if (out < -500.0f)
-    {
-        out = -500.0f;
-    }
     pid->raw = out;
-    pid->out = out;
-    return pid->out;
+    return pid->raw;
 }
 
 static float pid_to_cc(pid_t *pid, float val, float gain)
 {
-    float out = pid_calc(pid, val); /* 位置式 PID 的浮点输出。 */
+    float out = pid_calc(pid, val, gain); /* 位置式 PID 的浮点输出。 */
     float cc = PWM_CC_CENTER + out * PWM_CC_SCALE;
-    float static_cc_pos = PWM_CC_CENTER +
-                          (STATIC_CC_POS - PWM_CC_CENTER) * gain;
-    float static_cc_neg = PWM_CC_CENTER +
-                          (STATIC_CC_NEG - PWM_CC_CENTER) * gain;
     uint8_t stopped;
     uint8_t need_static;
 
     stopped = ((pid->delta_err > -STATIC_DERR_PX) &&
                (pid->delta_err < STATIC_DERR_PX));
-    need_static = (((pid->err >= DEADBAND_PX) && (cc < static_cc_pos)) ||
-                   ((pid->err <= -DEADBAND_PX) && (cc > static_cc_neg)));
+    need_static = (((pid->err >= DEADBAND_PX) && (cc < STATIC_CC_POS)) ||
+                   ((pid->err <= -DEADBAND_PX) && (cc > STATIC_CC_NEG)));
     s_static_active = 0U;
 
     if (stopped == 0U)
@@ -172,14 +196,14 @@ static float pid_to_cc(pid_t *pid, float val, float gain)
         /* 补偿只作为启动脉冲，防止低速时长期保持大倾角造成反复过冲。 */
         if (s_static_pulse_left > 0U)
         {
-            if ((pid->err >= DEADBAND_PX) && (cc < static_cc_pos))
+            if ((pid->err >= DEADBAND_PX) && (cc < STATIC_CC_POS))
             {
-                cc = static_cc_pos;
+                cc = STATIC_CC_POS;
                 s_static_active = 1U;
             }
-            else if ((pid->err <= -DEADBAND_PX) && (cc > static_cc_neg))
+            else if ((pid->err <= -DEADBAND_PX) && (cc > STATIC_CC_NEG))
             {
-                cc = static_cc_neg;
+                cc = STATIC_CC_NEG;
                 s_static_active = 1U;
             }
 
@@ -191,14 +215,6 @@ static float pid_to_cc(pid_t *pid, float val, float gain)
         }
     }
 
-    if (cc < PWM_CC_MIN)
-    {
-        cc = PWM_CC_MIN;
-    }
-    if (cc > PWM_CC_MAX)
-    {
-        cc = PWM_CC_MAX;
-    }
     return cc;
 }
 
@@ -220,8 +236,8 @@ static float set_cc(float req)
 
     delta = cc - s_cc_last;
     /* 钢珠离目标较远且尚未运动时，加快舵机向目标方向越过静摩擦区。 */
-    if ((((s_pid.err >= INTEGRAL_START_PX) && (delta > 0.0f)) ||
-         ((s_pid.err <= -INTEGRAL_START_PX) && (delta < 0.0f))) &&
+    if ((((s_pid.err >= DIST_FAR_PX) && (delta > 0.0f)) ||
+         ((s_pid.err <= -DIST_FAR_PX) && (delta < 0.0f))) &&
         (s_pid.delta_err > -STATIC_DERR_PX) &&
         (s_pid.delta_err < STATIC_DERR_PX))
     {
@@ -260,6 +276,8 @@ static void kalman_init(kalman_t *kf, float q, float r)
 
 static float kalman_filter(kalman_t *kf, float in)
 {
+    float gain;
+
     if (kf->first != 0U)
     {
         kf->prev = in;
@@ -268,9 +286,9 @@ static float kalman_filter(kalman_t *kf, float in)
     }
 
     kf->p += kf->q;
-    kf->gain = kf->p / (kf->p + kf->r);
-    kf->prev += kf->gain * (in - kf->prev);
-    kf->p = (1.0f - kf->gain) * kf->p;
+    gain = kf->p / (kf->p + kf->r);
+    kf->prev += gain * (in - kf->prev);
+    kf->p = (1.0f - gain) * kf->p;
     return kf->prev;
 }
 
@@ -410,16 +428,17 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     float target_x;
     float error;
     float delta_error;
+    float abs_error;
+    float abs_delta;
     float pos_cm;
     float gain;
     float cc;
     float req;
-    uint8_t in_stop;
+    uint8_t stop_ready;
     uint32_t valid_ms;
     uint8_t first = 0U; /* 当前是否为控制器初始化后的第一帧。 */
     uint8_t history_reset = 0U; /* 视觉间隔过长时重建位置和差分历史。 */
     uint8_t target_changed = 0U; /* 目标改变时重置旧目标的控制状态。 */
-    static uint32_t status_ms = 0U; /* 上次链路状态输出时间。 */
 
     /* valid_n 增长表示存在尚未消费的有效坐标，后续无目标帧不能覆盖它。 */
     if (frame == s_frame)
@@ -467,12 +486,6 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
     delta_error = error - s_pid.last_err;
     pos_cm = ctrl_x_to_pos_cm(x);
     gain = position_gain(pos_cm);
-    in_stop = ((error > -STOP_ERR_PX) &&
-               (error < STOP_ERR_PX));
-
-    s_pid.kp = PID_KP * gain;
-    s_pid.ki = PID_KI;
-    s_pid.kd = PID_KD * gain;
     if ((first != 0U) || (history_reset != 0U) ||
         (target_changed != 0U))
     {
@@ -480,36 +493,37 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
         s_pid.last_err = error;
         delta_error = 0.0f;
     }
+    abs_error = (error >= 0.0f) ? error : -error;
+    abs_delta = (delta_error >= 0.0f) ? delta_error : -delta_error;
+    stop_ready = ((abs_error < STOP_ERR_PX) &&
+                  (abs_delta < STATIC_DERR_PX));
 
     /* 跨过目标后清除旧方向积分，避免残余推力继续扩大过冲。 */
-    if (((error > 0.0f) && (s_pid.last_err < 0.0f)) ||
-        ((error < 0.0f) && (s_pid.last_err > 0.0f)))
+    if ((s_stop_active == 0U) &&
+        (((error > 0.0f) && (s_pid.last_err < 0.0f)) ||
+         ((error < 0.0f) && (s_pid.last_err > 0.0f))))
     {
         s_pid.integral = 0.0f;
     }
 
-    if (in_stop == 0U)
+    if (s_stop_active != 0U)
     {
-        s_stop_n = 0U;
-        if (s_stop_active != 0U)
+        if (abs_error < STOP_OUT_PX)
         {
-            stop_reset();
-            s_pid.integral = 0.0f;
-            static_comp_reset();
-            s_pid.last_err = error;
-            delta_error = 0.0f;
+            pid_stop(&s_pid, error);
+            req = s_cc_last;
+            cc = s_cc_last;
+            print_frame(input_x, x, target_x, error, delta_error, gain,
+                        req, cc, 1U);
+            return VISION_SERVO_REACHED;
         }
+        stop_reset();
+        static_comp_reset();
+        s_static_cooldown = STATIC_COOLDOWN_FRAMES;
+        s_pid.last_err = error;
+        delta_error = 0.0f;
     }
-    else if (s_stop_active != 0U)
-    {
-        pid_stop(&s_pid, error);
-        req = s_cc_last;
-        cc = s_cc_last;
-        print_frame(input_x, x, target_x, error, delta_error, gain,
-                    req, cc, 1U);
-        return VISION_SERVO_REACHED;
-    }
-    else
+    else if (stop_ready != 0U)
     {
         if (s_stop_n < STOP_FRAMES)
         {
@@ -525,6 +539,10 @@ VisionServoResult Vision_Servo_Test_Update(float target_cm)
                         req, cc, 1U);
             return VISION_SERVO_REACHED;
         }
+    }
+    else
+    {
+        s_stop_n = 0U;
     }
 
     req = pid_to_cc(&s_pid, x, gain);

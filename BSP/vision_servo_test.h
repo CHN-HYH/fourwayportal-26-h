@@ -16,6 +16,10 @@
 #define PID_KI             (0.0052f) /*** 积分系数，用于逐步克服静摩擦和稳态误差。 */
 #define PID_KD             (0.4315f) /*** 差分系数，用于抑制快速接近目标时的过冲。 */
 #define PID_I_LIMIT        (1300.0f) /*** 积分累计绝对值上限，防止积分持续饱和。 */
+#define DIST_FAR_PX        (185.0f)  /* 远距离阶段边界，积分从零开始介入。 */
+#define DIST_MID_PX        (80.0f)   /* 中距离阶段边界，积分完全生效。 */
+#define DIST_NEAR_PX       (25.0f)   /* 近距离阶段边界，D 完全生效。 */
+#define D_MIN_SCALE        (0.45f)   /* 大误差接近目标时的最小 D 比例。 */
 
 /* 控制器内部使用的标准图像坐标标定。 */
 #define CTRL_CENTER_X      (360.0f) /* 摆杆物理中心对应的控制器横坐标。 */
@@ -24,7 +28,7 @@
 #define PIPE_HALF_CM       (12.5f)  /* 摆杆中心到单侧端点的距离，单位 cm。 */
 
 /* 摄像头输入坐标到实际位置的标定。 */
-#define INPUT_CENTER_X     (158.0f)  /* 钢珠位于摆杆中心时的摄像头像素坐标。 */
+#define INPUT_CENTER_X     (152.0f)  /* 钢珠位于摆杆中心时的摄像头像素坐标。 */
 #define INPUT_CM_PX_POS    (0.0863f) /* 正半轴每个摄像头像素对应的距离，单位 cm/px。 */
 #define INPUT_CM_PX_NEG    (0.0837f) /* 负半轴每个摄像头像素对应的距离，单位 cm/px。 */
 
@@ -33,19 +37,18 @@
 #define PWM_CC_MIN         (50.0f)  /* 舵机允许输出的最小比较值。 */
 #define PWM_CC_MAX         (70.0f)  /* 舵机允许输出的最大比较值。 */
 #define PWM_CC_SCALE       (0.80f)  /* PID 输出换算为舵机比较值的比例。 */
-#define DEADBAND_PX        (8.0f)   /* 到位判定及静摩擦补偿使用的误差阈值。 */
-#define STOP_ERR_PX        (10.5f)   /*** 触发 PID 停止的绝对误差阈值。 */
-#define STOP_FRAMES        (4U)     /*** 连续满足停止误差的有效帧数。 */
-#define INTEGRAL_START_PX  (185.0f) /* 积分开始平滑介入的绝对误差上限。 */
-#define INTEGRAL_ERR_PX    (110.0f) /* 积分完全生效的绝对误差上限。 */
-#define INTEGRAL_DERR_PX   (4.0f)   /* 允许累计积分的单帧误差变化上限。 */
+#define DEADBAND_PX        (12.0f)  /* 静摩擦补偿使用的误差阈值。 */
+#define STOP_ERR_PX        (8.0f)   /*** 触发 PID 停止的绝对误差阈值。 */
+#define STOP_OUT_PX        (12.0f)  /* PID 停止后恢复控制的绝对误差阈值。 */
+#define STOP_FRAMES        (2U)     /*** 连续满足停止误差的有效帧数。 */
+#define INTEGRAL_DERR_PX   (4.0f)   /* 全量积分速度上限，至三倍时平滑降为零。 */
 #define STATIC_DERR_PX     (1.0f)   /* 判定钢珠接近静止的单帧误差变化上限。 */
 #define STATIC_CC_POS      (65.0f)  /* 正方向克服静摩擦所需的舵机比较值。 */
-#define STATIC_CC_NEG      (54.0f)  /* 负方向克服静摩擦所需的舵机比较值。 */
+#define STATIC_CC_NEG      (55.0f)  /* 负方向克服静摩擦所需的舵机比较值。 */
 #define STATIC_PULSE_FRAMES   (5U)  /*** 单次静摩擦启动脉冲持续的有效帧数。 */
 #define STATIC_COOLDOWN_FRAMES (4U) /* 两次静摩擦启动脉冲之间的冷却帧数。 */
 #define RATE_LIMIT         (1.0f)   /* 舵机比较值每个有效帧允许的最大变化量。 */
-#define START_RATE_LIMIT   (3.0f)   /* 远距离静止启动时每帧允许的最大变化量。 */
+#define START_RATE_LIMIT   (5.0f)   /* 远距离静止启动时每帧允许的最大变化量。 */
 #define BRAKE_RATE_LIMIT   (2.0f)   /* 反向制动时每个有效帧允许的最大变化量。 */
 #define HISTORY_TIMEOUT_MS (300U)   /* 超过该时间未收到有效帧时重建控制历史。 */
 
@@ -59,6 +62,7 @@
 #define GAIN_MIN_ARM_CM    (1.0f)  /* 参与位置增益计算的最小力臂长度，单位 cm。 */
 #define GAIN_SCALE_MIN     (0.55f) /* 位置增益的下限。 */
 #define GAIN_SCALE_MAX     (1.10f) /* 位置增益的上限。 */
+#define I_GAIN_MIN         (0.75f) /* 远离转轴时积分项保留的最低位置增益。 */
 
 typedef enum
 {
