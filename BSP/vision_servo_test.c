@@ -219,6 +219,14 @@ static float set_cc(float req)
     }
 
     delta = cc - s_cc_last;
+    /* 钢珠离目标较远且尚未运动时，加快舵机向目标方向越过静摩擦区。 */
+    if ((((s_pid.err >= INTEGRAL_START_PX) && (delta > 0.0f)) ||
+         ((s_pid.err <= -INTEGRAL_START_PX) && (delta < 0.0f))) &&
+        (s_pid.delta_err > -STATIC_DERR_PX) &&
+        (s_pid.delta_err < STATIC_DERR_PX))
+    {
+        limit = START_RATE_LIMIT;
+    }
     /* 舵机输出与误差变化同向时是在抑制钢珠运动，允许更快制动。 */
     if (((s_pid.delta_err > STATIC_DERR_PX) && (delta > 0.0f)) ||
         ((s_pid.delta_err < -STATIC_DERR_PX) && (delta < 0.0f)))
