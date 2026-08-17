@@ -3650,57 +3650,56 @@ Image Symbol Table
     [Anonymous Symbol]                       0x00002af4   Section        0  vision_servo_test.o(.text.pid_init)
     pid_stop                                 0x00002b07   Thumb Code    50  vision_servo_test.o(.text.pid_stop)
     [Anonymous Symbol]                       0x00002b06   Section        0  vision_servo_test.o(.text.pid_stop)
-    pid_to_cc                                0x00002b39   Thumb Code   400  vision_servo_test.o(.text.pid_to_cc)
+    pid_to_cc                                0x00002b39   Thumb Code   408  vision_servo_test.o(.text.pid_to_cc)
     [Anonymous Symbol]                       0x00002b38   Section        0  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_0                            0x00002cc8   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_1                            0x00002ccc   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_2                            0x00002cd0   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_4                            0x00002cd4   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_5                            0x00002cd8   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_6                            0x00002cdc   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_8                            0x00002ce0   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    __arm_cp.13_9                            0x00002ce4   Number         4  vision_servo_test.o(.text.pid_to_cc)
-    position_gain                            0x00002ce9   Thumb Code   100  vision_servo_test.o(.text.position_gain)
-    [Anonymous Symbol]                       0x00002ce8   Section        0  vision_servo_test.o(.text.position_gain)
-    __arm_cp.10_0                            0x00002d4c   Number         4  vision_servo_test.o(.text.position_gain)
-    __arm_cp.10_1                            0x00002d50   Number         4  vision_servo_test.o(.text.position_gain)
-    __arm_cp.10_2                            0x00002d54   Number         4  vision_servo_test.o(.text.position_gain)
-    __arm_cp.10_3                            0x00002d58   Number         4  vision_servo_test.o(.text.position_gain)
-    print_frame                              0x00002d5d   Thumb Code   380  vision_servo_test.o(.text.print_frame)
-    [Anonymous Symbol]                       0x00002d5c   Section        0  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_0                            0x00002ed8   Number         4  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_1                            0x00002edc   Number         4  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_2                            0x00002ee0   Number         4  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_3                            0x00002ee4   Number         4  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_5                            0x00002ee8   Number         4  vision_servo_test.o(.text.print_frame)
-    __arm_cp.12_6                            0x00002eec   Number         4  vision_servo_test.o(.text.print_frame)
-    set_cc                                   0x00002ef1   Thumb Code   336  vision_servo_test.o(.text.set_cc)
-    [Anonymous Symbol]                       0x00002ef0   Section        0  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_0                            0x00003040   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_1                            0x00003044   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_2                            0x00003048   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_3                            0x0000304c   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_4                            0x00003050   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_5                            0x00003054   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_6                            0x00003058   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_7                            0x0000305c   Number         4  vision_servo_test.o(.text.set_cc)
-    __arm_cp.14_8                            0x00003060   Number         4  vision_servo_test.o(.text.set_cc)
-    static_comp_reset                        0x00003065   Thumb Code    16  vision_servo_test.o(.text.static_comp_reset)
-    [Anonymous Symbol]                       0x00003064   Section        0  vision_servo_test.o(.text.static_comp_reset)
-    __arm_cp.1_0                             0x00003074   Number         4  vision_servo_test.o(.text.static_comp_reset)
-    __arm_cp.1_1                             0x00003078   Number         4  vision_servo_test.o(.text.static_comp_reset)
-    __arm_cp.1_2                             0x0000307c   Number         4  vision_servo_test.o(.text.static_comp_reset)
-    stop_reset                               0x00003081   Thumb Code    12  vision_servo_test.o(.text.stop_reset)
-    [Anonymous Symbol]                       0x00003080   Section        0  vision_servo_test.o(.text.stop_reset)
-    __arm_cp.2_0                             0x0000308c   Number         4  vision_servo_test.o(.text.stop_reset)
-    __arm_cp.2_1                             0x00003090   Number         4  vision_servo_test.o(.text.stop_reset)
-    target_to_ctrl_x                         0x00003095   Thumb Code    52  vision_servo_test.o(.text.target_to_ctrl_x)
-    [Anonymous Symbol]                       0x00003094   Section        0  vision_servo_test.o(.text.target_to_ctrl_x)
-    __arm_cp.8_0                             0x000030c8   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
-    __arm_cp.8_1                             0x000030cc   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
-    __arm_cp.8_2                             0x000030d0   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
-    i.__0printf                              0x000030d4   Section        0  printfa.o(i.__0printf)
-    i.__ARM_clz                              0x000030f4   Section        0  depilogue.o(i.__ARM_clz)
+    __arm_cp.13_0                            0x00002cd0   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_1                            0x00002cd4   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_2                            0x00002cd8   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_3                            0x00002cdc   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_4                            0x00002ce0   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_6                            0x00002ce4   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    __arm_cp.13_7                            0x00002ce8   Number         4  vision_servo_test.o(.text.pid_to_cc)
+    position_gain                            0x00002ced   Thumb Code   100  vision_servo_test.o(.text.position_gain)
+    [Anonymous Symbol]                       0x00002cec   Section        0  vision_servo_test.o(.text.position_gain)
+    __arm_cp.10_0                            0x00002d50   Number         4  vision_servo_test.o(.text.position_gain)
+    __arm_cp.10_1                            0x00002d54   Number         4  vision_servo_test.o(.text.position_gain)
+    __arm_cp.10_2                            0x00002d58   Number         4  vision_servo_test.o(.text.position_gain)
+    __arm_cp.10_3                            0x00002d5c   Number         4  vision_servo_test.o(.text.position_gain)
+    print_frame                              0x00002d61   Thumb Code   380  vision_servo_test.o(.text.print_frame)
+    [Anonymous Symbol]                       0x00002d60   Section        0  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_0                            0x00002edc   Number         4  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_1                            0x00002ee0   Number         4  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_2                            0x00002ee4   Number         4  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_3                            0x00002ee8   Number         4  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_5                            0x00002eec   Number         4  vision_servo_test.o(.text.print_frame)
+    __arm_cp.12_6                            0x00002ef0   Number         4  vision_servo_test.o(.text.print_frame)
+    set_cc                                   0x00002ef5   Thumb Code   336  vision_servo_test.o(.text.set_cc)
+    [Anonymous Symbol]                       0x00002ef4   Section        0  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_0                            0x00003044   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_1                            0x00003048   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_2                            0x0000304c   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_3                            0x00003050   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_4                            0x00003054   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_5                            0x00003058   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_6                            0x0000305c   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_7                            0x00003060   Number         4  vision_servo_test.o(.text.set_cc)
+    __arm_cp.14_8                            0x00003064   Number         4  vision_servo_test.o(.text.set_cc)
+    static_comp_reset                        0x00003069   Thumb Code    16  vision_servo_test.o(.text.static_comp_reset)
+    [Anonymous Symbol]                       0x00003068   Section        0  vision_servo_test.o(.text.static_comp_reset)
+    __arm_cp.1_0                             0x00003078   Number         4  vision_servo_test.o(.text.static_comp_reset)
+    __arm_cp.1_1                             0x0000307c   Number         4  vision_servo_test.o(.text.static_comp_reset)
+    __arm_cp.1_2                             0x00003080   Number         4  vision_servo_test.o(.text.static_comp_reset)
+    stop_reset                               0x00003085   Thumb Code    12  vision_servo_test.o(.text.stop_reset)
+    [Anonymous Symbol]                       0x00003084   Section        0  vision_servo_test.o(.text.stop_reset)
+    __arm_cp.2_0                             0x00003090   Number         4  vision_servo_test.o(.text.stop_reset)
+    __arm_cp.2_1                             0x00003094   Number         4  vision_servo_test.o(.text.stop_reset)
+    target_to_ctrl_x                         0x00003099   Thumb Code    52  vision_servo_test.o(.text.target_to_ctrl_x)
+    [Anonymous Symbol]                       0x00003098   Section        0  vision_servo_test.o(.text.target_to_ctrl_x)
+    __arm_cp.8_0                             0x000030cc   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
+    __arm_cp.8_1                             0x000030d0   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
+    __arm_cp.8_2                             0x000030d4   Number         4  vision_servo_test.o(.text.target_to_ctrl_x)
+    i.__0printf                              0x000030d8   Section        0  printfa.o(i.__0printf)
+    i.__ARM_clz                              0x000030f8   Section        0  depilogue.o(i.__ARM_clz)
     i.__scatterload_copy                     0x00003128   Section       14  handlers.o(i.__scatterload_copy)
     i.__scatterload_null                     0x00003138   Section        2  handlers.o(i.__scatterload_null)
     i.__scatterload_zeroinit                 0x00003140   Section       14  handlers.o(i.__scatterload_zeroinit)
@@ -3935,12 +3934,12 @@ Image Symbol Table
     delay_us                                 0x000024d1   Thumb Code   108  delay.o(.text.delay_us)
     fputc                                    0x000025f1   Thumb Code    40  usart.o(.text.fputc)
     main                                     0x00002781   Thumb Code   292  empty.o(.text.main)
-    __0printf                                0x000030d5   Thumb Code    24  printfa.o(i.__0printf)
-    __1printf                                0x000030d5   Thumb Code     0  printfa.o(i.__0printf)
-    __2printf                                0x000030d5   Thumb Code     0  printfa.o(i.__0printf)
-    __c89printf                              0x000030d5   Thumb Code     0  printfa.o(i.__0printf)
-    printf                                   0x000030d5   Thumb Code     0  printfa.o(i.__0printf)
-    __ARM_clz                                0x000030f5   Thumb Code    46  depilogue.o(i.__ARM_clz)
+    __0printf                                0x000030d9   Thumb Code    24  printfa.o(i.__0printf)
+    __1printf                                0x000030d9   Thumb Code     0  printfa.o(i.__0printf)
+    __2printf                                0x000030d9   Thumb Code     0  printfa.o(i.__0printf)
+    __c89printf                              0x000030d9   Thumb Code     0  printfa.o(i.__0printf)
+    printf                                   0x000030d9   Thumb Code     0  printfa.o(i.__0printf)
+    __ARM_clz                                0x000030f9   Thumb Code    46  depilogue.o(i.__ARM_clz)
     __scatterload_copy                       0x00003129   Thumb Code    14  handlers.o(i.__scatterload_copy)
     __scatterload_null                       0x00003139   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x00003141   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
@@ -4138,16 +4137,16 @@ Memory Map of the image
     0x000028c8   0x000028c8   0x0000022c   Code   RO         1427    .text.pid_calc      vision_servo_test.o
     0x00002af4   0x00002af4   0x00000012   Code   RO         1405    .text.pid_init      vision_servo_test.o
     0x00002b06   0x00002b06   0x00000032   Code   RO         1419    .text.pid_stop      vision_servo_test.o
-    0x00002b38   0x00002b38   0x000001b0   Code   RO         1423    .text.pid_to_cc     vision_servo_test.o
-    0x00002ce8   0x00002ce8   0x00000074   Code   RO         1417    .text.position_gain  vision_servo_test.o
-    0x00002d5c   0x00002d5c   0x00000194   Code   RO         1421    .text.print_frame   vision_servo_test.o
-    0x00002ef0   0x00002ef0   0x00000174   Code   RO         1425    .text.set_cc        vision_servo_test.o
-    0x00003064   0x00003064   0x0000001c   Code   RO         1399    .text.static_comp_reset  vision_servo_test.o
-    0x00003080   0x00003080   0x00000014   Code   RO         1401    .text.stop_reset    vision_servo_test.o
-    0x00003094   0x00003094   0x00000040   Code   RO         1413    .text.target_to_ctrl_x  vision_servo_test.o
-    0x000030d4   0x000030d4   0x00000020   Code   RO         1646    i.__0printf         mc_p.l(printfa.o)
-    0x000030f4   0x000030f4   0x0000002e   Code   RO         1800    i.__ARM_clz         mf_p.l(depilogue.o)
-    0x00003122   0x00003122   0x00000006   PAD
+    0x00002b38   0x00002b38   0x000001b4   Code   RO         1423    .text.pid_to_cc     vision_servo_test.o
+    0x00002cec   0x00002cec   0x00000074   Code   RO         1417    .text.position_gain  vision_servo_test.o
+    0x00002d60   0x00002d60   0x00000194   Code   RO         1421    .text.print_frame   vision_servo_test.o
+    0x00002ef4   0x00002ef4   0x00000174   Code   RO         1425    .text.set_cc        vision_servo_test.o
+    0x00003068   0x00003068   0x0000001c   Code   RO         1399    .text.static_comp_reset  vision_servo_test.o
+    0x00003084   0x00003084   0x00000014   Code   RO         1401    .text.stop_reset    vision_servo_test.o
+    0x00003098   0x00003098   0x00000040   Code   RO         1413    .text.target_to_ctrl_x  vision_servo_test.o
+    0x000030d8   0x000030d8   0x00000020   Code   RO         1646    i.__0printf         mc_p.l(printfa.o)
+    0x000030f8   0x000030f8   0x0000002e   Code   RO         1800    i.__ARM_clz         mf_p.l(depilogue.o)
+    0x00003126   0x00003126   0x00000002   PAD
     0x00003128   0x00003128   0x0000000e   Code   RO         1813    i.__scatterload_copy  mc_p.l(handlers.o)
     0x00003136   0x00003136   0x00000002   PAD
     0x00003138   0x00003138   0x00000002   Code   RO         1814    i.__scatterload_null  mc_p.l(handlers.o)
@@ -4263,10 +4262,10 @@ Image component sizes
         20          4        192          0       1024        624   startup_mspm0g350x_uvision.o
       1922        160         49          0        236      31427   ti_msp_dl_config.o
        354         24          0          0        131       6122   usart.o
-      3672        296        206          4         70       9835   vision_servo_test.o
+      3676        292        206          4         70       9835   vision_servo_test.o
 
     ----------------------------------------------------------------------
-      9906        860        772          4       2196     124344   Object Totals
+      9910        856        772          4       2196     124344   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         14          0          4          0         19          0   (incl. Padding)
 
@@ -4317,8 +4316,8 @@ Image component sizes
         88          0          0          0          0         72   fsqrt.o
 
     ----------------------------------------------------------------------
-      4802        154          0          8          0       2752   Library Totals
-        20          4          0          0          0          0   (incl. Padding)
+      4798        154          0          8          0       2752   Library Totals
+        16          4          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -4329,7 +4328,7 @@ Image component sizes
       2042         28          0          0          0       1620   mf_p.l
 
     ----------------------------------------------------------------------
-      4802        154          0          8          0       2752   Library Totals
+      4798        154          0          8          0       2752   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -4338,9 +4337,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     14708       1014        772         12       2196     125572   Grand Totals
-     14708       1014        772         12       2196     125572   ELF Image Totals
-     14708       1014        772         12          0          0   ROM Totals
+     14708       1010        772         12       2196     125572   Grand Totals
+     14708       1010        772         12       2196     125572   ELF Image Totals
+     14708       1010        772         12          0          0   ROM Totals
 
 ==============================================================================
 

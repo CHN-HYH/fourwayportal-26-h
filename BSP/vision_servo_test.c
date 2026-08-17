@@ -172,8 +172,8 @@ static float pid_to_cc(pid_t *pid, float val, float gain)
 
     stopped = ((pid->delta_err > -STATIC_DERR_PX) &&
                (pid->delta_err < STATIC_DERR_PX));
-    need_static = (((pid->err >= DEADBAND_PX) && (cc < STATIC_CC_POS)) ||
-                   ((pid->err <= -DEADBAND_PX) && (cc > STATIC_CC_NEG)));
+    need_static = (((pid->err >= STOP_ERR_PX) && (cc < STATIC_CC_POS)) ||
+                   ((pid->err <= -STOP_ERR_PX) && (cc > STATIC_CC_NEG)));
     s_static_active = 0U;
 
     if (stopped == 0U)
@@ -196,12 +196,12 @@ static float pid_to_cc(pid_t *pid, float val, float gain)
         /* 补偿只作为启动脉冲，防止低速时长期保持大倾角造成反复过冲。 */
         if (s_static_pulse_left > 0U)
         {
-            if ((pid->err >= DEADBAND_PX) && (cc < STATIC_CC_POS))
+            if ((pid->err >= STOP_ERR_PX) && (cc < STATIC_CC_POS))
             {
                 cc = STATIC_CC_POS;
                 s_static_active = 1U;
             }
-            else if ((pid->err <= -DEADBAND_PX) && (cc > STATIC_CC_NEG))
+            else if ((pid->err <= -STOP_ERR_PX) && (cc > STATIC_CC_NEG))
             {
                 cc = STATIC_CC_NEG;
                 s_static_active = 1U;
