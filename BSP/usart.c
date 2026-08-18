@@ -9,16 +9,12 @@ static volatile uint8_t s_rx_ready = 0U;          /* UART0 收到数据后的标
 
 void USART_Init(void)
 {
-	// SYSCFG初始化
-	// SYSCFG initialization
-	SYSCFG_DL_init();
-	//清除串口中断标志
-	//Clear the serial port interrupt flag
+	/* 系统外设已由 main 中的 SYSCFG_DL_init() 统一初始化。 */
+	/* 清除串口中断标志。 */
 	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
 	NVIC_ClearPendingIRQ(UART_1_INST_INT_IRQN);
     NVIC_ClearPendingIRQ(UART_3_INST_INT_IRQN);
-	//使能串口中断
-	//Enable serial port interrupt
+	/* 使能串口中断。 */
 	NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
 	NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
     NVIC_EnableIRQ(UART_3_INST_INT_IRQN);
