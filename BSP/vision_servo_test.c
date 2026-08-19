@@ -65,29 +65,6 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
     float p, i, d;
     float abs_err = fabsf(err);
 
-    /* 根据目标半轴选择不同参数 */
-    float kp, ki, kd;
-    if (pid->target_cm >= 0.0f)  /* 正半轴：力臂短，响应慢，保持当前参数 */
-    {
-        kp = 0.08f;
-        ki = 0.0080f;
-        kd = 0.800f;
-    }
-    else  /* 负半轴：力臂长，响应快，分距离调整 */
-    {
-        /* 远距离降低KP避免过冲，中近距离提高KP加快响应 */
-        if (abs_err > 70.0f)
-        {
-            kp = 0.045f;  /* 远距离温和 */
-        }
-        else
-        {
-            kp = 0.070f;  /* 从0.065提到0.070，应对系统衰退 */
-        }
-        ki = 0.0080f;
-        kd = 0.500f;
-    }
-
     /* 初始化或目标切换时不产生 D 冲击 */
     if (reset)
     {
@@ -99,11 +76,20 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
         return 0.0f;
     }
 
+    /* 简化的参数：基于误差动态调整 */
+    float kp = 0.058f;  /* 统一KP */
+    float ki = 0.0080f;
+    float kd = 0.720f;  /* 加强阻尼 */
+
+    /* 接近时降低KP防超调 */
+    if (abs_err < 8.0f)
+        kp *= 0.70f;  
+
     /* 检测钢珠是否静止 */
     float ball_movement = current_pos - pid->last_pos;
     float abs_movement = fabsf(ball_movement);
 
-    if (abs_movement < 0.25f) /* 静止阈值：约0.25cm，包含缓慢蠕动 */
+    if (abs_movement < 0.15f) /* 从0.25降到0.15，更准确识别真正的静止 */
     {
         if (pid->still_count < 255)
             pid->still_count++;
@@ -113,79 +99,101 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
         pid->still_count = 0;
     }
 
-    /* P 项 - 使用半轴特定参数 */
+    /* 速度检测：用于高速接近时的强制制动 */
+    float velocity = ball_movement;  /* cm/帧，正值=远离0cm，负值=靠近0cm */
+    float abs_velocity = abs_movement;
+
+    /* P 项 - 使用连续调整的参数 */
     p = kp * err;
 
-    /* 误差跨零判断：只在小幅振荡时清积分，大幅穿越保留 */
+    /* 强化的速度制动：针对0.11cm步进的超调 */
+    float velocity_brake = 0.0f;
+    if (abs_err < 25.0f && abs_err > 1.5f && abs_velocity > 0.08f)
+    {
+        /* 判断是否在接近目标 */
+        if (err * velocity < 0.0f)  /* 误差和速度反向=接近 */
+        {
+            /* 根据误差大小和速度动态调整制动力 */
+            float brake_coef;
+            if (abs_err < 5.0f)  /* 极近距离：超强制动 */
+            {
+                brake_coef = 18.0f;  /* 从12.0提高到18.0 */
+            }
+            else if (abs_err < 10.0f)  /* 接近距离：强制动 */
+            {
+                brake_coef = 14.0f;  /* 从9.0提高到14.0 */
+            }
+            else  /* 中距离：中等制动 */
+            {
+                brake_coef = 10.0f;
+            }
+
+            velocity_brake = -velocity * brake_coef;
+
+#if SV_FRAME_DEBUG
+            static uint32_t brake_print = 0;
+            if ((brake_print++ % 10) == 0)
+                printf("  [BRAKE] err=%.1f vel=%.2f brake=%.2f(coef=%.1f)\r\n",
+                       (double)err, (double)velocity, (double)velocity_brake, (double)brake_coef);
+#endif
+        }
+    }
+
+    /* 重新计算P项（可能被速度制动调整了KP） */
+    p = kp * err;
+
+    /* 简化的积分清零策略 */
     float delta_err = err - pid->last_err;
     float abs_delta = fabsf(delta_err);
 
-    if ((err > 0.0f && pid->last_err < 0.0f) ||
-        (err < 0.0f && pid->last_err > 0.0f))
+    /* 误差变号时减半积分 */
+    if ((err > 0.0f && pid->last_err < 0.0f) || (err < 0.0f && pid->last_err > 0.0f))
     {
-        /* 只在小幅度变号时清积分（可能是过冲振荡） */
-        if (abs_delta < 20.0f)
+        if (abs_delta < 10.0f)  /* 小幅震荡 */
         {
-            pid->integral = 0.0f;
+            pid->integral *= 0.6f;
             pid->still_count = 0;
-#if SV_FRAME_DEBUG
-            printf("  [INTEGRAL RESET] Small sign change\r\n");
-#endif
         }
-        /* 大幅度变号（>20px）保留积分，可能是正常穿越目标 */
     }
 
-    /* I 项：只在中等误差时累加 */
+    /* I 项：优化积分累积，覆盖中等误差区间 */
     if (abs_err > STOP_ERR_PX && abs_err < DIST_MID_PX)
     {
-        /* 基础积分 */
-        float i_gain = 1.0f;
-
-        /* 静止时加速积分累积 */
-        if (pid->still_count > 2 && abs_err > 15.0f)  /* 从3降到2 */
-        {
-            i_gain = 2.5f; /* 静止时积分增益 */
-        }
-
+        float i_gain = (pid->still_count > 2 && abs_err > 10.0f) ? 2.5f : 1.0f; 
         pid->integral += err * i_gain;
 
         /* 积分限幅 */
-        if (pid->integral > PID_I_LIMIT)
-            pid->integral = PID_I_LIMIT;
-        if (pid->integral < -PID_I_LIMIT)
-            pid->integral = -PID_I_LIMIT;
+        if (pid->integral > PID_I_LIMIT) pid->integral = PID_I_LIMIT;
+        if (pid->integral < -PID_I_LIMIT) pid->integral = -PID_I_LIMIT;
     }
     else if (abs_err >= DIST_MID_PX)
     {
-        /* 远距离直接清零积分 */
         pid->integral = 0.0f;
     }
     i = ki * pid->integral;
 
-    /* D 项：使用帧间误差变化 */
+    /* D 项：优化的限制策略，极近距离加强阻尼 */
     d = kd * delta_err;
 
-    /* 静止突破机制：静止超过5帧且误差>15像素，给额外推力 */
+    /* 根据误差大小限制D项：极近距离放宽，加强制动 */
+    float d_limit;
+    if (abs_err < 2.0f)  /* 极小误差：严格限制接近稳态 */
+        d_limit = 0.8f;
+    else if (abs_err < 5.0f)  /* 超调区：放宽限制加强阻尼 */
+        d_limit = 5.0f;  /* 从4.0提高到5.0 */
+    else if (abs_err < 10.0f)  /* 接近区：允许强阻尼 */
+        d_limit = 6.0f;
+    else
+        d_limit = 6.0f;
+
+    if (d > d_limit) d = d_limit;
+    if (d < -d_limit) d = -d_limit;
+
+    /* 优化的boost机制 */
     float boost = 0.0f;
-    if (pid->still_count > 5 && abs_err > 15.0f)
+    if (pid->still_count > 3 && abs_err > 5.0f)
     {
-        /* 根据半轴调整boost强度 */
-        float boost_base;
-        if (pid->target_cm >= 0.0f)  /* 正半轴：力臂短，需要更强推力 */
-        {
-            boost_base = (abs_err > 40.0f) ? 3.5f : 2.5f;
-        }
-        else  /* 负半轴：力臂长，响应快，降低推力 */
-        {
-            boost_base = (abs_err > 40.0f) ? 2.5f : 1.8f;
-        }
-        boost = (err > 0.0f) ? boost_base : -boost_base;
-#if SV_FRAME_DEBUG
-        static uint8_t boost_print = 0;
-        if ((boost_print++ % 10) == 0)
-            printf("  [BOOST] Still %u frames, err=%.1f boost=%.1f\r\n",
-                   pid->still_count, (double)abs_err, (double)boost);
-#endif
+        boost = (err > 0.0f) ? 2.0f : -2.0f;  
     }
 
     pid->err = err;

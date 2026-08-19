@@ -1435,16 +1435,16 @@ Section Cross References
     vision_servo_test.o(.text.vision_to_error_px) refers to fdiv.o(.text) for __aeabi_fdiv
     vision_servo_test.o(.text.vision_to_error_px) refers to fadd.o(.text) for __aeabi_fadd
     vision_servo_test.o(.ARM.exidx.text.vision_to_error_px) refers to vision_servo_test.o(.text.vision_to_error_px) for [Anonymous Symbol]
-    vision_servo_test.o(.text.pid_calc) refers to fcmplt.o(.text) for __aeabi_fcmplt
-    vision_servo_test.o(.text.pid_calc) refers to fcmple.o(.text) for __aeabi_fcmple
-    vision_servo_test.o(.text.pid_calc) refers to fadd.o(.text) for __aeabi_fsub
     vision_servo_test.o(.text.pid_calc) refers to fcmpge.o(.text) for __aeabi_fcmpge
     vision_servo_test.o(.text.pid_calc) refers to fmul.o(.text) for __aeabi_fmul
-    vision_servo_test.o(.text.pid_calc) refers to printfa.o(i.__0printf) for printf
-    vision_servo_test.o(.text.pid_calc) refers to fcmpgt.o(.text) for __aeabi_fcmpgt
+    vision_servo_test.o(.text.pid_calc) refers to fadd.o(.text) for __aeabi_fsub
+    vision_servo_test.o(.text.pid_calc) refers to fcmple.o(.text) for __aeabi_fcmple
     vision_servo_test.o(.text.pid_calc) refers to f2d.o(.text) for __aeabi_f2d
+    vision_servo_test.o(.text.pid_calc) refers to printfa.o(i.__0printf) for printf
+    vision_servo_test.o(.text.pid_calc) refers to fcmplt.o(.text) for __aeabi_fcmplt
+    vision_servo_test.o(.text.pid_calc) refers to fcmpgt.o(.text) for __aeabi_fcmpgt
+    vision_servo_test.o(.text.pid_calc) refers to vision_servo_test.o(.bss.pid_calc.brake_print) for [Anonymous Symbol]
     vision_servo_test.o(.text.pid_calc) refers to vision_servo_test.o(.rodata.str1.1) for [Anonymous Symbol]
-    vision_servo_test.o(.text.pid_calc) refers to vision_servo_test.o(.bss.pid_calc.boost_print) for [Anonymous Symbol]
     vision_servo_test.o(.text.pid_calc) refers to vision_servo_test.o(.bss.pid_calc.s_print_cnt) for [Anonymous Symbol]
     vision_servo_test.o(.ARM.exidx.text.pid_calc) refers to vision_servo_test.o(.text.pid_calc) for [Anonymous Symbol]
     vision_servo_test.o(.text.set_servo) refers to fcmpge.o(.text) for __aeabi_fcmpge
@@ -3530,81 +3530,82 @@ Image Symbol Table
     __arm_cp.0_6                             0x000025b8   Number         4  empty.o(.text.main)
     __arm_cp.0_7                             0x000025bc   Number         4  empty.o(.text.main)
     __arm_cp.0_8                             0x000025c0   Number         4  empty.o(.text.main)
-    pid_calc                                 0x000025c5   Thumb Code   976  vision_servo_test.o(.text.pid_calc)
+    pid_calc                                 0x000025c5   Thumb Code  1212  vision_servo_test.o(.text.pid_calc)
     [Anonymous Symbol]                       0x000025c4   Section        0  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_0                             0x00002994   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_1                             0x00002998   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_2                             0x0000299c   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_3                             0x000029a0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_4                             0x000029a4   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_5                             0x000029a8   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_6                             0x000029ac   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_7                             0x000029b0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_8                             0x000029b4   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_9                             0x000029b8   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_10                            0x000029bc   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_11                            0x000029c0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_12                            0x000029c4   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_13                            0x000029c8   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_14                            0x000029cc   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_15                            0x000029d0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_16                            0x000029d4   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_17                            0x000029d8   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_18                            0x000029dc   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_19                            0x000029e0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_20                            0x000029e4   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_21                            0x000029e8   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_22                            0x000029ec   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_23                            0x000029f0   Number         4  vision_servo_test.o(.text.pid_calc)
-    __arm_cp.4_24                            0x000029f4   Number         4  vision_servo_test.o(.text.pid_calc)
-    set_servo                                0x000029f9   Thumb Code   164  vision_servo_test.o(.text.set_servo)
-    [Anonymous Symbol]                       0x000029f8   Section        0  vision_servo_test.o(.text.set_servo)
-    __arm_cp.5_0                             0x00002a9c   Number         4  vision_servo_test.o(.text.set_servo)
-    __arm_cp.5_1                             0x00002aa0   Number         4  vision_servo_test.o(.text.set_servo)
-    __arm_cp.5_2                             0x00002aa4   Number         4  vision_servo_test.o(.text.set_servo)
-    __arm_cp.5_3                             0x00002aa8   Number         4  vision_servo_test.o(.text.set_servo)
-    vision_to_error_px                       0x00002aad   Thumb Code    76  vision_servo_test.o(.text.vision_to_error_px)
-    [Anonymous Symbol]                       0x00002aac   Section        0  vision_servo_test.o(.text.vision_to_error_px)
-    __arm_cp.3_0                             0x00002af8   Number         4  vision_servo_test.o(.text.vision_to_error_px)
-    __arm_cp.3_1                             0x00002afc   Number         4  vision_servo_test.o(.text.vision_to_error_px)
-    __arm_cp.3_2                             0x00002b00   Number         4  vision_servo_test.o(.text.vision_to_error_px)
-    i.__0printf                              0x00002b04   Section        0  printfa.o(i.__0printf)
-    i.__ARM_clz                              0x00002b24   Section        0  depilogue.o(i.__ARM_clz)
-    i.__scatterload_copy                     0x00002b58   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x00002b68   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x00002b70   Section       14  handlers.o(i.__scatterload_zeroinit)
-    _fp_digits                               0x00002b81   Thumb Code   344  printfa.o(i._fp_digits)
-    i._fp_digits                             0x00002b80   Section        0  printfa.o(i._fp_digits)
-    _printf_core                             0x00002cf5   Thumb Code  1754  printfa.o(i._printf_core)
-    i._printf_core                           0x00002cf4   Section        0  printfa.o(i._printf_core)
-    _printf_post_padding                     0x000033e1   Thumb Code    32  printfa.o(i._printf_post_padding)
-    i._printf_post_padding                   0x000033e0   Section        0  printfa.o(i._printf_post_padding)
-    _printf_pre_padding                      0x00003401   Thumb Code    44  printfa.o(i._printf_pre_padding)
-    i._printf_pre_padding                    0x00003400   Section        0  printfa.o(i._printf_pre_padding)
-    gI2C_0ClockConfig                        0x0000342c   Data           2  ti_msp_dl_config.o(.rodata.gI2C_0ClockConfig)
-    [Anonymous Symbol]                       0x0000342c   Section        0  ti_msp_dl_config.o(.rodata.gI2C_0ClockConfig)
-    gPWM_ServoClockConfig                    0x0000342e   Data           3  ti_msp_dl_config.o(.rodata.gPWM_ServoClockConfig)
-    [Anonymous Symbol]                       0x0000342e   Section        0  ti_msp_dl_config.o(.rodata.gPWM_ServoClockConfig)
-    gPWM_ServoConfig                         0x00003434   Data           8  ti_msp_dl_config.o(.rodata.gPWM_ServoConfig)
-    [Anonymous Symbol]                       0x00003434   Section        0  ti_msp_dl_config.o(.rodata.gPWM_ServoConfig)
-    gUART_0ClockConfig                       0x0000343c   Data           2  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
-    [Anonymous Symbol]                       0x0000343c   Section        0  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
-    gUART_0Config                            0x0000343e   Data          10  ti_msp_dl_config.o(.rodata.gUART_0Config)
-    [Anonymous Symbol]                       0x0000343e   Section        0  ti_msp_dl_config.o(.rodata.gUART_0Config)
-    gUART_1ClockConfig                       0x00003448   Data           2  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
-    [Anonymous Symbol]                       0x00003448   Section        0  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
-    gUART_1Config                            0x0000344a   Data          10  ti_msp_dl_config.o(.rodata.gUART_1Config)
-    [Anonymous Symbol]                       0x0000344a   Section        0  ti_msp_dl_config.o(.rodata.gUART_1Config)
-    gUART_3ClockConfig                       0x00003454   Data           2  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
-    [Anonymous Symbol]                       0x00003454   Section        0  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
-    gUART_3Config                            0x00003456   Data          10  ti_msp_dl_config.o(.rodata.gUART_3Config)
-    [Anonymous Symbol]                       0x00003456   Section        0  ti_msp_dl_config.o(.rodata.gUART_3Config)
-    s_time_cfg                               0x00003460   Data          20  bsp_camera_usart.o(.rodata.s_time_cfg)
-    [Anonymous Symbol]                       0x00003460   Section        0  bsp_camera_usart.o(.rodata.s_time_cfg)
-    s_time_clk                               0x00003474   Data           3  bsp_camera_usart.o(.rodata.s_time_clk)
-    [Anonymous Symbol]                       0x00003474   Section        0  bsp_camera_usart.o(.rodata.s_time_clk)
-    [Anonymous Symbol]                       0x00003477   Section        0  empty.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x0000355b   Section        0  vision_servo_test.o(.rodata.str1.1)
+    __arm_cp.4_26                            0x000029bc   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_27                            0x000029c0   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_28                            0x000029c4   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_29                            0x000029c8   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_30                            0x000029cc   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_5                             0x00002a80   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_6                             0x00002a84   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_7                             0x00002a88   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_8                             0x00002a8c   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_9                             0x00002a90   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_10                            0x00002a94   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_11                            0x00002a98   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_12                            0x00002a9c   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_13                            0x00002aa0   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_14                            0x00002aa4   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_15                            0x00002aa8   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_16                            0x00002aac   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_17                            0x00002ab0   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_18                            0x00002ab4   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_19                            0x00002ab8   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_20                            0x00002abc   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_21                            0x00002ac0   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_22                            0x00002ac4   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_23                            0x00002ac8   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_24                            0x00002acc   Number         4  vision_servo_test.o(.text.pid_calc)
+    __arm_cp.4_25                            0x00002ad0   Number         4  vision_servo_test.o(.text.pid_calc)
+    set_servo                                0x00002ad5   Thumb Code   164  vision_servo_test.o(.text.set_servo)
+    [Anonymous Symbol]                       0x00002ad4   Section        0  vision_servo_test.o(.text.set_servo)
+    __arm_cp.5_0                             0x00002b78   Number         4  vision_servo_test.o(.text.set_servo)
+    __arm_cp.5_1                             0x00002b7c   Number         4  vision_servo_test.o(.text.set_servo)
+    __arm_cp.5_2                             0x00002b80   Number         4  vision_servo_test.o(.text.set_servo)
+    __arm_cp.5_3                             0x00002b84   Number         4  vision_servo_test.o(.text.set_servo)
+    vision_to_error_px                       0x00002b89   Thumb Code    76  vision_servo_test.o(.text.vision_to_error_px)
+    [Anonymous Symbol]                       0x00002b88   Section        0  vision_servo_test.o(.text.vision_to_error_px)
+    __arm_cp.3_0                             0x00002bd4   Number         4  vision_servo_test.o(.text.vision_to_error_px)
+    __arm_cp.3_1                             0x00002bd8   Number         4  vision_servo_test.o(.text.vision_to_error_px)
+    __arm_cp.3_2                             0x00002bdc   Number         4  vision_servo_test.o(.text.vision_to_error_px)
+    i.__0printf                              0x00002be0   Section        0  printfa.o(i.__0printf)
+    i.__ARM_clz                              0x00002c00   Section        0  depilogue.o(i.__ARM_clz)
+    i.__scatterload_copy                     0x00002c30   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x00002c40   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x00002c48   Section       14  handlers.o(i.__scatterload_zeroinit)
+    _fp_digits                               0x00002c59   Thumb Code   344  printfa.o(i._fp_digits)
+    i._fp_digits                             0x00002c58   Section        0  printfa.o(i._fp_digits)
+    _printf_core                             0x00002dcd   Thumb Code  1754  printfa.o(i._printf_core)
+    i._printf_core                           0x00002dcc   Section        0  printfa.o(i._printf_core)
+    _printf_post_padding                     0x000034b9   Thumb Code    32  printfa.o(i._printf_post_padding)
+    i._printf_post_padding                   0x000034b8   Section        0  printfa.o(i._printf_post_padding)
+    _printf_pre_padding                      0x000034d9   Thumb Code    44  printfa.o(i._printf_pre_padding)
+    i._printf_pre_padding                    0x000034d8   Section        0  printfa.o(i._printf_pre_padding)
+    gI2C_0ClockConfig                        0x00003504   Data           2  ti_msp_dl_config.o(.rodata.gI2C_0ClockConfig)
+    [Anonymous Symbol]                       0x00003504   Section        0  ti_msp_dl_config.o(.rodata.gI2C_0ClockConfig)
+    gPWM_ServoClockConfig                    0x00003506   Data           3  ti_msp_dl_config.o(.rodata.gPWM_ServoClockConfig)
+    [Anonymous Symbol]                       0x00003506   Section        0  ti_msp_dl_config.o(.rodata.gPWM_ServoClockConfig)
+    gPWM_ServoConfig                         0x0000350c   Data           8  ti_msp_dl_config.o(.rodata.gPWM_ServoConfig)
+    [Anonymous Symbol]                       0x0000350c   Section        0  ti_msp_dl_config.o(.rodata.gPWM_ServoConfig)
+    gUART_0ClockConfig                       0x00003514   Data           2  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
+    [Anonymous Symbol]                       0x00003514   Section        0  ti_msp_dl_config.o(.rodata.gUART_0ClockConfig)
+    gUART_0Config                            0x00003516   Data          10  ti_msp_dl_config.o(.rodata.gUART_0Config)
+    [Anonymous Symbol]                       0x00003516   Section        0  ti_msp_dl_config.o(.rodata.gUART_0Config)
+    gUART_1ClockConfig                       0x00003520   Data           2  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
+    [Anonymous Symbol]                       0x00003520   Section        0  ti_msp_dl_config.o(.rodata.gUART_1ClockConfig)
+    gUART_1Config                            0x00003522   Data          10  ti_msp_dl_config.o(.rodata.gUART_1Config)
+    [Anonymous Symbol]                       0x00003522   Section        0  ti_msp_dl_config.o(.rodata.gUART_1Config)
+    gUART_3ClockConfig                       0x0000352c   Data           2  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
+    [Anonymous Symbol]                       0x0000352c   Section        0  ti_msp_dl_config.o(.rodata.gUART_3ClockConfig)
+    gUART_3Config                            0x0000352e   Data          10  ti_msp_dl_config.o(.rodata.gUART_3Config)
+    [Anonymous Symbol]                       0x0000352e   Section        0  ti_msp_dl_config.o(.rodata.gUART_3Config)
+    s_time_cfg                               0x00003538   Data          20  bsp_camera_usart.o(.rodata.s_time_cfg)
+    [Anonymous Symbol]                       0x00003538   Section        0  bsp_camera_usart.o(.rodata.s_time_cfg)
+    s_time_clk                               0x0000354c   Data           3  bsp_camera_usart.o(.rodata.s_time_clk)
+    [Anonymous Symbol]                       0x0000354c   Section        0  bsp_camera_usart.o(.rodata.s_time_clk)
+    [Anonymous Symbol]                       0x0000354f   Section        0  empty.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x00003633   Section        0  vision_servo_test.o(.rodata.str1.1)
     .data                                    0x20200000   Section        4  stdout.o(.data)
     s_cc_last                                0x20200004   Data           4  vision_servo_test.o(.data.s_cc_last)
     [Anonymous Symbol]                       0x20200004   Section        0  vision_servo_test.o(.data.s_cc_last)
@@ -3614,49 +3615,49 @@ Image Symbol Table
     [Anonymous Symbol]                       0x2020000a   Section        0  app_motor_usart.o(.bss.Deal_Control_Rxtemp.started)
     Key_GetEvent.last_key                    0x2020000b   Data           1  key.o(.bss.Key_GetEvent.last_key)
     [Anonymous Symbol]                       0x2020000b   Section        0  key.o(.bss.Key_GetEvent.last_key)
-    pid_calc.boost_print                     0x202000f9   Data           1  vision_servo_test.o(.bss.pid_calc.boost_print)
-    [Anonymous Symbol]                       0x202000f9   Section        0  vision_servo_test.o(.bss.pid_calc.boost_print)
-    pid_calc.s_print_cnt                     0x202000fc   Data           4  vision_servo_test.o(.bss.pid_calc.s_print_cnt)
-    [Anonymous Symbol]                       0x202000fc   Section        0  vision_servo_test.o(.bss.pid_calc.s_print_cnt)
-    s_frame                                  0x20200100   Data           8  bsp_camera_usart.o(.bss.s_frame)
-    [Anonymous Symbol]                       0x20200100   Section        0  bsp_camera_usart.o(.bss.s_frame)
-    s_frame                                  0x20200108   Data           4  vision_servo_test.o(.bss.s_frame)
-    [Anonymous Symbol]                       0x20200108   Section        0  vision_servo_test.o(.bss.s_frame)
-    s_has_seq                                0x2020010c   Data           1  bsp_camera_usart.o(.bss.s_has_seq)
-    [Anonymous Symbol]                       0x2020010c   Section        0  bsp_camera_usart.o(.bss.s_has_seq)
-    s_head                                   0x2020010e   Data           2  bsp_camera_usart.o(.bss.s_head)
-    [Anonymous Symbol]                       0x2020010e   Section        0  bsp_camera_usart.o(.bss.s_head)
-    s_i                                      0x20200110   Data           1  bsp_camera_usart.o(.bss.s_i)
-    [Anonymous Symbol]                       0x20200110   Section        0  bsp_camera_usart.o(.bss.s_i)
-    s_inited                                 0x20200111   Data           1  vision_servo_test.o(.bss.s_inited)
-    [Anonymous Symbol]                       0x20200111   Section        0  vision_servo_test.o(.bss.s_inited)
-    s_kf                                     0x20200114   Data          12  vision_servo_test.o(.bss.s_kf)
-    [Anonymous Symbol]                       0x20200114   Section        0  vision_servo_test.o(.bss.s_kf)
-    s_ms                                     0x20200120   Data           4  bsp_camera_usart.o(.bss.s_ms)
-    [Anonymous Symbol]                       0x20200120   Section        0  bsp_camera_usart.o(.bss.s_ms)
-    s_overflow                               0x20200124   Data           4  bsp_camera_usart.o(.bss.s_overflow)
-    [Anonymous Symbol]                       0x20200124   Section        0  bsp_camera_usart.o(.bss.s_overflow)
-    s_parse                                  0x20200128   Data           1  bsp_camera_usart.o(.bss.s_parse)
-    [Anonymous Symbol]                       0x20200128   Section        0  bsp_camera_usart.o(.bss.s_parse)
-    s_pid                                    0x2020012c   Data          24  vision_servo_test.o(.bss.s_pid)
-    [Anonymous Symbol]                       0x2020012c   Section        0  vision_servo_test.o(.bss.s_pid)
-    s_rx                                     0x20200144   Data         128  usart.o(.bss.s_rx)
-    [Anonymous Symbol]                       0x20200144   Section        0  usart.o(.bss.s_rx)
-    s_rx                                     0x202001c4   Data         128  bsp_camera_usart.o(.bss.s_rx)
-    [Anonymous Symbol]                       0x202001c4   Section        0  bsp_camera_usart.o(.bss.s_rx)
-    s_rx                                     0x20200244   Data         256  app_motor_usart.o(.bss.s_rx)
-    [Anonymous Symbol]                       0x20200244   Section        0  app_motor_usart.o(.bss.s_rx)
-    s_rx_done                                0x20200344   Data         256  app_motor_usart.o(.bss.s_rx_done)
-    [Anonymous Symbol]                       0x20200344   Section        0  app_motor_usart.o(.bss.s_rx_done)
-    s_rx_len                                 0x20200444   Data           2  usart.o(.bss.s_rx_len)
-    [Anonymous Symbol]                       0x20200444   Section        0  usart.o(.bss.s_rx_len)
-    s_rx_ready                               0x20200446   Data           1  usart.o(.bss.s_rx_ready)
-    [Anonymous Symbol]                       0x20200446   Section        0  usart.o(.bss.s_rx_ready)
-    s_tail                                   0x20200448   Data           2  bsp_camera_usart.o(.bss.s_tail)
-    [Anonymous Symbol]                       0x20200448   Section        0  bsp_camera_usart.o(.bss.s_tail)
-    s_valid_ms                               0x2020044c   Data           4  vision_servo_test.o(.bss.s_valid_ms)
-    [Anonymous Symbol]                       0x2020044c   Section        0  vision_servo_test.o(.bss.s_valid_ms)
-    STACK                                    0x20200480   Section     1024  startup_mspm0g350x_uvision.o(STACK)
+    pid_calc.brake_print                     0x202000fc   Data           4  vision_servo_test.o(.bss.pid_calc.brake_print)
+    [Anonymous Symbol]                       0x202000fc   Section        0  vision_servo_test.o(.bss.pid_calc.brake_print)
+    pid_calc.s_print_cnt                     0x20200100   Data           4  vision_servo_test.o(.bss.pid_calc.s_print_cnt)
+    [Anonymous Symbol]                       0x20200100   Section        0  vision_servo_test.o(.bss.pid_calc.s_print_cnt)
+    s_frame                                  0x20200104   Data           8  bsp_camera_usart.o(.bss.s_frame)
+    [Anonymous Symbol]                       0x20200104   Section        0  bsp_camera_usart.o(.bss.s_frame)
+    s_frame                                  0x2020010c   Data           4  vision_servo_test.o(.bss.s_frame)
+    [Anonymous Symbol]                       0x2020010c   Section        0  vision_servo_test.o(.bss.s_frame)
+    s_has_seq                                0x20200110   Data           1  bsp_camera_usart.o(.bss.s_has_seq)
+    [Anonymous Symbol]                       0x20200110   Section        0  bsp_camera_usart.o(.bss.s_has_seq)
+    s_head                                   0x20200112   Data           2  bsp_camera_usart.o(.bss.s_head)
+    [Anonymous Symbol]                       0x20200112   Section        0  bsp_camera_usart.o(.bss.s_head)
+    s_i                                      0x20200114   Data           1  bsp_camera_usart.o(.bss.s_i)
+    [Anonymous Symbol]                       0x20200114   Section        0  bsp_camera_usart.o(.bss.s_i)
+    s_inited                                 0x20200115   Data           1  vision_servo_test.o(.bss.s_inited)
+    [Anonymous Symbol]                       0x20200115   Section        0  vision_servo_test.o(.bss.s_inited)
+    s_kf                                     0x20200118   Data          12  vision_servo_test.o(.bss.s_kf)
+    [Anonymous Symbol]                       0x20200118   Section        0  vision_servo_test.o(.bss.s_kf)
+    s_ms                                     0x20200124   Data           4  bsp_camera_usart.o(.bss.s_ms)
+    [Anonymous Symbol]                       0x20200124   Section        0  bsp_camera_usart.o(.bss.s_ms)
+    s_overflow                               0x20200128   Data           4  bsp_camera_usart.o(.bss.s_overflow)
+    [Anonymous Symbol]                       0x20200128   Section        0  bsp_camera_usart.o(.bss.s_overflow)
+    s_parse                                  0x2020012c   Data           1  bsp_camera_usart.o(.bss.s_parse)
+    [Anonymous Symbol]                       0x2020012c   Section        0  bsp_camera_usart.o(.bss.s_parse)
+    s_pid                                    0x20200130   Data          24  vision_servo_test.o(.bss.s_pid)
+    [Anonymous Symbol]                       0x20200130   Section        0  vision_servo_test.o(.bss.s_pid)
+    s_rx                                     0x20200148   Data         128  usart.o(.bss.s_rx)
+    [Anonymous Symbol]                       0x20200148   Section        0  usart.o(.bss.s_rx)
+    s_rx                                     0x202001c8   Data         128  bsp_camera_usart.o(.bss.s_rx)
+    [Anonymous Symbol]                       0x202001c8   Section        0  bsp_camera_usart.o(.bss.s_rx)
+    s_rx                                     0x20200248   Data         256  app_motor_usart.o(.bss.s_rx)
+    [Anonymous Symbol]                       0x20200248   Section        0  app_motor_usart.o(.bss.s_rx)
+    s_rx_done                                0x20200348   Data         256  app_motor_usart.o(.bss.s_rx_done)
+    [Anonymous Symbol]                       0x20200348   Section        0  app_motor_usart.o(.bss.s_rx_done)
+    s_rx_len                                 0x20200448   Data           2  usart.o(.bss.s_rx_len)
+    [Anonymous Symbol]                       0x20200448   Section        0  usart.o(.bss.s_rx_len)
+    s_rx_ready                               0x2020044a   Data           1  usart.o(.bss.s_rx_ready)
+    [Anonymous Symbol]                       0x2020044a   Section        0  usart.o(.bss.s_rx_ready)
+    s_tail                                   0x2020044c   Data           2  bsp_camera_usart.o(.bss.s_tail)
+    [Anonymous Symbol]                       0x2020044c   Section        0  bsp_camera_usart.o(.bss.s_tail)
+    s_valid_ms                               0x20200450   Data           4  vision_servo_test.o(.bss.s_valid_ms)
+    [Anonymous Symbol]                       0x20200450   Section        0  vision_servo_test.o(.bss.s_valid_ms)
+    STACK                                    0x20200488   Section     1024  startup_mspm0g350x_uvision.o(STACK)
 
     Global Symbols
 
@@ -3793,23 +3794,23 @@ Image Symbol Table
     delay_us                                 0x0000234d   Thumb Code   108  delay.o(.text.delay_us)
     fputc                                    0x000023c1   Thumb Code    40  usart.o(.text.fputc)
     main                                     0x00002489   Thumb Code   280  empty.o(.text.main)
-    __0printf                                0x00002b05   Thumb Code    24  printfa.o(i.__0printf)
-    __1printf                                0x00002b05   Thumb Code     0  printfa.o(i.__0printf)
-    __2printf                                0x00002b05   Thumb Code     0  printfa.o(i.__0printf)
-    __c89printf                              0x00002b05   Thumb Code     0  printfa.o(i.__0printf)
-    printf                                   0x00002b05   Thumb Code     0  printfa.o(i.__0printf)
-    __ARM_clz                                0x00002b25   Thumb Code    46  depilogue.o(i.__ARM_clz)
-    __scatterload_copy                       0x00002b59   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x00002b69   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x00002b71   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    Region$$Table$$Base                      0x0000370c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0000372c   Number         0  anon$$obj.o(Region$$Table)
+    __0printf                                0x00002be1   Thumb Code    24  printfa.o(i.__0printf)
+    __1printf                                0x00002be1   Thumb Code     0  printfa.o(i.__0printf)
+    __2printf                                0x00002be1   Thumb Code     0  printfa.o(i.__0printf)
+    __c89printf                              0x00002be1   Thumb Code     0  printfa.o(i.__0printf)
+    printf                                   0x00002be1   Thumb Code     0  printfa.o(i.__0printf)
+    __ARM_clz                                0x00002c01   Thumb Code    46  depilogue.o(i.__ARM_clz)
+    __scatterload_copy                       0x00002c31   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x00002c41   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x00002c49   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    Region$$Table$$Base                      0x000037c0   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x000037e0   Number         0  anon$$obj.o(Region$$Table)
     __stdout                                 0x20200000   Data           4  stdout.o(.data)
     gPWM_ServoBackup                         0x2020000c   Data         188  ti_msp_dl_config.o(.bss.gPWM_ServoBackup)
     gUART_3Backup                            0x202000c8   Data          48  ti_msp_dl_config.o(.bss.gUART_3Backup)
     g_recv_flag                              0x202000f8   Data           1  app_motor_usart.o(.bss.g_recv_flag)
-    vision                                   0x20200450   Data          48  bsp_camera_usart.o(.bss.vision)
-    __initial_sp                             0x20200880   Data           0  startup_mspm0g350x_uvision.o(STACK)
+    vision                                   0x20200454   Data          48  bsp_camera_usart.o(.bss.vision)
+    __initial_sp                             0x20200888   Data           0  startup_mspm0g350x_uvision.o(STACK)
 
 
 
@@ -3819,9 +3820,9 @@ Memory Map of the image
 
   Image Entry point : 0x000000c1
 
-  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00003738, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x000037e8, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x0000372c, Max: 0x00020000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x000037e0, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -3986,81 +3987,82 @@ Memory Map of the image
     0x000023c0   0x000023c0   0x0000002c   Code   RO         1310    .text.fputc         usart.o
     0x000023ec   0x000023ec   0x0000009c   Code   RO         1401    .text.kalman_filter  vision_servo_test.o
     0x00002488   0x00002488   0x0000013c   Code   RO            2    .text.main          empty.o
-    0x000025c4   0x000025c4   0x00000434   Code   RO         1405    .text.pid_calc      vision_servo_test.o
-    0x000029f8   0x000029f8   0x000000b4   Code   RO         1407    .text.set_servo     vision_servo_test.o
-    0x00002aac   0x00002aac   0x00000058   Code   RO         1403    .text.vision_to_error_px  vision_servo_test.o
-    0x00002b04   0x00002b04   0x00000020   Code   RO         1619    i.__0printf         mc_p.l(printfa.o)
-    0x00002b24   0x00002b24   0x0000002e   Code   RO         1769    i.__ARM_clz         mf_p.l(depilogue.o)
-    0x00002b52   0x00002b52   0x00000006   PAD
-    0x00002b58   0x00002b58   0x0000000e   Code   RO         1782    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x00002b66   0x00002b66   0x00000002   PAD
-    0x00002b68   0x00002b68   0x00000002   Code   RO         1783    i.__scatterload_null  mc_p.l(handlers.o)
-    0x00002b6a   0x00002b6a   0x00000006   PAD
-    0x00002b70   0x00002b70   0x0000000e   Code   RO         1784    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x00002b7e   0x00002b7e   0x00000002   PAD
-    0x00002b80   0x00002b80   0x00000174   Code   RO         1626    i._fp_digits        mc_p.l(printfa.o)
-    0x00002cf4   0x00002cf4   0x000006ec   Code   RO         1627    i._printf_core      mc_p.l(printfa.o)
-    0x000033e0   0x000033e0   0x00000020   Code   RO         1628    i._printf_post_padding  mc_p.l(printfa.o)
-    0x00003400   0x00003400   0x0000002c   Code   RO         1629    i._printf_pre_padding  mc_p.l(printfa.o)
-    0x0000342c   0x0000342c   0x00000002   Data   RO          125    .rodata.gI2C_0ClockConfig  ti_msp_dl_config.o
-    0x0000342e   0x0000342e   0x00000003   Data   RO          123    .rodata.gPWM_ServoClockConfig  ti_msp_dl_config.o
-    0x00003431   0x00003431   0x00000003   PAD
-    0x00003434   0x00003434   0x00000008   Data   RO          124    .rodata.gPWM_ServoConfig  ti_msp_dl_config.o
-    0x0000343c   0x0000343c   0x00000002   Data   RO          126    .rodata.gUART_0ClockConfig  ti_msp_dl_config.o
-    0x0000343e   0x0000343e   0x0000000a   Data   RO          127    .rodata.gUART_0Config  ti_msp_dl_config.o
-    0x00003448   0x00003448   0x00000002   Data   RO          128    .rodata.gUART_1ClockConfig  ti_msp_dl_config.o
-    0x0000344a   0x0000344a   0x0000000a   Data   RO          129    .rodata.gUART_1Config  ti_msp_dl_config.o
-    0x00003454   0x00003454   0x00000002   Data   RO          130    .rodata.gUART_3ClockConfig  ti_msp_dl_config.o
-    0x00003456   0x00003456   0x0000000a   Data   RO          131    .rodata.gUART_3Config  ti_msp_dl_config.o
-    0x00003460   0x00003460   0x00000014   Data   RO         1388    .rodata.s_time_cfg  bsp_camera_usart.o
-    0x00003474   0x00003474   0x00000003   Data   RO         1387    .rodata.s_time_clk  bsp_camera_usart.o
-    0x00003477   0x00003477   0x000000e4   Data   RO            4    .rodata.str1.1      empty.o
-    0x0000355b   0x0000355b   0x000001b0   Data   RO         1415    .rodata.str1.1      vision_servo_test.o
-    0x0000370b   0x0000370b   0x00000001   PAD
-    0x0000370c   0x0000370c   0x00000020   Data   RO         1781    Region$$Table       anon$$obj.o
+    0x000025c4   0x000025c4   0x00000510   Code   RO         1405    .text.pid_calc      vision_servo_test.o
+    0x00002ad4   0x00002ad4   0x000000b4   Code   RO         1407    .text.set_servo     vision_servo_test.o
+    0x00002b88   0x00002b88   0x00000058   Code   RO         1403    .text.vision_to_error_px  vision_servo_test.o
+    0x00002be0   0x00002be0   0x00000020   Code   RO         1619    i.__0printf         mc_p.l(printfa.o)
+    0x00002c00   0x00002c00   0x0000002e   Code   RO         1769    i.__ARM_clz         mf_p.l(depilogue.o)
+    0x00002c2e   0x00002c2e   0x00000002   PAD
+    0x00002c30   0x00002c30   0x0000000e   Code   RO         1782    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x00002c3e   0x00002c3e   0x00000002   PAD
+    0x00002c40   0x00002c40   0x00000002   Code   RO         1783    i.__scatterload_null  mc_p.l(handlers.o)
+    0x00002c42   0x00002c42   0x00000006   PAD
+    0x00002c48   0x00002c48   0x0000000e   Code   RO         1784    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x00002c56   0x00002c56   0x00000002   PAD
+    0x00002c58   0x00002c58   0x00000174   Code   RO         1626    i._fp_digits        mc_p.l(printfa.o)
+    0x00002dcc   0x00002dcc   0x000006ec   Code   RO         1627    i._printf_core      mc_p.l(printfa.o)
+    0x000034b8   0x000034b8   0x00000020   Code   RO         1628    i._printf_post_padding  mc_p.l(printfa.o)
+    0x000034d8   0x000034d8   0x0000002c   Code   RO         1629    i._printf_pre_padding  mc_p.l(printfa.o)
+    0x00003504   0x00003504   0x00000002   Data   RO          125    .rodata.gI2C_0ClockConfig  ti_msp_dl_config.o
+    0x00003506   0x00003506   0x00000003   Data   RO          123    .rodata.gPWM_ServoClockConfig  ti_msp_dl_config.o
+    0x00003509   0x00003509   0x00000003   PAD
+    0x0000350c   0x0000350c   0x00000008   Data   RO          124    .rodata.gPWM_ServoConfig  ti_msp_dl_config.o
+    0x00003514   0x00003514   0x00000002   Data   RO          126    .rodata.gUART_0ClockConfig  ti_msp_dl_config.o
+    0x00003516   0x00003516   0x0000000a   Data   RO          127    .rodata.gUART_0Config  ti_msp_dl_config.o
+    0x00003520   0x00003520   0x00000002   Data   RO          128    .rodata.gUART_1ClockConfig  ti_msp_dl_config.o
+    0x00003522   0x00003522   0x0000000a   Data   RO          129    .rodata.gUART_1Config  ti_msp_dl_config.o
+    0x0000352c   0x0000352c   0x00000002   Data   RO          130    .rodata.gUART_3ClockConfig  ti_msp_dl_config.o
+    0x0000352e   0x0000352e   0x0000000a   Data   RO          131    .rodata.gUART_3Config  ti_msp_dl_config.o
+    0x00003538   0x00003538   0x00000014   Data   RO         1388    .rodata.s_time_cfg  bsp_camera_usart.o
+    0x0000354c   0x0000354c   0x00000003   Data   RO         1387    .rodata.s_time_clk  bsp_camera_usart.o
+    0x0000354f   0x0000354f   0x000000e4   Data   RO            4    .rodata.str1.1      empty.o
+    0x00003633   0x00003633   0x0000018c   Data   RO         1415    .rodata.str1.1      vision_servo_test.o
+    0x000037bf   0x000037bf   0x00000001   PAD
+    0x000037c0   0x000037c0   0x00000020   Data   RO         1781    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM2 (Exec base: 0x20200000, Load base: 0x00003730, Size: 0x00000880, Max: 0x00008000, ABSOLUTE)
+    Execution Region RW_IRAM2 (Exec base: 0x20200000, Load base: 0x000037e0, Size: 0x00000888, Max: 0x00008000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20200000   0x00003730   0x00000004   Data   RW         1686    .data               mc_p.l(stdout.o)
-    0x20200004   0x00003734   0x00000004   Data   RW         1411    .data.s_cc_last     vision_servo_test.o
+    0x20200000   0x000037e0   0x00000004   Data   RW         1686    .data               mc_p.l(stdout.o)
+    0x20200004   0x000037e4   0x00000004   Data   RW         1411    .data.s_cc_last     vision_servo_test.o
     0x20200008        -       0x00000002   Zero   RW         1508    .bss.Deal_Control_Rxtemp.n  app_motor_usart.o
     0x2020000a        -       0x00000001   Zero   RW         1509    .bss.Deal_Control_Rxtemp.started  app_motor_usart.o
     0x2020000b        -       0x00000001   Zero   RW         1273    .bss.Key_GetEvent.last_key  key.o
     0x2020000c        -       0x000000bc   Zero   RW          121    .bss.gPWM_ServoBackup  ti_msp_dl_config.o
     0x202000c8        -       0x00000030   Zero   RW          122    .bss.gUART_3Backup  ti_msp_dl_config.o
     0x202000f8        -       0x00000001   Zero   RW         1511    .bss.g_recv_flag    app_motor_usart.o
-    0x202000f9        -       0x00000001   Zero   RW         1416    .bss.pid_calc.boost_print  vision_servo_test.o
-    0x202000fa   0x00003738   0x00000002   PAD
-    0x202000fc        -       0x00000004   Zero   RW         1417    .bss.pid_calc.s_print_cnt  vision_servo_test.o
-    0x20200100        -       0x00000008   Zero   RW         1389    .bss.s_frame        bsp_camera_usart.o
-    0x20200108        -       0x00000004   Zero   RW         1409    .bss.s_frame        vision_servo_test.o
-    0x2020010c        -       0x00000001   Zero   RW         1386    .bss.s_has_seq      bsp_camera_usart.o
-    0x2020010d   0x00003738   0x00000001   PAD
-    0x2020010e        -       0x00000002   Zero   RW         1379    .bss.s_head         bsp_camera_usart.o
-    0x20200110        -       0x00000001   Zero   RW         1385    .bss.s_i            bsp_camera_usart.o
-    0x20200111        -       0x00000001   Zero   RW         1410    .bss.s_inited       vision_servo_test.o
-    0x20200112   0x00003738   0x00000002   PAD
-    0x20200114        -       0x0000000c   Zero   RW         1414    .bss.s_kf           vision_servo_test.o
-    0x20200120        -       0x00000004   Zero   RW         1382    .bss.s_ms           bsp_camera_usart.o
-    0x20200124        -       0x00000004   Zero   RW         1381    .bss.s_overflow     bsp_camera_usart.o
-    0x20200128        -       0x00000001   Zero   RW         1384    .bss.s_parse        bsp_camera_usart.o
-    0x20200129   0x00003738   0x00000003   PAD
-    0x2020012c        -       0x00000018   Zero   RW         1413    .bss.s_pid          vision_servo_test.o
-    0x20200144        -       0x00000080   Zero   RW         1319    .bss.s_rx           usart.o
-    0x202001c4        -       0x00000080   Zero   RW         1383    .bss.s_rx           bsp_camera_usart.o
-    0x20200244        -       0x00000100   Zero   RW         1510    .bss.s_rx           app_motor_usart.o
-    0x20200344        -       0x00000100   Zero   RW         1512    .bss.s_rx_done      app_motor_usart.o
-    0x20200444        -       0x00000002   Zero   RW         1318    .bss.s_rx_len       usart.o
-    0x20200446        -       0x00000001   Zero   RW         1320    .bss.s_rx_ready     usart.o
-    0x20200447   0x00003738   0x00000001   PAD
-    0x20200448        -       0x00000002   Zero   RW         1380    .bss.s_tail         bsp_camera_usart.o
-    0x2020044a   0x00003738   0x00000002   PAD
-    0x2020044c        -       0x00000004   Zero   RW         1412    .bss.s_valid_ms     vision_servo_test.o
-    0x20200450        -       0x00000030   Zero   RW         1378    .bss.vision         bsp_camera_usart.o
-    0x20200480        -       0x00000400   Zero   RW           11    STACK               startup_mspm0g350x_uvision.o
+    0x202000f9   0x000037e8   0x00000003   PAD
+    0x202000fc        -       0x00000004   Zero   RW         1416    .bss.pid_calc.brake_print  vision_servo_test.o
+    0x20200100        -       0x00000004   Zero   RW         1417    .bss.pid_calc.s_print_cnt  vision_servo_test.o
+    0x20200104        -       0x00000008   Zero   RW         1389    .bss.s_frame        bsp_camera_usart.o
+    0x2020010c        -       0x00000004   Zero   RW         1409    .bss.s_frame        vision_servo_test.o
+    0x20200110        -       0x00000001   Zero   RW         1386    .bss.s_has_seq      bsp_camera_usart.o
+    0x20200111   0x000037e8   0x00000001   PAD
+    0x20200112        -       0x00000002   Zero   RW         1379    .bss.s_head         bsp_camera_usart.o
+    0x20200114        -       0x00000001   Zero   RW         1385    .bss.s_i            bsp_camera_usart.o
+    0x20200115        -       0x00000001   Zero   RW         1410    .bss.s_inited       vision_servo_test.o
+    0x20200116   0x000037e8   0x00000002   PAD
+    0x20200118        -       0x0000000c   Zero   RW         1414    .bss.s_kf           vision_servo_test.o
+    0x20200124        -       0x00000004   Zero   RW         1382    .bss.s_ms           bsp_camera_usart.o
+    0x20200128        -       0x00000004   Zero   RW         1381    .bss.s_overflow     bsp_camera_usart.o
+    0x2020012c        -       0x00000001   Zero   RW         1384    .bss.s_parse        bsp_camera_usart.o
+    0x2020012d   0x000037e8   0x00000003   PAD
+    0x20200130        -       0x00000018   Zero   RW         1413    .bss.s_pid          vision_servo_test.o
+    0x20200148        -       0x00000080   Zero   RW         1319    .bss.s_rx           usart.o
+    0x202001c8        -       0x00000080   Zero   RW         1383    .bss.s_rx           bsp_camera_usart.o
+    0x20200248        -       0x00000100   Zero   RW         1510    .bss.s_rx           app_motor_usart.o
+    0x20200348        -       0x00000100   Zero   RW         1512    .bss.s_rx_done      app_motor_usart.o
+    0x20200448        -       0x00000002   Zero   RW         1318    .bss.s_rx_len       usart.o
+    0x2020044a        -       0x00000001   Zero   RW         1320    .bss.s_rx_ready     usart.o
+    0x2020044b   0x000037e8   0x00000001   PAD
+    0x2020044c        -       0x00000002   Zero   RW         1380    .bss.s_tail         bsp_camera_usart.o
+    0x2020044e   0x000037e8   0x00000002   PAD
+    0x20200450        -       0x00000004   Zero   RW         1412    .bss.s_valid_ms     vision_servo_test.o
+    0x20200454        -       0x00000030   Zero   RW         1378    .bss.vision         bsp_camera_usart.o
+    0x20200484   0x000037e8   0x00000004   PAD
+    0x20200488        -       0x00000400   Zero   RW           11    STACK               startup_mspm0g350x_uvision.o
 
 
 
@@ -4100,12 +4102,12 @@ Image component sizes
         20          4        192          0       1024        624   startup_mspm0g350x_uvision.o
       1922        160         49          0        236      31427   ti_msp_dl_config.o
        350         24          0          0        131       6120   usart.o
-      2280        252        432          4         50       4732   vision_servo_test.o
+      2500        256        396          4         53       5057   vision_servo_test.o
 
     ----------------------------------------------------------------------
-      8546        816        960          4       2168     118922   Object Totals
+      8766        820        924          4       2176     119247   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-        14          0          4          0         11          0   (incl. Padding)
+        14          0          4          0         16          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -4150,8 +4152,8 @@ Image component sizes
        122          0          0          0          0         72   fmul.o
 
     ----------------------------------------------------------------------
-      4618        148          0          4          0       2488   Library Totals
-        20          4          0          0          0          0   (incl. Padding)
+      4614        148          0          4          0       2488   Library Totals
+        16          4          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -4161,7 +4163,7 @@ Image component sizes
       1914         28          0          0          0       1488   mf_p.l
 
     ----------------------------------------------------------------------
-      4618        148          0          4          0       2488   Library Totals
+      4614        148          0          4          0       2488   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -4170,15 +4172,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     13164        964        960          8       2168     120062   Grand Totals
-     13164        964        960          8       2168     120062   ELF Image Totals
-     13164        964        960          8          0          0   ROM Totals
+     13380        968        924          8       2176     120387   Grand Totals
+     13380        968        924          8       2176     120387   ELF Image Totals
+     13380        968        924          8          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                14124 (  13.79kB)
-    Total RW  Size (RW Data + ZI Data)              2176 (   2.12kB)
-    Total ROM Size (Code + RO Data + RW Data)      14132 (  13.80kB)
+    Total RO  Size (Code + RO Data)                14304 (  13.97kB)
+    Total RW  Size (RW Data + ZI Data)              2184 (   2.13kB)
+    Total ROM Size (Code + RO Data + RW Data)      14312 (  13.98kB)
 
 ==============================================================================
 
