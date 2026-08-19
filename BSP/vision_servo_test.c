@@ -65,6 +65,29 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
     float p, i, d;
     float abs_err = fabsf(err);
 
+    /* 根据目标半轴选择不同参数 */
+    float kp, ki, kd;
+    if (pid->target_cm >= 0.0f)  /* 正半轴：力臂短，响应慢，保持当前参数 */
+    {
+        kp = 0.08f;
+        ki = 0.0080f;
+        kd = 0.800f;
+    }
+    else  /* 负半轴：力臂长，响应快，分距离调整 */
+    {
+        /* 远距离降低KP避免过冲，中近距离提高KP加快响应 */
+        if (abs_err > 65.0f)  /* 从65提到70，更早增强驱动 */
+        {
+            kp = 0.045f;  /* 远距离温和 */
+        }
+        else
+        {
+            kp = 0.060f;  /* 从0.060提到0.065，增强中距离驱动 */
+        }
+        ki = 0.0080f;
+        kd = 0.500f;
+    }
+
     /* 初始化或目标切换时不产生 D 冲击 */
     if (reset)
     {
@@ -80,7 +103,7 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
     float ball_movement = current_pos - pid->last_pos;
     float abs_movement = fabsf(ball_movement);
 
-    if (abs_movement < 0.15f) /* 静止阈值：约0.15cm */
+    if (abs_movement < 0.25f) /* 静止阈值：约0.25cm，包含缓慢蠕动 */
     {
         if (pid->still_count < 255)
             pid->still_count++;
@@ -90,26 +113,26 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
         pid->still_count = 0;
     }
 
-    /* P 项 */
-    p = PID_KP * err;
+    /* P 项 - 使用半轴特定参数 */
+    p = kp * err;
 
-    /* 误差跨零判断：区分"过冲回摆"和"穿越目标继续运动" */
+    /* 误差跨零判断：只在小幅振荡时清积分，大幅穿越保留 */
     float delta_err = err - pid->last_err;
     float abs_delta = fabsf(delta_err);
 
     if ((err > 0.0f && pid->last_err < 0.0f) ||
         (err < 0.0f && pid->last_err > 0.0f))
     {
-        /* 情况1：小幅度跨零 + 钢珠反向运动 = 过冲回摆，清积分 */
-        if (abs_delta < 15.0f && (err * ball_movement < 0.0f))
+        /* 只在小幅度变号时清积分（可能是过冲振荡） */
+        if (abs_delta < 20.0f)
         {
             pid->integral = 0.0f;
             pid->still_count = 0;
 #if SV_FRAME_DEBUG
-            printf("  [INTEGRAL RESET] Overshoot detected\r\n");
+            printf("  [INTEGRAL RESET] Small sign change\r\n");
 #endif
         }
-        /* 情况2：大幅度跨零或钢珠同向运动 = 穿越目标，保留积分 */
+        /* 大幅度变号（>20px）保留积分，可能是正常穿越目标 */
     }
 
     /* I 项：只在中等误差时累加 */
@@ -119,7 +142,7 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
         float i_gain = 1.0f;
 
         /* 静止时加速积分累积 */
-        if (pid->still_count > 3 && abs_err > 15.0f)
+        if (pid->still_count > 2 && abs_err > 15.0f)  /* 从3降到2 */
         {
             i_gain = 2.5f; /* 静止时积分增益 */
         }
@@ -137,25 +160,25 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
         /* 远距离直接清零积分 */
         pid->integral = 0.0f;
     }
-    i = PID_KI * pid->integral;
+    i = ki * pid->integral;
 
     /* D 项：使用帧间误差变化 */
-    d = PID_KD * delta_err;
+    d = kd * delta_err;
 
-    /* 接近目标时限制 D 项反向制动，防止反向过冲 */
-    if (err * delta_err < 0.0f) /* 正在接近 */
-    {
-        float max_d = fabsf(p + i) + D_REVERSE_MARGIN;
-        if (d > max_d) d = max_d;
-        if (d < -max_d) d = -max_d;
-    }
-
-    /* 静止突破机制：静止超过7帧且误差>18像素，给额外推力 */
+    /* 静止突破机制：静止超过5帧且误差>15像素，给额外推力 */
     float boost = 0.0f;
-    if (pid->still_count > 7 && abs_err > 18.0f)
+    if (pid->still_count > 5 && abs_err > 15.0f)
     {
-        /* 根据误差大小动态调整boost */
-        float boost_base = (abs_err > 40.0f) ? 3.5f : 2.5f;
+        /* 根据半轴调整boost强度 */
+        float boost_base;
+        if (pid->target_cm >= 0.0f)  /* 正半轴：力臂短，需要更强推力 */
+        {
+            boost_base = (abs_err > 40.0f) ? 3.5f : 2.5f;
+        }
+        else  /* 负半轴：力臂长，响应快，降低推力 */
+        {
+            boost_base = (abs_err > 40.0f) ? 2.5f : 1.8f;
+        }
         boost = (err > 0.0f) ? boost_base : -boost_base;
 #if SV_FRAME_DEBUG
         static uint8_t boost_print = 0;
@@ -176,9 +199,9 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
     static uint32_t s_print_cnt = 0;
     if ((++s_print_cnt % 5) == 0) /* 每5帧打印一次，减少串口负担 */
     {
-        printf("  [PID] err=%.1f p=%.2f i=%.2f(%.0f) d=%.2f boost=%.1f out=%.2f still=%u\r\n",
-               (double)err, (double)p, (double)i, (double)pid->integral,
-               (double)d, (double)boost, (double)output, pid->still_count);
+        printf("  [PID] err=%.1f p=%.2f(kp=%.3f) i=%.2f(%.0f) d=%.2f(kd=%.3f) boost=%.1f out=%.2f still=%u\r\n",
+               (double)err, (double)p, (double)kp, (double)i, (double)pid->integral,
+               (double)d, (double)kd, (double)boost, (double)output, pid->still_count);
     }
 #endif
 

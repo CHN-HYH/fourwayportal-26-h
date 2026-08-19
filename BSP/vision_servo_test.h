@@ -18,7 +18,7 @@
 #define PID_KI             (0.0080f) /* 积分系数，适中 */
 #define PID_KD             (0.800f)  /* 差分系数，强阻尼抑制振荡 */
 #define PID_I_LIMIT        (500.0f)  /* 积分限幅进一步降低 */
-#define DIST_MID_PX        (70.0f)   /* 积分启用边界 */
+#define DIST_MID_PX        (80.0f)   /* 积分启用边界，约7cm */
 #define STOP_ERR_PX        (6.0f)    /* 积分停止边界 */
 #define D_REVERSE_MARGIN   (0.60f)   /* D 项反向制动余量增加 */
 
@@ -34,7 +34,7 @@
 #define PWM_CC_MIN         (50.0f)  /* 舵机最小比较值 */
 #define PWM_CC_MAX         (70.0f)  /* 舵机最大比较值 */
 #define PWM_CC_SCALE       (1.15f)  /* PID 输出缩放，提高加快响应 */
-#define REACH_ERR_PX       (18.0f)  /* 到位判断阈值进一步放宽，约1.5cm */
+#define REACH_ERR_PX       (10.0f)  /* 到位判断阈值进一步放宽，约1.5cm */
 #define RATE_LIMIT         (4.0f)   /* 每帧最大变化，加快 */
 #define HISTORY_TIMEOUT_MS (300U)   /* 视觉超时阈值 */
 
