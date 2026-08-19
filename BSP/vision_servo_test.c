@@ -76,13 +76,13 @@ static float pid_calc(pid_simple_t *pid, float err, float current_pos, uint8_t r
     else  /* 负半轴：力臂长，响应快，分距离调整 */
     {
         /* 远距离降低KP避免过冲，中近距离提高KP加快响应 */
-        if (abs_err > 65.0f)  /* 从65提到70，更早增强驱动 */
+        if (abs_err > 70.0f)
         {
             kp = 0.045f;  /* 远距离温和 */
         }
         else
         {
-            kp = 0.060f;  /* 从0.060提到0.065，增强中距离驱动 */
+            kp = 0.070f;  /* 从0.065提到0.070，应对系统衰退 */
         }
         ki = 0.0080f;
         kd = 0.500f;
